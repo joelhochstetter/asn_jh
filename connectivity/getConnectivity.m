@@ -135,10 +135,12 @@ clc
     %---------------------------------------------------------------------%  
 
         case 'adjMat'
-            load(Connectivity.filename, 'adj_matrix');
-            
-            Connectivity.weights        = adj_matrix;
-            Connectivity.NumberOfNodes  = size(adj_matrix,1);
+            if ~isfield(Connectivity, 'weights')
+                load(Connectivity.filename, 'adj_matrix');
+                Connectivity.weights        = adj_matrix;
+            end
+                           
+            Connectivity.NumberOfNodes  = size(Connectivity.weights,1);
 
 
     %---------------------------------------------------------------------%  
@@ -199,18 +201,22 @@ clc
             Connectivity.weights  = zeros(Connectivity.NumberOfNodes);
             %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
             %nodeIdx = Connectivity.sizex * (j - 1) + i
-            for i = 1:Connectivity.sizex
-                for j = 1:(Connectivity.sizey - 1)
-                    %Connect adjacent nodes in x direction
-                    Connectivity.weights(Connectivity.sizex * (i - 1) + j, Connectivity.sizex * (i - 1) + j + 1) = 1;
-                    Connectivity.weights(Connectivity.sizex * (i - 1) + j + 1, Connectivity.sizex * (i - 1) + j) = 1;
-                    
-                    %Connect adjacent nodes in y direction
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i) = 1;
-                    Connectivity.weights(Connectivity.sizex * j + i, Connectivity.sizex * (j - 1) + i) = 1;                    
+            %Connect adjacent nodes in x direction
+            for i = 1:(Connectivity.sizex - 1)
+                for j = 1:Connectivity.sizey
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = 1;
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = 1;                
                 end
             end
 
+            %Connect adjacent nodes in y direction
+            for i = 1:Connectivity.sizex
+                for j = 1:(Connectivity.sizey - 1)
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = 1;
+                    Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = 1;                
+                end
+            end            
+            
     %---------------------------------------------------------------------%  
 
         case 'Random'

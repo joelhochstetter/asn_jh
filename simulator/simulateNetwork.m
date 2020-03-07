@@ -93,7 +93,7 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetwork(Equati
         progressBar(ii,niterations);
         
         %OG Solution
-        %{
+        %%{
         % Update resistance values:
         updateComponentResistance(compPtr); 
         LHS = [Equations.KCLCoeff .* compPtr.comp.resistance(:,ones(Equations.NumberOfNodes-1,1)).' ; ...
@@ -102,10 +102,10 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetwork(Equati
 
         % Solve equation:
         compPtr.comp.voltage = LHS\RHS; %temporary Voltage
-        %}
+        %%}
         
         
-        %%{
+        %{
         %My solution %Valid for a single source and drain
         % Update resistance values:
         switchChange = updateComponentResistance(compPtr); 
@@ -122,7 +122,7 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetwork(Equati
         end
         
         compPtr.comp.voltage = V*Stimulus.Signal(ii);
-        %%}
+        %}
         
         lam = compPtr.comp.filamentState;       
         
@@ -152,12 +152,12 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetwork(Equati
                 snapshots{kk} = frame;
                 kk = kk + 1;
         end
-        %%{
+        %{
         if strcmp(Stimulus.BiasType, 'DC') && sum(abs(lam(1:end-1) - compPtr.comp.filamentState(1:end-1))) < 1e-13
             ii
             break
         end
-        %%}
+        %}
         
     end
     

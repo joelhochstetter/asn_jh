@@ -62,6 +62,8 @@ function [ s, tvec, cList ] = analyseSimGoodMemory(params, field, changeVar)
             s.lastCPath     = zeros(numRun,1); %last time in simulation with a cond. path
             
             s.firstIncrease = zeros(numRun,1);
+            s.firstDecrease = zeros(numRun,1);
+
             s.reachMin      = zeros(numRun,1);            
             
             %Number of conducting paths at each time step
@@ -74,10 +76,16 @@ function [ s, tvec, cList ] = analyseSimGoodMemory(params, field, changeVar)
             s.beta          = zeros(numRun,1);
             s.beta_0_10     = zeros(numRun,1);
             s.beta_100_500  = zeros(numRun,1);
+            s.halfMin       = zeros(numRun,1);
+            s.fullMin       = zeros(numRun,1);
+            s.fullMin1      = zeros(numRun,1);
 
             for i = 1:numRun
                 p.(field).(changeVar) = vars(i);
                 cList(i) = vars(i);
+%                 if vars(i) <= 0.04
+%                     continue
+%                 end
                 sims = multiImport(p);
                 
                 c = sims{1}.netC;                
@@ -88,6 +96,12 @@ function [ s, tvec, cList ] = analyseSimGoodMemory(params, field, changeVar)
                 s.avLam(:,i) = mean(abs(sims{1}.swLam),2);
                 [s.Max(i), s.MaxLoc(i)] = max(c);
                 s.MaxLoc(i) = tvec(s.MaxLoc(i));
+                
+                
+                
+
+                
+                
                 
                 x = find(c==s.Max(i));
                 s.MaxEnd(i) = tvec(x(end));                
@@ -105,6 +119,13 @@ function [ s, tvec, cList ] = analyseSimGoodMemory(params, field, changeVar)
                     y = tvec(end);
                 end
                 s.firstIncrease(i) = y; 
+
+                y = tvec(find((c - c(1)) < 1e-12, 1));
+                if numel(y) == 0
+                    y = tvec(end);
+                end
+                s.firstDecrease(i) = y;                 
+                
                 
                 [s.Min(i) , y] = min(c(x(1):end));
                 s.reachMin(i) = tvec(y + x(1) - 1);
@@ -132,8 +153,34 @@ function [ s, tvec, cList ] = analyseSimGoodMemory(params, field, changeVar)
                     s.onEnd(i,2) = NaN;
                 else
                     s.onEnd(i,2) = tvec(find(c==x(1),1));
-                end                
+                end
                 
+                
+                if strcmp(sims{1}.Stim.BiasType, 'DCandWait') == 1
+                    
+                    %Timing defined by distance on a log scale
+                    c2 = c((round(sims{1}.Stim.OffTime/sims{1}.Stim.dt) + 1):end-1);
+                    c3 = c((round(sims{1}.Stim.OffTime/sims{1}.Stim.dt) + 1+1):end);                    
+                    c4 =  10^(log10(c(round(sims{1}.Stim.OffTime/sims{1}.Stim.dt))*c(end))/2);
+                    x = round(sims{1}.Stim.OffTime/sims{1}.Stim.dt) + find((c2 >= c4 & c3 < c4) | (c2 < c4 & c3 >= c4),1);
+                    if numel(x) == 0
+                        s.halfMin(i) = tvec(round(sims{1}.Stim.OffTime/sims{1}.Stim.dt) + 1);
+                        s.fullMin(i) = tvec(round(sims{1}.Stim.OffTime/sims{1}.Stim.dt) + 1);
+                    else
+                        s.halfMin(i) = tvec(round(sims{1}.Stim.OffTime/sims{1}.Stim.dt) + find((c2 >= c4 & c3 < c4) | (c2 < c4 & c3 >= c4),1));
+                        s.fullMin(i) = tvec(round(sims{1}.Stim.OffTime/sims{1}.Stim.dt) + find(abs(log10(c(round(sims{1}.Stim.OffTime/sims{1}.Stim.dt):end)/c(end))) < 1.00001 , 1));
+
+                    end
+                    
+                    x = find(sum(abs(sims{1}.swLam(2:end,:) - sims{1}.swLam(1:end - 1,:)), 2) == 0, 1);
+                    if numel(x) == 0
+                        x = numel(tvec) - 1;
+                    end
+                    
+                    
+                    
+                    continue
+                end
                 
 %                 s.endGrad(i) = (c(end)-c(end-1))/sims{1}.dt;
 %                 s.beta(i) = getBeta (tvec, c, -1, -1);
@@ -165,7 +212,7 @@ function [ s, tvec, cList ] = analyseSimGoodMemory(params, field, changeVar)
 %                         lieOnCurrentP(j,:) = (bins(edgeList(1,:)) == currentBin) & (bins(edgeList(2,:)) == currentBin) & onOrOff(j,:);
 %                     end 
                 end
-                s.numSwOn(:,i)  = sum(OnOrOff,2); %number of switches on at a given timestep
+                s.numSwOn(:,i)  = sum(onOrOff,2); %number of switches on at a given timestep
                 
                 s.eqSwOn(i)      = s.numSwOn(end, i);
                 sg               = getOnSubGraph(adjMat, edgeList, onOrOff(end,:));
@@ -205,7 +252,6 @@ function [ s, tvec, cList ] = analyseSimGoodMemory(params, field, changeVar)
                 
                 %Calculate which switchs are on at which timestep
 %                 OnOrOff         = abs(sims{1}.swLam(:,1:end-1)) > sims{1}.Comp.critFlux;
-                 s.numSwOn(:,i)  = sum(OnOrOff,2); %number of switches on at a given timestep
 %                 nonzero         = find(s.numSwOn(:,i)); %returns array of non-zero elements
 %                 s.firstSwOn(i)  = tvec(nonzero(1)); %1st time in sim where a switch turns on
 %                 s.lastSwOn(i)   = tvec(nonzero(end)); %last time in the sim with a witch on

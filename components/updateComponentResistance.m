@@ -88,7 +88,7 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
         case 'tunnelSwitch'
             V = compPtr.comp.voltage;
             phi = 2;          
-            d = (compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*30 + 0.4;
+            d = (compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1) + 0.4;
             d(d<0.4)=0.4;
             resistance = tunnelSwitch(V,d,phi,0.4,compPtr.comp.offResistance(1));
             
@@ -102,14 +102,14 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
         case 'tunnelSwitch2'
             V = compPtr.comp.voltage;
             phi = 0.81;          
-            d = (0.1-abs(compPtr.comp.filamentState))*50;
+            d =(compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1);
             d(d < 0.0) = 0.0;
             resistance = tunnelSwitch2(V, d, phi, 0.17, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
             
         case 'tunnelSwitchL'
             phi = 2;          
-            d = (0.1-abs(compPtr.comp.filamentState))*50;
+            d = (compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1);
             d(d < 0.0) = 0.0;
             resistance = tunnelSwitchL(d, phi, 0.17, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;

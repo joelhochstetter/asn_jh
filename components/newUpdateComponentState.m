@@ -1,0 +1,16 @@
+switch compPtr.comp.type
+    case 'atomicSwitch'
+        %update according to modified memristor equation
+        compPtr.comp.filamentState = compPtr.comp.filamentState + ...
+                         (abs(compPtr.comp.voltage) > compPtr.comp.setVoltage) .* ...
+                         (abs(compPtr.comp.voltage) - compPtr.comp.setVoltage) * dt ...
+                         + (compPtr.comp.resetVoltage > abs(compPtr.comp.voltage)) .* ...
+                         (abs(compPtr.comp.voltage) - compPtr.comp.resetVoltage) * dt ...
+                         * compPtr.comp.boost;
+
+        %If lambda < 0 set to 0
+        compPtr.comp.filamentState(compPtr.comp.filamentState < 0) = 0;       
+
+        %If lambda > lambda max set to lambdamax
+        compPtr.comp.filamentState (compPtr.comp.filamentState >  compPtr.comp.maxFlux) =  compPtr.comp.maxFlux(compPtr.comp.filamentState >  compPtr.comp.maxFlux);
+end

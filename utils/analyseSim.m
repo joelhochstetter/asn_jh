@@ -79,6 +79,9 @@ function [ s, tvec, cList ] = analyseSim(sims, field, changeVar)
                 
                 s.I(:,i) = sims{i}.netI;
                 s.V(:,i) = s.I(:,i)./s.c(:,i);
+                
+                continue;
+                
                 s.avLam(:,i) = mean(abs(sims{i}.swLam),2);
                 [s.Max(i), s.MaxLoc(i)] = max(c);
                 s.MaxLoc(i) = tvec(s.MaxLoc(i));
@@ -155,6 +158,20 @@ function [ s, tvec, cList ] = analyseSim(sims, field, changeVar)
 %                     end 
                 end
                 
+                y = tvec(find(isCurrentPath, 1));
+                if numel(y) == 0
+                    y = tvec(end);
+                end
+                s.firstCPath(i) =y;
+                
+                
+                x = find(isCurrentPath);
+                if numel(x) == 0
+                    x = tvec(end);
+                end
+                
+                s.lastCPath(i)  = tvec(x(end)); 
+                
                 s.eqSwOn(i)      = s.numSwOn(i);
                 sg               = getOnSubGraph(adjMat, edgeList, onOrOff(end,:));
                 g                = graph(sg);
@@ -177,17 +194,7 @@ function [ s, tvec, cList ] = analyseSim(sims, field, changeVar)
                 
                 
                 
-                y = tvec(find(isCurrentPath, 1));
-                if numel(y) == 0
-                    y = tvec(end);
-                end
-                s.firstCPath(i) =y;
-                x = find(isCurrentPath);
-                if numel(x) == 0
-                    x = tvec(end);
-                end
-                
-                s.lastCPath(i)  = tvec(x(end)); 
+
                 
                 
                 %Calculate which switchs are on at which timestep

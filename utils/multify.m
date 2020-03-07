@@ -85,7 +85,9 @@ function [runs] = multify (params)
 
     %create list of fields for connectivity
     if isfield(params,'Conn') > 0 
-        
+
+ 
+            
         %Handles multiple file types if enterred as cell array
         if isfield(params.Conn, 'filename')
             %if it is a char array then 
@@ -106,10 +108,10 @@ function [runs] = multify (params)
                     params.Conn.fNamesCells = 1:numel(params.Conn.filename);
             end
         end
-        
+
         cnFlds = fieldnames(params.Conn);
         for i = 1:numel(cnFlds)
-            if isnumeric(params.Conn.(cnFlds{i})) == 0
+            if (isnumeric(params.Conn.(cnFlds{i})) == 0) || strcmp('weights', cnFlds{i})
                 Conn.(cnFlds{i}) = params.Conn.(cnFlds{i});
             else
                 combs = combvec(combs,params.Conn.(cnFlds{i}));
@@ -117,7 +119,6 @@ function [runs] = multify (params)
                 fldType(end + 1) = 4;
             end            
         end
-
     end   
         
     combs = combs(2:end,:);

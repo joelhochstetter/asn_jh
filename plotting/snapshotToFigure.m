@@ -571,7 +571,7 @@ function snapshotFigure = snapshotToFigure(snapshot, contacts, connectivity, wha
 
             % colorbar:               
             dissipationColorbar  = colorbar;
-            dissipationColorbar.Label.String = 'V_{drop}';
+            dissipationColorbar.Label.String = 'Junction Voltage (V)';
             caxis(axesLimits.dVCbar);
             %upperLimit = ceil(max(log10(power)));
             %{
@@ -586,75 +586,121 @@ function snapshotFigure = snapshotToFigure(snapshot, contacts, connectivity, wha
             colormap('parula');
         end   
         
-    %% Currents
-        if whatToPlot.Currents
-            % Allocate space (assuming no intersections at ends of wires):
-            numberOfSections = 2*length(connectivity.EdgeList) - connectivity.NumberOfNodes + 2;
-            sectionCenterX  = zeros(numberOfSections,1);
-            sectionCenterY  = zeros(numberOfSections,1);
-            sectionCurrentX = zeros(numberOfSections,1);
-            sectionCurrentY = zeros(numberOfSections,1);
-            numSectionsDone = 0;
-
-            % Calculate currents:
-            currents = 1e6*(snapshot.Voltage(1:end-1)).*(snapshot.Resistance(1:end-1)); % (nA)
-
-            % Calculate wire angles ([-pi/2,pi/2]):
-                    % first [0,pi]
-            wireAngles = mod(atan2(connectivity.WireEnds(:,4)-connectivity.WireEnds(:,2), connectivity.WireEnds(:,3)-connectivity.WireEnds(:,1)),pi);
-                % The modulu operation makes sure that the result is between
-                % 0 and pi. It is just for safety, since the ends are sorted
-                % such that WireEnds(:,4)>WireEnds(:,2).        
-                    % then [-pi/2,pi/2]
-            wireAngles(wireAngles>pi/2) = wireAngles(wireAngles>pi/2) - pi;
-                % Since the sections will soon be sorted from left to right, a
-                % positive current value along a section must always have a
-                % positive cosine value, and vise versa.
-
-            % Wire by wire:
-            for currWire=1 : connectivity.NumberOfNodes            
-                % Find the indices of edges (=intersections) relevant for this
-                % vertex (=wire):
-                relevantEdges = find(connectivity.EdgeList(1,:) == currWire | connectivity.EdgeList(2,:) == currWire);
-
-                % Sort them according to physical location (left-to-right, or
-                % if the wire is vertical then bottom-up):
+    %% currents:
+    if whatToPlot.Currents
+        % Allocate space (assuming no intersections at ends of wires):
+        numberOfSections = 2*length(connectivity.EdgeList) - connectivity.NumberOfNodes + 2;
+        sectionCenterX  = zeros(numberOfSections,1);
+        sectionCenterY  = zeros(numberOfSections,1);
+        sectionCurrentX = zeros(numberOfSections,1);
+        sectionCurrentY = zeros(numberOfSections,1);
+        numSectionsDone = 0;
+        
+        % Calculate currents:
+        currents = 1e6*(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
+        
+        % Calculate wire angles ([-pi/2,pi/2]):
+                % first [0,pi]
+        wireAngles = mod(atan2(connectivity.WireEnds(:,4)-connectivity.WireEnds(:,2), connectivity.WireEnds(:,3)-connectivity.WireEnds(:,1)),pi);
+            % The modulu operation makes sure that the result is between
+            % 0 and pi. It is just for safety, since the ends are sorted
+            % such that WireEnds(:,4)>WireEnds(:,2).        
+                % then [-pi/2,pi/2]
+        wireAngles(wireAngles>pi/2) = wireAngles(wireAngles>pi/2) - pi;
+            % Since the sections will soon be sorted from left to right, a
+            % positive current value along a section must always have a
+            % positive cosine value, and vise versa.
+   
+        % Wire by wire:
+        for currWire= 1 : connectivity.NumberOfNodes            
+            % Find the indices of edges (=intersections) relevant for this
+            % vertex (=wire):
+            relevantEdges = find(connectivity.EdgeList(1,:) == currWire | connectivity.EdgeList(2,:) == currWire);
+            
+            % Sort them according to physical location (left-to-right, or
+            % if the wire is vertical then bottom-up):
+            if connectivity.WireEnds(currWire,1) ~= connectivity.WireEnds(currWire,3)
+                [~,I] = sort(connectivity.EdgePosition(relevantEdges,1));
+            else
+                [~,I] = sort(connectivity.EdgePosition(relevantEdges,2));
+            end
+            relevantEdges = relevantEdges(I);
+            
+            % Calculate the current along each section of the wire:
+            direction = ((currWire ~= connectivity.EdgeList(1,relevantEdges))-0.5)*2;       
+                % Using the convention that currents are defined to flow
+                % from wires with lower index to wires with higher index, 
+                % and that in the field EdgeList the upper row always 
+                % contains lower indices. 
+            wireCurrents = cumsum(currents(relevantEdges(1:end - 1)).*direction(1:end - 1)'); 
+                % The first element in wireCurrents is the current in the
+                % section between relevantEdge(1) and relevantEdge(2). We
+                % assume that between relevantEdge(1) and the closest wire
+                % end there's no current. Then, acording to a KCL
+                % equation, there's also no current from relevantEdge(end)
+                % to the other wire end (that's why the end-1 in the 
+                % expression). 
+                % The only two exceptions are the two contacts, where the 
+                % contact point is defined as the wire end closest to 
+                % relevantEdge(end).
+            
+            % Accumulate for a quiver (vector field) plot:
+            first = numSectionsDone + 1;
+            last = first + length(wireCurrents) - 1;
+            sectionCenterX(first:last)  = mean([connectivity.EdgePosition(relevantEdges(1:end-1),1), connectivity.EdgePosition(relevantEdges(2:end),1)],2);
+            sectionCenterY(first:last)  = mean([connectivity.EdgePosition(relevantEdges(1:end-1),2), connectivity.EdgePosition(relevantEdges(2:end),2)],2);
+            sectionCurrentX(first:last) = cos(wireAngles(currWire))*wireCurrents;
+            sectionCurrentY(first:last) = sin(wireAngles(currWire))*wireCurrents;
+            numSectionsDone = last;
+            
+            % Contacts stuff:
+            if any(contacts == currWire)
+                % Find the relevant end of the wire:
                 if connectivity.WireEnds(currWire,1) ~= connectivity.WireEnds(currWire,3)
-                    [~,I] = sort(connectivity.EdgePosition(relevantEdges,1));
+                    if connectivity.WireEnds(currWire,1) < connectivity.WireEnds(currWire,3)
+                        contactEnd = connectivity.WireEnds(currWire,3:4);
+                    else
+                        contactEnd = connectivity.WireEnds(currWire,1:2);
+                    end
                 else
-                    [~,I] = sort(connectivity.EdgePosition(relevantEdges,2));
+                    if connectivity.WireEnds(currWire,2) < connectivity.WireEnds(currWire,4)
+                        contactEnd = connectivity.WireEnds(currWire,3:4);
+                    else
+                        contactEnd = connectivity.WireEnds(currWire,1:2);
+                    end
                 end
-                relevantEdges = relevantEdges(I);
 
-                % Calculate the current along each section of the wire:
-                direction = ((currWire ~= connectivity.EdgeList(1,relevantEdges))-0.5)*2;       
-                    % Using the convention that currents are defined to flow
-                    % from wires with lower index to wires with higher index, 
-                    % and that in the field EdgeList the upper row always 
-                    % contains lower indices. 
-                wireCurrents = cumsum(currents(relevantEdges(1:end-1)).*direction(1:end-1)'); 
-                    % The first element in wireCurrents is the current in the
-                    % section between relevantEdge(1) and relevantEdge(2). We
-                    % assume that between relevantEdge(1) and the closest wire
-                    % end there's no current. Then, acording to a KCL
-                    % equation, there's also no current from relevantEdge(end)
-                    % to the other wire end (that's why the end-1 in the 
-                    % expression). 
-                    % The only two exceptions are the two contacts, where the 
-                    % contact point is defined as the wire end closest to 
-                    % relevantEdge(end).
+                % Add total current arrow:
+                totalCurrent = sum(currents(relevantEdges).*direction');
+                sectionCenterX(numSectionsDone+1)  = mean([connectivity.EdgePosition(relevantEdges(end),1), contactEnd(1)],2);
+                sectionCenterY(numSectionsDone+1)  = mean([connectivity.EdgePosition(relevantEdges(end),2), contactEnd(2)],2);
+                sectionCurrentX(numSectionsDone+1) = cos(wireAngles(currWire))*totalCurrent; 
+                sectionCurrentY(numSectionsDone+1) = sin(wireAngles(currWire))*totalCurrent;
+                numSectionsDone = numSectionsDone + 1;
+                
+                % Gather contact point location, if needed:
+                if whatToPlot.Contacts
+                % The location of the current wire's end which is 
+                % rightmost (or if vertical, upper) is defined as the 
+                % contact POINT:
+                    if currWire == contacts(1)
+                        sourcePoint = contactEnd;
+                    else
+                        drainPoint  = contactEnd;
+                    end
+                end
+            end
+        end
+        
+        % Plot current arrows:
+        quiver(sectionCenterX,sectionCenterY,sectionCurrentX/axesLimits.CurrentArrowScaling,sectionCurrentY/axesLimits.CurrentArrowScaling,0,'Color','w','LineWidth',3);
+        %quiver(sectionCenterX,sectionCenterY,sectionCurrentX,sectionCurrentY,'Color','w','LineWidth',1);
+    end
+    
 
-                % Accumulate for a quiver (vector field) plot:
-                first = numSectionsDone + 1;
-                last = first + length(wireCurrents) - 1;
-                sectionCenterX(first:last)  = mean([connectivity.EdgePosition(relevantEdges(1:end-1),1), connectivity.EdgePosition(relevantEdges(2:end),1)],2);
-                sectionCenterY(first:last)  = mean([connectivity.EdgePosition(relevantEdges(1:end-1),2), connectivity.EdgePosition(relevantEdges(2:end),2)],2);
-                sectionCurrentX(first:last) = cos(wireAngles(currWire))*wireCurrents;
-                sectionCurrentY(first:last) = sin(wireAngles(currWire))*wireCurrents;
-                numSectionsDone = last;
-
-                % Contacts stuff:
-                if any(contacts == currWire)
+        %% contacts:   
+        if whatToPlot.Contacts
+            for currWire = contacts
                     % Find the relevant end of the wire:
                     if connectivity.WireEnds(currWire,1) ~= connectivity.WireEnds(currWire,3)
                         if connectivity.WireEnds(currWire,1) < connectivity.WireEnds(currWire,3)
@@ -669,49 +715,21 @@ function snapshotFigure = snapshotToFigure(snapshot, contacts, connectivity, wha
                             contactEnd = connectivity.WireEnds(currWire,1:2);
                         end
                     end
-
-                    % Add total current arrow:
-                    totalCurrent = sum(currents(relevantEdges).*direction');
-                    sectionCenterX(numSectionsDone+1)  = mean([connectivity.EdgePosition(relevantEdges(end),1), contactEnd(1)],2);
-                    sectionCenterY(numSectionsDone+1)  = mean([connectivity.EdgePosition(relevantEdges(end),2), contactEnd(2)],2);
-                    sectionCurrentX(numSectionsDone+1) = cos(wireAngles(currWire))*totalCurrent; 
-                    sectionCurrentY(numSectionsDone+1) = sin(wireAngles(currWire))*totalCurrent;
-                    numSectionsDone = numSectionsDone + 1;
-
-                    % Gather contact point location, if needed:
-                    if whatToPlot.Contacts
-                    % The location of the current wire's end which is 
-                    % rightmost (or if vertical, upper) is defined as the 
-                    % contact POINT:
-                        if currWire == contacts(1)
-                            sourcePoint = contactEnd;
-                        else
-                            drainPoint  = contactEnd;
-                        end
+                
+                    if currWire == contacts(1)
+                        sourcePoint = contactEnd;
+                    else
+                        drainPoint  = contactEnd;
                     end
-                end
             end
 
-            % Plot current arrows:
-            quiver(sectionCenterX,sectionCenterY,sectionCurrentX/axesLimits.CurrentArrowScaling,sectionCurrentY/axesLimits.CurrentArrowScaling,0,'Color','w','LineWidth',1);
-            %quiver(sectionCenterX,sectionCenterY,sectionCurrentX,sectionCurrentY,'Color','w','LineWidth',1);
-        end
-
-
-        %% contacts:   
-        if whatToPlot.Contacts
-            if whatToPlot.Currents
-                scatter([sourcePoint(1),drainPoint(1)],[sourcePoint(2),drainPoint(2)],200,[[0 1 0];[1 0 0]],'filled','h');
-                sourceTextPosition = sourcePoint;
-                drainTextPosition  = drainPoint;
-            else
-                line([connectivity.WireEnds(contacts(1),1),connectivity.WireEnds(contacts(1),3)],[connectivity.WireEnds(contacts(1),2),connectivity.WireEnds(contacts(1),4)],'Color','g','LineWidth',0.2)
-                line([connectivity.WireEnds(contacts(2),1),connectivity.WireEnds(contacts(2),3)],[connectivity.WireEnds(contacts(2),2),connectivity.WireEnds(contacts(2),4)],'Color','r','LineWidth',0.2)
-                sourceTextPosition = connectivity.VertexPosition(contacts(1),:);
-                drainTextPosition  = connectivity.VertexPosition(contacts(2),:);
-            end
-            text(sourceTextPosition(1), sourceTextPosition(2), strcat('(1)'),  'Color', 'g', 'FontSize', 16);
-            text(drainTextPosition(1),  drainTextPosition(2),  strcat('(2)'),  'Color', 'r', 'FontSize', 16);
+                
+            scatter([sourcePoint(1),drainPoint(1)],[sourcePoint(2),drainPoint(2)],200,[[0 1 0];[1 0 0]],'filled','h');
+            sourceTextPosition = sourcePoint;
+            drainTextPosition  = drainPoint;
+                
+%             text(sourceTextPosition(1), sourceTextPosition(2), strcat('  (1)'),  'Color', 'g', 'FontSize', 16);
+%             text(drainTextPosition(1),  drainTextPosition(2),  strcat('  (2)'),  'Color', 'r', 'FontSize', 16);
         end
 
         %% Labels for junctions and nanowires
@@ -732,12 +750,20 @@ function snapshotFigure = snapshotToFigure(snapshot, contacts, connectivity, wha
 
         end
         %% title, axes labels and limits:
-        title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' \sigma=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)));
+        %title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' \sigma=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)));
 
         xlabel('x (\mum)');
         ylabel('y (\mum)');
-        %shoulder = 800;
-        %axis([-shoulder,connectivity.GridSize(1)+shoulder,-shoulder,connectivity.GridSize(2)+shoulder]);
+        shoulder = 800;
+        axis([-shoulder,connectivity.GridSize(1)+shoulder,-shoulder,connectivity.GridSize(2)+shoulder]);
         axis square;
+        hFig=findall(0,'type','figure');
+        hLeg=findobj(hFig(1,1),'type','legend');
+        set(hLeg,'visible','off');
+        
+        text(2500, 3500, sprintf('t = %.2f s', snapshot.Timestamp), 'Color', 'white', 'FontSize', 16);
+        
+        set(gcf,'color','w');
+        
     end
 end

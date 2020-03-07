@@ -37,7 +37,8 @@ function sim = importSim(Components, Stimulus, T, num, saveFolder, nameComment, 
         case 'ACsaw'
             Stimulus.stimName = strcat(Stimulus.BiasType, num2str( Stimulus.Amplitude,3),'V_f',num2str(Stimulus.Frequency,3),'Hz');
         case 'DCandWait'
-           Stimulus.stimName   = strcat(Stimulus.BiasType,num2str(Stimulus.AmplitudeOn,3),'V_off',num2str(Stimulus.OffTime,3),'s');
+           Stimulus.stimName   = strcat(Stimulus.BiasType,num2str(Stimulus.AmplitudeOn,3),'V_off',num2str(Stimulus.OffTime,3),'s', ...
+               'offV', num2str(Stimulus.AmplitudeOff,3), 'V');
     end
     
     filename = strcat(saveFolder, '/',swType,'_T',num2str(T),'_',Stimulus.stimName,'_s', ...

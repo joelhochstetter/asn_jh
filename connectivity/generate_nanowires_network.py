@@ -54,12 +54,12 @@ parser.add_argument('--seed',
 parser.add_argument('--Lx',
     dest    = 'Lx', 
     type    = float, 
-    default = 3e3,
+    default = 2e4,
     help    ='The horizontal length of the network''s physical substrate in micrometres.')
 
 parser.add_argument('--Ly',
     type    = float,
-    default = 3e3,
+    default = 2e4,
     help    ='The vertical length of the network''s physical substrate in micrometres.')
 
 parser.add_argument('--cent_dispersion', 

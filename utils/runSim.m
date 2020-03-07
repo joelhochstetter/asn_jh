@@ -147,6 +147,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         case {'AC', 'ACsaw'}
             DStimulus.Frequency       = 0.5; % (Hz)
             DStimulus.Amplitude       = 3;   % (Volt)
+            DStimulus.Phase           = 0.0;
         case 'DCandWait'
             DStimulus.OffTime      = 1; % SimulationOptions.T/3; % (sec)
             DStimulus.AmplitudeOn  = 1.5;                   % (Volt)
@@ -154,7 +155,9 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         case 'Square'
             DStimulus.OffTime      = 1; % SimulationOptions.T/3; % (sec)
             DStimulus.AmplitudeOn  = 1.5;                   % (Volt)
-            DStimulus.AmplitudeOff = 0.005;                
+            DStimulus.AmplitudeOff = 0.005;    
+            DStimulus.Phase        = 0.0;
+            DStimulus.Duty         = 50;
             
         case 'Ramp'
             DStimulus.AmplitudeMin = 0;    % (Volt)

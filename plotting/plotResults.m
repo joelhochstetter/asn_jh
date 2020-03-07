@@ -113,7 +113,7 @@ function plotResults(resistance,current,Stimulus)
 %             xlim([min(stability_hist_bin),max(stability_hist_bin)]);
 %             grid on;
             
-        case {'AC', 'ACsaw'}
+        case {'AC', 'ACsaw', 'DCsaw'}
             subplot(2,1,1);
             [t_freq, extCur_freq] = fourier_analysis(Stimulus.TimeAxis, current);
             % use yyaxis instead of plotyy

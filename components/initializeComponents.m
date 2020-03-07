@@ -44,13 +44,14 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.filamentState = 0.0;
     default.resistance    = 1e-7; %conductance of passive elements
     %default.OnOrOff       = 0.0;
-    default.setVoltage    = 1e-2;%1e-2; %0.3
-    default.resetVoltage  = 1e-3;%1e-3; %0.01
-    default.criticalFlux  = 1e-1;%1e-1; %1e-4
+    default.setVoltage    = 0.3;%1e-2; %0.3
+    default.resetVoltage  = 1e-2;%1e-3; %0.01
+    default.criticalFlux  = 1e-4;%1e-1; %1e-4
     default.maxFlux       = 0.15;%0.15;
     default.penalty       = 1;%10;
     default.boost         = 10;%10;
-    
+    default.nonpolar      = false;
+    default.unipolar      = false;
     
     fields = fieldnames(default);
     for i = 1:numel(fields)

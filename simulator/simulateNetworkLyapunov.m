@@ -1,10 +1,7 @@
 function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectivity, Components, Signals, SimulationOptions, varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Simulate network at each time step. Mostly the same as Ido's code.
-% Improved the simulation efficiency by change using nodal analysis.
-% Enabled multi-electrodes at the same time.
+% Modifies simulate network to perform lyapunov exponent calculation
 %
-% Left the API of snapshots. For later usage of visualize the network.
 % ARGUMENTS: 
 % Connectivity - The Connectivity information of the network. Most
 %                importantly the edge list, which shows the connectivity
@@ -35,18 +32,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
 % updateComponentResistance
 % updateComponentState
 %
-% USAGE:
-%{
-    Connectivity = getConnectivity(Connectivity);
-    contact      = [1,2];
-    Equations    = getEquations(Connectivity,contact);
-    Components   = initializeComponents(Connectivity.NumberOfEdges,Components)
-    Stimulus     = getStimulus(Stimulus);
-    
-    OutputDynamics = runSimulation(Equations, Components, Stimulus);
-%}
-%
 % Authors:
+% Joel Hochstetter
 % Ido Marcus
 % Paula Sanz-Leon
 % Ruomin Zhu
@@ -86,9 +73,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         
         % Get LHS (matrix) and RHS (vector) of equation:
         Gmat = zeros(V);
-        
-        %Gmat(edgeList(:,1),edgeList(:,2)) = componentConductance;
-        %Gmat(edgeList(:,2),edgeList(:,1)) = componentConductance;
+
         
          for i = 1:E
              Gmat(edgeList(i,1),edgeList(i,2)) = componentConductance(i);
@@ -121,9 +106,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         deltaLam     = compPtr.comp.filamentState - unpertFilState(:,ii);
         normDeltaLam = norm(deltaLam);
         if normDeltaLam == 0
-            %LyapunovMax(ii:end) = -inf;
             LyapunovMax(ii) = -inf;
-            break
+            %break
         end
         
         %Update trajectory

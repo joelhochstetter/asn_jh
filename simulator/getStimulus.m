@@ -105,7 +105,10 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
             Stimulus.stimName = strcat(Stimulus.BiasType, num2str( Stimulus.Amplitude,3),'V_f',num2str(Stimulus.Frequency,3),'Hz');
         case 'ACsaw'
             Stimulus.stimName = strcat(Stimulus.BiasType, num2str( Stimulus.Amplitude,3),'V_f',num2str(Stimulus.Frequency,3),'Hz');
-            Stimulus.Signal = Stimulus.Amplitude*sawtooth(2*pi*Stimulus.Frequency*(Stimulus.TimeAxis-0.75/Stimulus.Frequency) , 0.5);
+            Stimulus.Signal = Stimulus.Amplitude*sawtooth(Stimulus.Phase + 2*pi*Stimulus.Frequency*(Stimulus.TimeAxis-0.75/Stimulus.Frequency) , 0.5);
+        case 'DCsaw'
+            Stimulus.stimName = strcat(Stimulus.BiasType, num2str( Stimulus.Amplitude,3),'V_f',num2str(Stimulus.Frequency,3),'Hz');
+            Stimulus.Signal = abs(Stimulus.Amplitude*sawtooth(2*pi*Stimulus.Frequency*(Stimulus.TimeAxis-0.75/Stimulus.Frequency) , 0.5)) + 1e-8;
         case 'DCandWait'
             % Standard boxcar:
             %Stimulus.Signal = Stimulus.AmplitudeOn*ones(size(Stimulus.TimeAxis));
@@ -124,9 +127,12 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
 %            Stimulus.Signal(Stimulus.TimeAxis >= 5) = max( Stimulus.AmplitudeOff, exp( -1.5*((Stimulus.TimeAxis(Stimulus.TimeAxis >= 5)/5)- 1) )*Stimulus.AmplitudeOn );
             %
             Stimulus.Signal(Stimulus.TimeAxis > Stimulus.OffTime) = Stimulus.AmplitudeOff;
-            Stimulus.stimName   = strcat(Stimulus.BiasType,num2str(Stimulus.AmplitudeOn,3),'V_off',num2str(Stimulus.OffTime,3),'s');
+            Stimulus.stimName   = strcat(Stimulus.BiasType,num2str(Stimulus.AmplitudeOn,3),'V_off',num2str(Stimulus.OffTime,3),'s', ...
+               'offV', num2str(Stimulus.AmplitudeOff,3), 'V');
+           
         case 'Square'
-            Stimulus.Signal = max(Stimulus.AmplitudeOff,Stimulus.AmplitudeOn*square(1*pi*Stimulus.TimeAxis/Stimulus.OffTime));
+            Stimulus.Signal = max(Stimulus.AmplitudeOff,Stimulus.AmplitudeOn*square(1*pi*Stimulus.TimeAxis/Stimulus.OffTime + Stimulus.Phase, Stimulus.Duty));           
+            
         case 'Ramp'
             Stimulus.Signal = linspace(Stimulus.AmplitudeMin, Stimulus.AmplitudeMax, length(Stimulus.TimeAxis))';
         case 'Custom'
