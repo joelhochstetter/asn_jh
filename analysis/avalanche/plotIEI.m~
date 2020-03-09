@@ -1,16 +1,16 @@
-function plotDeltaG(G, pn, fitP)
+function plotIEI(G, ddG, pn, fitP)
 %{
     Plots the distribution of DeltaG
     Inputs:
         G: Conductance time-series
-      net: Plot total DeltaG with both positive and negative fluctuations
+      net: Plot total IEI with both positive and negative fluctuations
        pn: if 1 plots +ve and -ve separately on the same axis. Else we plot
             them together
      fitP: A struct containing parameters to fit
-        fitP.lc:    Lower cut-off of dG in units of G
-        fitP.uc:    Upper cut-off of dG in units of G
-        fitP.lcn:    Lower cut-off of dG in units of G for dG < 0 fit
-        fitP.ucn:    Upper cut-off of dG in units of G for dG < 0 fit
+        fitP.lc:    Lower cut-off of IEI
+        fitP.uc:    Upper cut-off of IEI
+        fitP.lcn:    Lower cut-off of IEI for neg event fit
+        fitP.ucn:    Upper cut-off of IEI for neg event fit
 
     Option to fit if we provide cut-offs
 
