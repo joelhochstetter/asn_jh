@@ -11,6 +11,8 @@ function plotDeltaG(G, pn, fitP)
         fitP.uc:    Upper cut-off of dG in units of G
         fitP.lcn:    Lower cut-off of dG in units of G for dG < 0 fit
         fitP.ucn:    Upper cut-off of dG in units of G for dG < 0 fit
+        fitP.toInc:  Vector of same length as G. Tells which time-points to
+                        include
 
     Option to fit if we provide cut-offs
 
@@ -25,7 +27,14 @@ function plotDeltaG(G, pn, fitP)
     dG = [diff(G), 0];
     dG(isnan(dG)) = 0;    
     
+    
+    
     if fitPL
+        %if we exclude points then we do it here
+        if isfield(fitP, 'toInc')
+            fitP.toInc = dG(fitP.toInc);
+        end
+            
         if ~isfield(fitP, 'lc')
             fitP.lc = 0;
         end
@@ -35,11 +44,11 @@ function plotDeltaG(G, pn, fitP)
         end    
         
         if ~isfield(fitP, 'lcn')
-            fitP.lc = 0;
+            fitP.lcn = 0;
         end
 
         if ~isfield(fitP, 'ucn')
-            fitP.uc = 10*max(abs(dG));
+            fitP.ucn = 10*max(abs(dG));
         end            
     end
 
@@ -51,7 +60,6 @@ function plotDeltaG(G, pn, fitP)
         [N1,edges1] = histcounts(abs(dG(dG < 0)), 'Normalization', 'probability');
         loglog((edges1(1:end-1) + edges1(2:end))/2,N1, 'rx')
         legend('\Delta G > 0', '\Delta G < 0')
-        title('\Delta G distribution')
         xlabel('\Delta G')
         ylabel('P(\Delta G)') 
         
@@ -68,23 +76,26 @@ function plotDeltaG(G, pn, fitP)
             plot(fitresult, 'b--', xData, yData, 'gx')
             
             %repeat for dG < 0
-            fitP.lcn = fitP.lc;
-            fitP.ucn = fitP.uc;
             fitEdges = edges1((edges1 >= fitP.lcn) & (edges1 <= fitP.ucn));
             cutFront = numel(edges1(edges1 < fitP.lcn));
             cutEnd   = numel(edges1(edges1 > fitP.ucn));
             edgeCen1 = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
             fitN1    = N1(1 + cutFront : end - cutEnd);
 
-            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen1, fitN1);
-            plot(fitresult, 'r--', xData, yData, 'mx')
+            [fitresult1, xData, yData, gof] = fitPowerLaw(edgeCen1, fitN1);
+            plot(fitresult1, 'r--', xData, yData, 'mx')
             legend('\Delta G > 0 not fit', '\Delta G < 0 not fit', ...
                 '\Delta G > 0 inc fit', '\Delta G > 0 fit', ...
                 '\Delta G < 0 inc fit', '\Delta G < 0 fit')
-            
-            title('\Delta G > 0: ')
+            text(edgeCen(1) , fitN(1)/3 , strcat('\Delta G^{-', num2str(-fitresult.b ,3),'}'), 'Color','b') 
+            text(edgeCen1(1), fitN1(1)/3, strcat('\Delta G^{-', num2str(-fitresult1.b,3),'}'), 'Color','r')
+%             title(strcat('\Delta G > 0: \Delta G^{-', ...
+%                 num2str(-fitresult.b,3),'}', ...
+%                 ',  \Delta G < 0: \Delta G^{-', num2str(-fitresult1.b,3),'}'))
         else
             legend('\Delta G > 0', '\Delta G < 0')
+            title('\Delta G distribution')
+
         end
        
     else %~pn
@@ -107,7 +118,7 @@ function plotDeltaG(G, pn, fitP)
             %fit power law
             [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
             plot(fitresult, 'b--', xData, yData, 'gx')
-            
+            text(edgeCen(1), fitN(1)/3, strcat('\Delta G^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
             legend('not fit', 'inc fit', 'fit')        
         end
         

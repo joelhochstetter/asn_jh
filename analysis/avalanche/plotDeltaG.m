@@ -3,7 +3,6 @@ function plotDeltaG(G, pn, fitP)
     Plots the distribution of DeltaG
     Inputs:
         G: Conductance time-series
-      net: Plot total DeltaG with both positive and negative fluctuations
        pn: if 1 plots +ve and -ve separately on the same axis. Else we plot
             them together
      fitP: A struct containing parameters to fit
@@ -11,6 +10,8 @@ function plotDeltaG(G, pn, fitP)
         fitP.uc:    Upper cut-off of dG in units of G
         fitP.lcn:    Lower cut-off of dG in units of G for dG < 0 fit
         fitP.ucn:    Upper cut-off of dG in units of G for dG < 0 fit
+        fitP.toInc:  Vector of same length as G. Tells which time-points to
+                        include
 
     Option to fit if we provide cut-offs
 
@@ -25,7 +26,15 @@ function plotDeltaG(G, pn, fitP)
     dG = [diff(G), 0];
     dG(isnan(dG)) = 0;    
     
+    
+    
     if fitPL
+        %if we exclude points then we do it here
+        if isfield(fitP, 'toInc')
+            dG = dG(fitP.toInc);
+        end
+        
+        %add defaults for cut-offs for PL
         if ~isfield(fitP, 'lc')
             fitP.lc = 0;
         end

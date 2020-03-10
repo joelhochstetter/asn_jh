@@ -1,23 +1,26 @@
-function plotIEI(G, thr, pn, fitP)
+function plotIEI(G, thr, dt, pn, fitP)
 %{
     Plots the distribution of DeltaG
     Inputs:
         G: Conductance time-series
       thr: Threshold in conductance to define an event
-      net: Plot total IEI with both positive and negative fluctuations
+       dt: sampling time of G in s
        pn: if 1 plots +ve and -ve separately on the same axis. Else we plot
             them together
+
      fitP: A struct containing parameters to fit
         fitP.lc:    Lower cut-off of IEI
         fitP.uc:    Upper cut-off of IEI
         fitP.lcn:    Lower cut-off of IEI for neg event fit
         fitP.ucn:    Upper cut-off of IEI for neg event fit
+        fitP.toInc:  Vector of same length as G. Tells which time-points to
+                        include
 
     Option to fit if we provide cut-offs
 
 %}
-    
-    if nargin == 3
+
+    if nargin == 4
         fitPL = 0;
     else
         fitPL = 1;
@@ -27,6 +30,12 @@ function plotIEI(G, thr, pn, fitP)
     dG(isnan(dG)) = 0;    
     
     if fitPL
+        %if we exclude points then we do it here
+        if isfield(fitP, 'toInc')
+            dG = dG(fitP.toInc);
+        end
+        
+        %add defaults for cut-offs for PL
         if ~isfield(fitP, 'lc')
             fitP.lc = 0;
         end
@@ -45,15 +54,34 @@ function plotIEI(G, thr, pn, fitP)
     end
 
 
+    figure;
+    loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
+    [fitresult, xData, yData, gof] = fitPowerLaw((edges1(1:end-1) + edges1(2:end))/2, N1);
+    hold on;
+    plot(fitresult, xData, yData, 'gx')
+    xlim([edgesiei(1), edgesiei(end)]);
+    legend('not fitted', 'data', 'fit');
+    xlabel('Time (dt)')
+    ylabel('P(t)')
+    text(10,500,strcat('t^{-', num2str(-fitresult.b,3),'}'))
+    
+    
     if pn
-        [N,edges] = histcounts(abs(dG(dG > 0)), 'Normalization', 'probability');
-        loglog((edges(1:end-1) + edges(2:end))/2,N, 'bx')
+        
+        ddG = dG > thr;
+        ieiDat = IEI(ddG, 1)*dt;
+        [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
+        loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
         hold on;
-        [N1,edges1] = histcounts(abs(dG(dG < 0)), 'Normalization', 'probability');
-        loglog((edges1(1:end-1) + edges1(2:end))/2,N1, 'rx')
+        
+        %negative fluctuations        
+        ddG = dG < thr;
+        ieiDat = IEI(ddG, 1)*dt;
+        [Niei1,edgesiei1] = histcounts(ieiDat, 'Normalization', 'probability');
+        loglog((edgesiei1(1:end-1) + edgesiei1(2:end))/2, Niei1, 'rx')        
         legend('\Delta G > 0', '\Delta G < 0')
-        xlabel('\Delta G')
-        ylabel('P(\Delta G)') 
+        xlabel('IEI (s)')
+        ylabel('P(IEI)') 
         
         if fitPL
             %only include bins within include range to fit
