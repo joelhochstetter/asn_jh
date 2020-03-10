@@ -13,12 +13,9 @@ function Stimulus = expStimToStim(V, my_tdms_struct, t, type)
             Stimulus.Amplitude = mean(V);
             
         case 'ACsaw'                           
-            fun = @(x, t) x(1)*sawtooth(x(3) + 2*pi*x(2)*(t-0.75/x(2)) , 0.5);
-            x0 = [1, 1, 0];
-            x = lsqcurvefit(fun, x0, t, V);            
-            Stimulus.Amplitude = x(1); 
-            Stimulus.Frequency = x(2);             
-            Stimulus.Phase     = x(3);  
+            Stimulus.Amplitude  = str2double(my_tdms_struct.Props.Amplitude);            
+            Stimulus.Frequency    = t(end)/str2double(my_tdms_struct.Props.Frequency); %half the frequency             
+            Stimulus.Phase        = str2double(my_tdms_struct.Props.Phase);     
             
         case 'DCsaw'
             fun = @(x, t) x(1)*abs(sawtooth(x(3) + 2*pi*x(2)*(t-0.75/x(2)) , 0.5));
