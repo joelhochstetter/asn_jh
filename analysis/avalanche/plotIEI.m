@@ -53,21 +53,10 @@ function plotIEI(G, thr, dt, pn, fitP)
         end            
     end
 
-
-    figure;
-    loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
-    [fitresult, xData, yData, gof] = fitPowerLaw((edges1(1:end-1) + edges1(2:end))/2, N1);
-    hold on;
-    plot(fitresult, xData, yData, 'gx')
-    xlim([edgesiei(1), edgesiei(end)]);
-    legend('not fitted', 'data', 'fit');
-    xlabel('Time (dt)')
-    ylabel('P(t)')
-    text(10,500,strcat('t^{-', num2str(-fitresult.b,3),'}'))
     
     
     if pn
-        
+       
         ddG = dG > thr;
         ieiDat = IEI(ddG, 1)*dt;
         [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
@@ -85,60 +74,59 @@ function plotIEI(G, thr, dt, pn, fitP)
         
         if fitPL
             %only include bins within include range to fit
-            fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
-            cutFront = numel(edges(edges < fitP.lc));
-            cutEnd   = numel(edges(edges > fitP.uc));
+            fitEdges = edgesiei((edgesiei >= fitP.lc) & (edgesiei <= fitP.uc));
+            cutFront = numel(edgesiei(edgesiei < fitP.lc));
+            cutEnd   = numel(edgesiei(edgesiei > fitP.uc));
             edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
-            fitN     = N(1 + cutFront : end - cutEnd);
+            fitN     = Niei(1 + cutFront : end - cutEnd);
          
             %fit power law
             [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
             plot(fitresult, 'b--', xData, yData, 'gx')
             
             %repeat for dG < 0
-            fitEdges = edges1((edges1 >= fitP.lcn) & (edges1 <= fitP.ucn));
-            cutFront = numel(edges1(edges1 < fitP.lcn));
-            cutEnd   = numel(edges1(edges1 > fitP.ucn));
+            fitEdges = edgesiei1((edgesiei1 >= fitP.lcn) & (edgesiei1 <= fitP.ucn));
+            cutFront = numel(edgesiei1(edgesiei1 < fitP.lcn));
+            cutEnd   = numel(edgesiei1(edgesiei1 > fitP.ucn));
             edgeCen1 = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
-            fitN1    = N1(1 + cutFront : end - cutEnd);
+            fitN1    = Niei1(1 + cutFront : end - cutEnd);
 
             [fitresult1, xData, yData, gof] = fitPowerLaw(edgeCen1, fitN1);
             plot(fitresult1, 'r--', xData, yData, 'mx')
             legend('\Delta G > 0 not fit', '\Delta G < 0 not fit', ...
                 '\Delta G > 0 inc fit', '\Delta G > 0 fit', ...
                 '\Delta G < 0 inc fit', '\Delta G < 0 fit')
-            text(edgeCen(1) , fitN(1)/3 , strcat('\Delta G^{-', num2str(-fitresult.b ,3),'}'), 'Color','b') 
-            text(edgeCen1(1), fitN1(1)/3, strcat('\Delta G^{-', num2str(-fitresult1.b,3),'}'), 'Color','r')
+            text(edgeCen(1) , fitN(1)/3 , strcat('t^{-', num2str(-fitresult.b ,3),'}'), 'Color','b') 
+            text(edgeCen1(1), fitN1(1)/3, strcat('t^{-', num2str(-fitresult1.b,3),'}'), 'Color','r')
 %             title(strcat('\Delta G > 0: \Delta G^{-', ...
 %                 num2str(-fitresult.b,3),'}', ...
 %                 ',  \Delta G < 0: \Delta G^{-', num2str(-fitresult1.b,3),'}'))
         else
             legend('\Delta G > 0', '\Delta G < 0')
-            title('\Delta G distribution')
+            title('IEI distribution')
 
         end
        
     else %~pn
-        [N,edges] = histcounts(abs(dG), 'Normalization', 'probability');
-        loglog((edges(1:end-1) + edges(2:end))/2,N, 'bx')
-        hold on;
-        title('\Delta G distribution')
-        xlabel('\Delta G')
-        ylabel('P(\Delta G)') 
         
+        ddG = abs(dG) > thr;
+        ieiDat = IEI(ddG, 1)*dt;
+        [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
+        loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
+        hold on;
         
         if fitPL
             %only include bins within include range to fit
-            fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
-            cutFront = numel(edges(edges < fitP.lc));
-            cutEnd   = numel(edges(edges > fitP.uc));
+            fitEdges = edgesiei((edgesiei >= fitP.lc) & (edgesiei <= fitP.uc));
+            cutFront = numel(edgesiei(edgesiei < fitP.lc));
+            cutEnd   = numel(edgesiei(edgesiei > fitP.uc));
             edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
-            fitN     = N(1 + cutFront : end - cutEnd);
-         
+            fitN     = Niei(1 + cutFront : end - cutEnd);         
             %fit power law
             [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
             plot(fitresult, 'b--', xData, yData, 'gx')
-            text(edgeCen(1), fitN(1)/3, strcat('\Delta G^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
+
+            text(edgeCen(1), fitN(1)/3, strcat('t^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
             legend('not fit', 'inc fit', 'fit')        
         end
         
