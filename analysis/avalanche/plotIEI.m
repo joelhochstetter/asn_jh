@@ -1,6 +1,6 @@
 function plotIEI(G, thr, dt, pn, fitP)
 %{
-    Plots the distribution of DeltaG
+    Plots the distribution of inter-event interval
     Inputs:
         G: Conductance time-series
       thr: Threshold in conductance to define an event
@@ -41,7 +41,7 @@ function plotIEI(G, thr, dt, pn, fitP)
         end
 
         if ~isfield(fitP, 'uc')
-            fitP.uc = 10*max(abs(dG));
+            fitP.uc = Inf;
         end    
         
         if ~isfield(fitP, 'lcn')
@@ -49,7 +49,7 @@ function plotIEI(G, thr, dt, pn, fitP)
         end
 
         if ~isfield(fitP, 'ucn')
-            fitP.ucn = 10*max(abs(dG));
+            fitP.ucn = Inf;
         end            
     end
 
@@ -98,9 +98,7 @@ function plotIEI(G, thr, dt, pn, fitP)
                 '\Delta G < 0 inc fit', '\Delta G < 0 fit')
             text(edgeCen(1) , fitN(1)/3 , strcat('t^{-', num2str(-fitresult.b ,3),'}'), 'Color','b') 
             text(edgeCen1(1), fitN1(1)/3, strcat('t^{-', num2str(-fitresult1.b,3),'}'), 'Color','r')
-%             title(strcat('\Delta G > 0: \Delta G^{-', ...
-%                 num2str(-fitresult.b,3),'}', ...
-%                 ',  \Delta G < 0: \Delta G^{-', num2str(-fitresult1.b,3),'}'))
+
         else
             legend('\Delta G > 0', '\Delta G < 0')
             title('IEI distribution')
