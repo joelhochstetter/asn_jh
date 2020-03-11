@@ -4,16 +4,16 @@ function mergeVec = mergeData(dataCell, useNaN)
     useNaN (boolean) pads a NaN at the end of the dataset
 %}
     
-    if nargin = 1
+    if nargin == 1
        useNaN = false;
     end
     
     mergeVec = [];
 
     for i = 1:numel(dataCell)
-        mergeVec = [mergeVec; dataCell];
+        mergeVec = [mergeVec, dataCell{i}];
         if useNaN
-           mergeVec = [mergeVec; nan]; 
+           mergeVec = [mergeVec, nan]; 
         end  
     end
 

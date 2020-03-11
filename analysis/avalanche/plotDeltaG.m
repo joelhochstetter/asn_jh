@@ -60,8 +60,7 @@ function plotDeltaG(G, pn, fitP)
         [N1,edges1] = histcounts(abs(dG(dG < 0)), 'Normalization', 'probability');
         loglog((edges1(1:end-1) + edges1(2:end))/2,N1, 'rx')
         legend('\Delta G > 0', '\Delta G < 0')
-        xlabel('\Delta G')
-        ylabel('P(\Delta G)') 
+
         
         if fitPL
             %only include bins within include range to fit
@@ -125,6 +124,7 @@ function plotDeltaG(G, pn, fitP)
     end
     set(gca, 'XScale', 'log')
     set(gca, 'YScale', 'log')
-
+    xlabel('\Delta G')
+    ylabel('P(\Delta G)') 
 
 end

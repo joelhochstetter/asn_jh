@@ -57,6 +57,7 @@ function plotACF(G, dt, useAbs, fitP)
     if useAbs
        
         [acf,lags,bounds] = autocorr(abs(dG));
+        acf = abs(acf);
         lags = lags*dt;
         %loglog(lags,acf, 'bx','HandleVisibility','off');
         hold on;
@@ -64,8 +65,8 @@ function plotACF(G, dt, useAbs, fitP)
         
         if fitPL
             %only include bins within include range to fit
-            fitLags  = lags((lags >= fitP.lc) & (lags <= fitP.uc));
-            cutFront = numel(lags(lags < fitP.lc));
+            fitLags  = lags((lags > fitP.lc) & (lags <= fitP.uc));
+            cutFront = numel(lags(lags <= fitP.lc));
             cutEnd   = numel(lags(lags > fitP.uc));
             fitACF   = acf(1 + cutFront : end - cutEnd);    
             [fitresult, xData, yData, gof] = fitPowerLaw(fitLags, fitACF);
@@ -76,12 +77,13 @@ function plotACF(G, dt, useAbs, fitP)
         %shuffle data and plot
         shuff_dG = shuffle_data(abs(dG));
         [sacf,lags, bounds] = autocorr(abs(shuff_dG));
+        sacf = abs(sacf);
         lags = lags*dt;
         
         if fitPL
             %only include bins within include range to fit
-            fitLags1 = lags((lags >= fitP.lc) & (lags <= fitP.uc));
-            cutFront = numel(lags(lags < fitP.lc));
+            fitLags1 = lags((lags > fitP.lc) & (lags <= fitP.uc));
+            cutFront = numel(lags(lags <= fitP.lc));
             cutEnd   = numel(lags(lags > fitP.uc));
             fitACF   = sacf(1 + cutFront : end - cutEnd);    
             [fitresult, xData, yData, gof] = fitPowerLaw(fitLags1, fitACF);
@@ -108,8 +110,8 @@ function plotACF(G, dt, useAbs, fitP)
         
         if fitPL
             %only include bins within include range to fit
-            fitLags  = lags((lags >= fitP.lc) & (lags <= fitP.uc));
-            cutFront = numel(lags(lags < fitP.lc));
+            fitLags  = lags((lags > fitP.lc) & (lags <= fitP.uc));
+            cutFront = numel(lags(lags <= fitP.lc));
             cutEnd   = numel(lags(lags > fitP.uc));
             fitACF   = acf(1 + cutFront : end - cutEnd);    
             [fitresult, xData, yData, gof] = fitPowerLaw(fitLags, fitACF);
@@ -124,8 +126,8 @@ function plotACF(G, dt, useAbs, fitP)
         
         if fitPL
             %only include bins within include range to fit
-            fitLags1 = lags((lags >= fitP.lc) & (lags <= fitP.uc));
-            cutFront = numel(lags(lags < fitP.lc));
+            fitLags1 = lags((lags > fitP.lc) & (lags <= fitP.uc));
+            cutFront = numel(lags(lags <= fitP.lc));
             cutEnd   = numel(lags(lags > fitP.uc));
             fitACF   = sacf(1 + cutFront : end - cutEnd);    
             [fitresult, xData, yData, gof] = fitPowerLaw(fitLags1, fitACF);

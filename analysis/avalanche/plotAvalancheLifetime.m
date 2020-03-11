@@ -1,13 +1,13 @@
-function plotIEI(G, thr, t, pn, fitP)
+function [alpha, dalpha] = plotAvalancheLifetime(G, thr, dt, pn, bin, fitP)
 %{
-    Plots the distribution of inter-event interval
+    Plots the avalanche size distribution
     Inputs:
         G: Conductance time-series
       thr: Threshold in conductance to define an event
-       t: time-vector
+       dt: sampling time of G in s
        pn: if 1 plots +ve and -ve separately on the same axis. Else we plot
             them together
-
+      bin: size of time-bins used for the analysis
      fitP: A struct containing parameters to fit
         fitP.lc:    Lower cut-off of IEI
         fitP.uc:    Upper cut-off of IEI
@@ -19,9 +19,8 @@ function plotIEI(G, thr, t, pn, fitP)
     Option to fit if we provide cut-offs
 
 %}
-    dt = t(2) - t(1);
-    
-    if nargin == 4
+
+    if nargin == 5
         fitPL = 0;
     else
         fitPL = 1;
@@ -59,18 +58,19 @@ function plotIEI(G, thr, t, pn, fitP)
     if pn
        
         ddG = dG > thr;
-        [~, ieiDat] = IEI(ddG, 1, t);
+        ieiDat = IEI(ddG, 1)*dt;
         [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
         loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
         hold on;
         
         %negative fluctuations        
         ddG = dG < thr;
-        [~, ieiDat] = IEI(ddG, 1, t);
+        ieiDat = IEI(ddG, 1)*dt;
         [Niei1,edgesiei1] = histcounts(ieiDat, 'Normalization', 'probability');
         loglog((edgesiei1(1:end-1) + edgesiei1(2:end))/2, Niei1, 'rx')        
         legend('\Delta G > 0', '\Delta G < 0')
-
+        xlabel('IEI (s)')
+        ylabel('P(IEI)') 
         
         if fitPL
             %only include bins within include range to fit
@@ -108,7 +108,7 @@ function plotIEI(G, thr, t, pn, fitP)
     else %~pn
         
         ddG = abs(dG) > thr;
-        [~, ieiDat] = IEI(ddG, 1, t);
+        ieiDat = IEI(ddG, 1)*dt;
         [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
         loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
         hold on;
@@ -131,8 +131,6 @@ function plotIEI(G, thr, t, pn, fitP)
     end
     set(gca, 'XScale', 'log')
     set(gca, 'YScale', 'log')
-    xlabel('IEI (s)')
-    ylabel('P(IEI)') 
-
+    
 
 end
