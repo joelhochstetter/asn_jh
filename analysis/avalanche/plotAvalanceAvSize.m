@@ -1,6 +1,0 @@
-function plotAvalanceAvSize()
-
-
-
-
-end

@@ -32,10 +32,14 @@ function [tau, dta] = plotAvalancheSize(sizeAv, fitP)
             fitP.uc = Inf;
         end
         
+        if ~isfield(fitP, 'cLevel')
+            fitP.cLevel = 0.5;
+        end
+        
     end
 
     
-    [N,edges] = histcounts(sizeAv);
+    [N,edges] = histcounts(sizeAv, 'Normalization', 'probability');
     loglog((edges(1:end-1) + edges(2:end))/2, N, 'bx')
     hold on;
 
@@ -54,15 +58,16 @@ function [tau, dta] = plotAvalancheSize(sizeAv, fitP)
         text(edgeCen(1), fitN(1)/3, strcat('S^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
         legend('not fit', 'inc fit', 'fit')   
         tau = -fitresult.b;
-        CI  = confint(fitresult, cLevel);
+        CI  = confint(fitresult, fitP.cLevel);
         tCI = CI(:,2);
         dta = (tCI(2) - tCI(1))/2;
 
     end
-
     
-    set(gca, 'XScale', 'log')
     set(gca, 'YScale', 'log')
-    
+    set(gca, 'XScale', 'log')
+    xlabel('S (events)')
+    ylabel('P(S)')
+
 
 end
