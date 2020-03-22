@@ -93,6 +93,18 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
                                              (abs(compPtr.comp.voltage) - compPtr.comp.setVoltage) .* ...
                                              sign(compPtr.comp.voltage) ...
                                              * dt;
+                
+                %Add noise term
+                
+                if compPtr.comp.noise > 0.0
+                    %white noise
+                    %compPtr.comp.filamentState = awgn(compPtr.comp.filamentState, compPtr.comp.noise);
+                    %1/f^beta noise
+                    noise = dsp.ColoredNoise(2, 1, numel(compPtr.comp.filamentState));
+                    lamN  = noise()*compPtr.comp.noise;                    
+                    compPtr.comp.filamentState = compPtr.comp.filamentState + lamN';
+                end
+                    
                 reset = (compPtr.comp.resetVoltage > abs(compPtr.comp.voltage)) .* ...
                                             (compPtr.comp.resetVoltage - abs(compPtr.comp.voltage)) .* ...
                                             sign(compPtr.comp.filamentState) * dt * compPtr.comp.boost;
@@ -108,7 +120,10 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
 
                compPtr.comp.filamentState (compPtr.comp.filamentState >  compPtr.comp.maxFlux) =  compPtr.comp.maxFlux(compPtr.comp.filamentState >  compPtr.comp.maxFlux);
                compPtr.comp.filamentState (compPtr.comp.filamentState < -compPtr.comp.maxFlux) = -compPtr.comp.maxFlux(compPtr.comp.filamentState < -compPtr.comp.maxFlux);
-
+                
+               
+               
+               
 
                 % local values:
                 local_lambda = compPtr.comp.filamentState;

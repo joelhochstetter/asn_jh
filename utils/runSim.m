@@ -96,12 +96,13 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.lyapunovSim     = false;
         DSimulationOptions.NodalAnal       = true;
         DSimulationOptions.useRK4          = false;
-        
-       
+        DSimulationOptions.numOfElectrodes = 2;
+        DSimulationOptions.oneSrcMultiDrn  = false; 
         
         %% Simulation general options:
         rng(42); %Set the seed for PRNGs for reproducibility
-        DSimulationOptions.seed = rng;    % save
+        DSimulationOptions.seed  = rng;    % save
+        DSimulationOptions.rSeed = 1;    % seed for running sims
         DSimulationOptions.dt = 1e-3;   % (sec)
         DSimulationOptions.T  = 1;    % (sec) duration of simulation
 
@@ -250,15 +251,29 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         
         
     elseif SimulationOptions.NodalAnal
-        SimulationOptions.numOfElectrodes = 2;
-        Signals = cell(SimulationOptions.numOfElectrodes,1);
+        if SimulationOptions.numOfElectrodes == 2
+            Signals = cell(SimulationOptions.numOfElectrodes,1);
+
+            Signals{1} = Stimulus.Signal;
+
+            Signals{2} = zeros(SimulationOptions.NumberOfIterations,1);
+
+            SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
+            Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);
         
-        Signals{1} = Stimulus.Signal;
+        elseif SimulationOptions.oneSrcMultiDrn %single source multiple drains
+            %First electrode in contacts is source. Rest are drains
+            Signals = cell(SimulationOptions.numOfElectrodes,1);
 
-        Signals{2} = zeros(SimulationOptions.NumberOfIterations,1);
+            Signals{1} = Stimulus.Signal;
+            
+            for i = 2:SimulationOptions.numOfElectrodes
+                Signals{i} = zeros(SimulationOptions.NumberOfIterations,1);
+            end
 
-        SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-        Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);
+            SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
+            Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);            
+        end
         
     else
         Components = initializeComponents(Connectivity.NumberOfEdges,Components, false);
@@ -275,6 +290,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
 
 
     %% Simulate:
+    rng(SimulationOptions.rSeed);
     if SimulationOptions.takingSnapshots
         if SimulationOptions.NodalAnal
             [Output, SimulationOptions, snapshots] = simulateNetworkRuomin(Connectivity, Components, Signals, SimulationOptions, snapshotsIdx); % (Ohm)              

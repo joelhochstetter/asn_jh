@@ -52,6 +52,7 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.boost         = 10;%10;
     default.nonpolar      = false;
     default.unipolar      = false;
+    default.noise         = 0.0;
     
     fields = fieldnames(default);
     for i = 1:numel(fields)
@@ -101,10 +102,9 @@ function Components = initializeComponents(E,Components, NodalAnal)
             Components.maxFlux       = ones(sz,1).*Components.maxFlux; %1.5e-1 % (Volt*sec) %% sawtooth: 0.1
             Components.penalty       = Components.penalty; %10
             Components.boost         = Components.boost; %10
-            
             Components.filamentState = ones(sz,1) .* Components.filamentState;        % (Volt*sec)
             Components.OnOrOff       = true(sz,1); %This gets fixed upon running sim
-
+            
             
         case 'resistor'
             Components.identity      = zeros(sz,1);        % 0 for a passive resistor, 1 for an active element

@@ -15,6 +15,7 @@ function plotIEI(G, thr, t, pn, fitP)
         fitP.ucn:    Upper cut-off of IEI for neg event fit
         fitP.toInc:  Vector of same length as G. Tells which time-points to
                         include
+        fitP.logBins: binary depending on whether or not log bins are used
 
     Option to fit if we provide cut-offs
 
@@ -51,7 +52,11 @@ function plotIEI(G, thr, t, pn, fitP)
 
         if ~isfield(fitP, 'ucn')
             fitP.ucn = Inf;
-        end            
+        end 
+        
+        if ~isfield(fitP, 'logBins')
+            fitP.logBins = false;
+        end
     end
 
     
@@ -60,7 +65,16 @@ function plotIEI(G, thr, t, pn, fitP)
        
         ddG = dG > thr;
         [~, ieiDat] = IEI(ddG, 1, t);
-        [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
+        if fitP.logBins
+            N = floor(sqrt(ieiDat));         % number of bins
+            start = min(ieiDat); % first bin edge
+            stop = max(ieiDat);  % last bin edge
+            b = 2.^linspace(log2(start),log2(stop),N+1);
+            [Niei,edgesiei] = histcounts(ieiDat, b, 'Normalization', 'probability');
+        else
+            [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');            
+        end
+        
         loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
         hold on;
         
@@ -109,7 +123,15 @@ function plotIEI(G, thr, t, pn, fitP)
         
         ddG = abs(dG) > thr;
         [~, ieiDat] = IEI(ddG, 1, t);
-        [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
+        if fitP.logBins
+            N = floor(sqrt(ieiDat));         % number of bins
+            start = min(ieiDat); % first bin edge
+            stop = max(ieiDat);  % last bin edge
+            b = 2.^linspace(log2(start),log2(stop),N+1);
+            [Niei,edgesiei] = histcounts(ieiDat, b, 'Normalization', 'probability');
+        else
+            [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');            
+        end
         loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
         hold on;
         

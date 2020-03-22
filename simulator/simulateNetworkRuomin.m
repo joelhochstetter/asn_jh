@@ -162,7 +162,8 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkRuomin(
     OutputDynamics.lambda             = junctionFilament;
 
     % Calculate network resistance and save:
-    OutputDynamics.networkCurrent    = electrodeCurrent(:, 2);
+    OutputDynamics.networkCurrent    = electrodeCurrent(:, 2:end);
+    OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent ./ Signals{1});
     OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent ./ Signals{1});
 
     %OutputDynamics.condition = condition;

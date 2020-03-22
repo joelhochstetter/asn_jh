@@ -32,7 +32,7 @@ function [re_tm,re_sz, scale, acoeff, gamma] = avalancheShapeCollapse(dur, size_
     
     %% rescale durations  to follow convention of Mehta 2002
     for i = 1:N
-        dur(i) = dur(i) + 1;
+        dur(i) = dur(i)
     end
     
     

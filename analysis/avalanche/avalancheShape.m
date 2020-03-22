@@ -28,18 +28,21 @@ function [dur, size_t, time_t] = avalancheShape(events, lifeAv)
     
     %make time vectors
     for i = 1:N
-        time_t{i} = 0:(dur(i) + 1); %duration + timesteps before and after
+        time_t{i} = 0:(dur(i)); %duration + timesteps before and after
     end
     
     
     %make average event at each time point
     for i = 1:N %loop over event durations
-        size_t{i} = zeros(dur(i) + 2,1);
+        size_t{i} = zeros(dur(i) + 1,1);
         avIDs = find(lifeAv == dur(i)); %get the avalanche IDs
         nRelv = numel(avIDs); %Number of relevant avalanches
         
-        for j = 1:(dur(i) + 2) %loop over size of avalanche            
+        for j = 1:(dur(i) + 1) %loop over size of avalanche            
             for k = 1:nRelv %loop over the relevant avalanches
+                if avEdg(avIDs(k)) + j - 1 > numel(events)
+                    break;
+                end
                 size_t{i}(j) = size_t{i}(j) + events(avEdg(avIDs(k)) + j - 1);
             end
         end
