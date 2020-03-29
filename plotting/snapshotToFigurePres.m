@@ -195,7 +195,7 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
         %G.Edges.Weight = full(snapshot.Voltage(1:connectivity.NumberOfEdges));
 
         hold all;
-        p = plot(G,'Layout','auto','LineStyle','--','LineWidth',2, 'MarkerSize',10);
+        p = plot(G,'Layout','auto','LineStyle','-','LineWidth',2, 'MarkerSize',4);
 
         % Highlight on switches
             % Find the edges which correspond to OFF switches:
@@ -206,9 +206,9 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
             % Remove the edges which correspond to OFF switches:
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(1,:),badPairs(2,:))) = 0;
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(2,:),badPairs(1,:))) = 0;
-        highlight(p, graph(adjacencyMatrix),'EdgeColor','w','LineWidth',7,'LineStyle','--')
+        highlight(p, graph(adjacencyMatrix),'EdgeColor','w','LineWidth',2,'LineStyle','-')
 
-        ax=plot(NaN,NaN,'b--',NaN,NaN,'w'); %plotting invisible points of desired colors
+        ax=plot(NaN,NaN,'b-',NaN,NaN,'w'); %plotting invisible points of desired colors
         %legend(ax,'OFF switch','ON switch');        %adding the legend
         
 
