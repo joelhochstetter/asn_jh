@@ -62,6 +62,9 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkPerturb(Connectivi
     
     LyapunovMax        = zeros(niterations,1);
     
+    perturbVec = zeros(E, 1);
+    perturbVec(SimulationOptions.perturbID) = SimulationOptions.LyEps;
+    
     %% Solve equation systems for every time step and update:
     for ii = 1 : niterations
         % Show progress:
@@ -104,15 +107,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkPerturb(Connectivi
         
         %Calculate state difference
         deltaLam     = compPtr.comp.filamentState - unpertFilState(:,ii);
-        normDeltaLam = norm(deltaLam);
-        if normDeltaLam == 0
-            LyapunovMax(ii) = -inf;
-            %break
-        end
-        
-        %Update trajectory
-        compPtr.comp.filamentState =  unpertFilState(:,ii) + SimulationOptions.LyEps/normDeltaLam*deltaLam;
-        
+        normDeltaLam = norm(deltaLam);        
         LyapunovMax(ii) = log(normDeltaLam/SimulationOptions.LyEps);
         
         wireVoltage(ii,:)        = sol(1:V);
@@ -120,6 +115,9 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkPerturb(Connectivi
         junctionVoltage(ii,:)    = compPtr.comp.voltage;
         junctionResistance(ii,:) = compPtr.comp.resistance;
         junctionFilament(ii,:)   = compPtr.comp.filamentState;
+        
+        %Update trajectory
+        compPtr.comp.filamentState =  unpertFilState(:,ii) + perturbVec;
         
     end
     

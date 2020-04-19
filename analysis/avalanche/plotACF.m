@@ -1,4 +1,4 @@
-function plotACF(G, dt, useAbs, fitP)
+function [alpha, dalph] = plotACF(G, dt, useAbs, fitP)
 %{
     Plots the distribution of DeltaG
     Inputs:
@@ -18,6 +18,8 @@ function plotACF(G, dt, useAbs, fitP)
 
 %}
 
+    alpha = nan;
+    dalph = nan;
 
     if nargin == 3
         fitPL = 0;
@@ -49,7 +51,11 @@ function plotACF(G, dt, useAbs, fitP)
 
         if ~isfield(fitP, 'ucn')
             fitP.ucn = Inf;
-        end            
+        end   
+        
+        if ~isfield(fitP, 'cLevel')
+            fitP.cLevel = 0.95;
+        end     
     end
 
 
@@ -133,7 +139,10 @@ function plotACF(G, dt, useAbs, fitP)
             [fitresult, xData, yData, gof] = fitPowerLaw(fitLags1, fitACF);
             plot(fitresult, xData, yData, 'mx')
             text(fitLags1(1) , fitACF(1)/3 , strcat('t^{-', num2str(-fitresult.b ,3),'}'), 'Color','r') 
-
+            alpha = -fitresult.b;
+            CI  = confint(fitresult, fitP.cLevel);
+            tCI = CI(:,2);
+            dalph = (tCI(2) - tCI(1))/2;
         else
             legend('data', 'shuffled')
 

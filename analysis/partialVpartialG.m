@@ -5,11 +5,11 @@ function deriv =  partialVpartialG(jnCon, Connectivity, electrodes)
     
     deriv = zeros(Connectivity.NumberOfEdges);
     dG = min(jnCon)*1e-3;
-    oneVec = ones(Connectivity.NumberOfEdges,1);
+    oneVec = eye(Connectivity.NumberOfEdges);
     
     for i = 1:Connectivity.NumberOfEdges
-        jnV1 = solveKirchoff(jnCon + oneVec(i)*dG*0.5, electrodes, Connectivity.EdgeList, Connectivity.NumberOfNodes, 1.0);
-        jnV2 = solveKirchoff(jnCon - oneVec(i)*dG*0.5, electrodes, Connectivity.EdgeList, Connectivity.NumberOfNodes, 1.0);
+        jnV1 = solveKirchoff(jnCon + oneVec(i, :)*dG*0.5, electrodes, Connectivity.EdgeList, Connectivity.NumberOfNodes, 1.0);
+        jnV2 = solveKirchoff(jnCon - oneVec(i, :)*dG*0.5, electrodes, Connectivity.EdgeList, Connectivity.NumberOfNodes, 1.0);
         deriv(:,i) = (abs(jnV1) - abs(jnV2))/dG;
     end
 end

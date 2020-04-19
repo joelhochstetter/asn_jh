@@ -96,8 +96,11 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.lyapunovSim     = false;
         DSimulationOptions.NodalAnal       = true;
         DSimulationOptions.useRK4          = false;
+        DSimulationOptions.perturb         = false;
         DSimulationOptions.numOfElectrodes = 2;
-        DSimulationOptions.oneSrcMultiDrn  = false; 
+        DSimulationOptions.oneSrcMultiDrn  = false;
+        DSimulationOptions.MultiSrcOneDrn  = false; 
+        
         
         %% Simulation general options:
         rng(42); %Set the seed for PRNGs for reproducibility
@@ -128,7 +131,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
   
 
 
-        %% Initialize dynamic components:
+        %% Initialize dynamic components
         DComponents.ComponentType       = 'atomicSwitch'; % 'atomicSwitch' \ 'memristor' \ 'resistor', \'tunnelSwitch'
         %other defaults for component params are specified in initializeComponents.m
         
@@ -200,7 +203,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
     end
      
     %% Set mode
-    if SimulationOptions.lyapunovSim  || SimulationOptions.useLong
+    if SimulationOptions.lyapunovSim  || SimulationOptions.useLong || SimulationOptions.perturb
         SimulationOptions.NodalAnal = true;
     end
       
@@ -273,6 +276,20 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
 
             SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
             Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);            
+        
+        elseif SimulationOptions.MultiSrcOneDrn %single source multiple drains
+            %First electrode in contacts is source. Rest are drains
+            Signals = cell(SimulationOptions.numOfElectrodes,1);
+
+            Signals{SimulationOptions.numOfElectrodes} = zeros(SimulationOptions.NumberOfIterations,1);
+            
+            for i = 1:SimulationOptions.numOfElectrodes - 1
+                Signals{i} = Stimulus.Signal;
+            end
+
+            SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
+            Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);            
+
         end
         
     else
@@ -302,6 +319,8 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             [Output, SimulationOptions] = longSimulateNetwork(Connectivity, Components, Signals, SimulationOptions);  % (Ohm)   
         elseif SimulationOptions.lyapunovSim
             [Output, SimulationOptions] = simulateNetworkLyapunov(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
+        elseif SimulationOptions.perturb
+            [Output, SimulationOptions] = simulateNetworkPerturb(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
         elseif SimulationOptions.useRK4
             [Output, SimulationOptions] = simulateNetworkRK4(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
         elseif SimulationOptions.NodalAnal

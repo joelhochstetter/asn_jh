@@ -168,6 +168,10 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
       axesLimits.VoltageCbar = [min(absoluteVoltage), max(absoluteVoltage)];
     end
 
+    if ~isfield(axesLimits, 'LyCbar') && isfield(snapshot, 'Lyapunov')
+      axesLimits.VoltageCbar = [min(snapshot.Lyapunov), max(snapshot.Lyapunov)];
+    end    
+    
     if ~isfield(axesLimits, 'LambdaCbar')
       axesLimits.LambdaCbar = [0, max(snapshot.filamentState(1:connectivity.NumberOfEdges))];
     end
@@ -205,7 +209,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             % Remove the edges which correspond to OFF switches:
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(1,:),badPairs(2,:))) = 0;
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(2,:),badPairs(1,:))) = 0;
-        highlight(p, graph(adjacencyMatrix),'EdgeColor','w','LineWidth',7,'LineStyle','-')
+        highlight(p, graph(adjacencyMatrix),'EdgeColor','w','LineWidth',3.5,'LineStyle','-')
 
         ax=plot(NaN,NaN,'b--',NaN,NaN,'w'); %plotting invisible points of desired colors
         %legend(ax,'OFF switch','ON switch');        %adding the legend
@@ -218,7 +222,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
           
         % Highlight an edge
         if numel(highlightEdges) > 0
-            highlight(p, connectivity.EdgeList(1,highlightEdges),connectivity.EdgeList(2,highlightEdges), 'LineWidth',6, 'LineStyle','-', 'EdgeColor', 'red')%,'Marker', 'square','MarkerSize',10)
+            highlight(p, connectivity.EdgeList(1,highlightEdges),connectivity.EdgeList(2,highlightEdges), 'LineWidth',10, 'LineStyle','-')%,'Marker', 'square','MarkerSize',10)
         end
         
         
@@ -338,36 +342,40 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             cbar.FontSize = 15;
 
         elseif whatToPlot.Lyapunov
-            myColors = log10(abs(snapshot.Lyapunov(1:connectivity.NumberOfEdges)));
-            upper = ceil(max(myColors));
-            cRange = 4;
-            myColors(highlightEdges) =upper - cRange;
-            p.EdgeCData = myColors;
-            caxis([upper - cRange, upper]);
-            cbar  = colorbar; 
-            for i = 2:numel(cbar.Ticks)
-                cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
-            end
-            cbar.TickLabels{1} = '';
-            cbar.FontSize = 15;
-            cbar.Label.String = 'l_j (s^{-1})';  
-            
-            shiftX = zeros(size(highlightEdges));
-            shiftY = zeros(size(highlightEdges));
-            shiftY(1) = -0.31;           
-            shiftY(7) = -0.25;
-            shiftX(7) = -0.23;
-            shiftY(6) = 0.4;
-            shiftX(4) = 0.20;
-            shiftY(5) = 0.34;
-            shiftX(5) = -0.06;
-            shiftY(2) = 0.44;
-            shiftY(3) = -0.35;
-            shiftY(8) = -0.26;
-            for i = 1:numel(highlightEdges)
-                text(sectionCentreX(highlightEdges(i)) + shiftX(i), sectionCentreY(highlightEdges(i)) + shiftY(i), num2str(i), 'FontSize', 25, 'Color', 'w')
-            end
-            cbar.FontSize = 11.5;
+            colormap('parula');
+            p.EdgeCData = snapshot.Lyapunov(1:connectivity.NumberOfEdges);
+            colorbar
+            caxis(axesLimits.LyCbar);
+%             myColors = log10(abs(snapshot.Lyapunov(1:connectivity.NumberOfEdges)));
+%             upper = ceil(max(myColors));
+%             cRange = 4;
+%             myColors(highlightEdges) =upper - cRange;
+%             p.EdgeCData = myColors;
+%             caxis([upper - cRange, upper]);
+%             cbar  = colorbar; 
+%             for i = 2:numel(cbar.Ticks)
+%                 cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
+%             end
+%             cbar.TickLabels{1} = '';
+%             cbar.FontSize = 15;
+%             cbar.Label.String = 'l_j (s^{-1})';  
+%             
+%             shiftX = zeros(size(highlightEdges));
+%             shiftY = zeros(size(highlightEdges));
+%             shiftY(1) = -0.31;           
+%             shiftY(7) = -0.25;
+%             shiftX(7) = -0.23;
+%             shiftY(6) = 0.4;
+%             shiftX(4) = 0.20;
+%             shiftY(5) = 0.34;
+%             shiftX(5) = -0.06;
+%             shiftY(2) = 0.44;
+%             shiftY(3) = -0.35;
+%             shiftY(8) = -0.26;
+%             for i = 1:numel(highlightEdges)
+%                 text(sectionCentreX(highlightEdges(i)) + shiftX(i), sectionCentreY(highlightEdges(i)) + shiftY(i), num2str(i), 'FontSize', 25, 'Color', 'w')
+%             end
+%             cbar.FontSize = 11.5;
 
             %upperLimit = 0.15;
             %caxis([log10(axesLimits.ConCbar(1)/7.77e-5),round(log10(axesLimits.ConCbar(2)/7.77e-5))]);
@@ -378,7 +386,13 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
 %             cbar.TickLabels = string(10.^(cbar.Ticks));          
 %             colormap('parula');
             
-            
+             parula1 = parula(1000);
+%             parula1 = [[1 0 0]; parula1(10:end,:)];
+             parula1 = parula1(10:end,:);
+% 
+             colormap(parula1);
+        
+        
         elseif whatToPlot.Conductance
             % calculate power consumption:
             p.EdgeCData = log10(snapshot.Resistance(1:connectivity.NumberOfEdges)/7.77e-5);          
@@ -398,11 +412,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
 
             
         end
-        parula1 = parula(1000);
-        parula1 = [[1 0 0]; parula1(10:end,:)];
-        %parula1 = [parula1(10:end,:)];
 
-        colormap(parula1);
 
         
         if whatToPlot.Weights 
@@ -416,7 +426,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
 
 
         %Set title
-        %title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 18);
+        title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 18);
 %         ax = gca;
 %         outerpos = ax.OuterPosition;
 %         ti = ax.TightInset; 

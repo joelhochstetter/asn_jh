@@ -87,7 +87,7 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             %adding tunnel resistance
         case 'tunnelSwitch'
             V = compPtr.comp.voltage;
-            phi = 2;          
+            phi = compPtr.comp.barrHeight; %2;          
             d = (compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1) + 0.4;
             d(d<0.4)=0.4;
             resistance = tunnelSwitch(V,d,phi,0.4,compPtr.comp.offResistance(1));
@@ -101,17 +101,19 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
         %adding tunnel resistance
         case 'tunnelSwitch2'
             V = compPtr.comp.voltage;
-            phi = 0.81;          
+            phi = compPtr.comp.barrHeight; %2;          
             d =(compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1);
             d(d < 0.0) = 0.0;
-            resistance = tunnelSwitch2(V, d, phi, 0.17, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
+            A = compPtr.comp.filArea; %0.17
+            resistance = tunnelSwitch2(V, d, phi, A, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
             
-        case 'tunnelSwitchL'
-            phi = 2;          
+        case 'tunnelSwitchL'        
             d = (compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1);
             d(d < 0.0) = 0.0;
-            resistance = tunnelSwitchL(d, phi, 0.17, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
+            phi = compPtr.comp.barrHeight; %2;          
+            A = compPtr.comp.filArea; %0.17            
+            resistance = tunnelSwitchL(d, phi, A, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
 
         case 'linearSwitch'         

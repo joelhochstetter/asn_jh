@@ -41,12 +41,13 @@ function [sizeAv, lifeAv] = avalancheStats(events, t)
     elseif runMode == 2
         for avId = 1:A
             sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
-            lifeAv(avId) = t(avEdg(avId+1)) - t(avEdg(avId));
+            lifeAv(avId) = t(avEdg(avId+1)) - t(avEdg(avId)) - 1;
         end   
     end
     
     
-
+    sizeAv = sizeAv(sizeAv > 0);
+    lifeAv = lifeAv(lifeAv > 0);
     
 
 

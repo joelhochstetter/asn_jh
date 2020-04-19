@@ -61,6 +61,7 @@ function [sims] = multiImport (params)
                     sims{i} = sims{i}.sim;
                 end
                 if isfield(sims{i}, 'hdfFile') && params.importSwitch
+                    sims{i}.hdfFile = strcat(params.SimOpt.saveFolder, '/', sims{i}.hdfFile);   
                     sims{i}.swLam =  h5read(sims{i}.hdfFile, '/swLam');
                     sims{i}.swV   =  h5read(sims{i}.hdfFile, '/swV');    
                     sims{i}.swC   =  h5read(sims{i}.hdfFile, '/swC');  

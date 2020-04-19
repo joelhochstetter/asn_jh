@@ -76,8 +76,8 @@ def generate_wires_distribution(number_of_wires=1500,
     
     # wire lengths
     wire_lengths     = generate_dist_lengths(number_of_wires, wire_av_length, wire_dispersion)
-    xc, yc = generate_dist_centroids(number_of_wires, loc=Lx/2, scale=centroid_dispersion, beta=gennorm_shape)
-#    xc, yc = np.random.rand(number_of_wires) * Lx, np.random.rand(number_of_wires) * Ly
+#    xc, yc = generate_dist_centroids(number_of_wires, loc=Lx/2, scale=centroid_dispersion, beta=gennorm_shape)
+    xc, yc = np.random.rand(number_of_wires) * Lx, np.random.rand(number_of_wires) * Ly
     theta  = generate_dist_orientations(number_of_wires)
     
     xa, ya  = xc - wire_lengths/2.0 * np.cos(theta), yc - wire_lengths/2.0 * np.sin(theta) # coordinates for one end 
@@ -109,18 +109,18 @@ def generate_wires_distribution(number_of_wires=1500,
                 wire_distances = wire_distances)
 
 
-def generate_dist_centroids(number_of_wires, loc, scale, beta=5):
+def generate_dist_centroids(number_of_wires, loc = 10, scale = 50, beta=5):
     '''
     Generates the 2D coordinates from a general normal distribution
     '''
 
     # This is a uniform random distribution
-    #xc = np.random.rand(number_of_wires) * Lx # uniform random in [0,Lx) for each coordinate dimension
-    #yc = np.random.rand(number_of_wires) * Ly # uniform random in [0,Lx) for each coordinate dimension
+    xc = np.random.rand(number_of_wires) * Lx # uniform random in [0,Lx) for each coordinate dimension
+    yc = np.random.rand(number_of_wires) * Ly # uniform random in [0,Lx) for each coordinate dimension
 
     
-    xc = gennorm.rvs(beta, loc=loc, scale=scale, size=int(number_of_wires))
-    yc = gennorm.rvs(beta, loc=loc, scale=scale, size=int(number_of_wires))
+    #xc = gennorm.rvs(beta, loc=loc, scale=scale, size=int(number_of_wires))
+    #yc = gennorm.rvs(beta, loc=loc, scale=scale, size=int(number_of_wires))
     
     return xc, yc
 

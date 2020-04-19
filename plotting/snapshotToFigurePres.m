@@ -94,6 +94,9 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
     
     isSource = zeros(numel(contacts),1);
     isSource(1) = 1;
+    if numel(contacts) > 2
+        isSource(2) = 1;
+    end
     
     if ~isfield(whatToPlot, 'GraphRep')
        whatToPlot.GraphRep = false; 
@@ -140,6 +143,10 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
     if ~isfield(whatToPlot, 'Labels')
        whatToPlot.Labels = false; 
     end
+
+    if ~isfield(whatToPlot, 'Lyapunov')
+       whatToPlot.Lyapunov = false; 
+    end    
     
     if ~isfield(whatToPlot, 'VDrop')
        whatToPlot.VDrop = false; 
@@ -179,7 +186,7 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
         % https://au.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.graphplot-properties.html
         %Set-up figure and colour
         snapshotFigure = figure('visible','off', 'units','normalized','outerposition',[0 0 1 1]);
-        set(gca,'Color',[0 0 0],'xtick',[],'ytick',[]);
+        set(gca,'Color',[0.75 0.75 0.75],'xtick',[],'ytick',[]);
         
         
         %set(gca,'xtick',[],'ytick',[]);
@@ -249,6 +256,11 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
                 for i = 1:numel(contacts)
                     highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
                 end
+                if numel(contacts) > 2
+                    text(p.XData(contacts(1)) + 0.25, p.YData(contacts(1)), 'A', 'FontSize', 36);
+                    text(p.XData(contacts(2)) + 0.25, p.YData(contacts(2)), 'B', 'FontSize', 36);
+                    text(p.XData(contacts(3)) - 0.5, p.YData(contacts(3)), 'drn', 'FontSize', 36);  
+                end
             else
                 source = contacts(logical(isSource));
                 drain  = contacts(~logical(isSource));
@@ -260,7 +272,8 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
             
         if whatToPlot.Labels
             %Show edge labels
-            labeledge(p,1:numedges(G),1:numedges(G))   
+            %labeledge(p,1:numedges(G),1:numedges(G))   
+            labelnode(p,1:numnodes(G),1:numnodes(G))  
         else
             %Hide Node Labels
             p.NodeLabel = {};
@@ -423,17 +436,55 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
                 % voltageColorbar.
         end
 
+        
+        
+    %% Effective currents
+        if whatToPlot.EffectiveCurrents
+            % Calculate currents:
+            currents = (snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
+            wireCurrents  = zeros(connectivity.NumberOfNodes,1);
+            % Wire by wire:
+            for currWire=1 : connectivity.NumberOfNodes            
+                % Find the indices of edges (=intersections) relevant for this
+                % vertex (=wire):
+                relevantEdges = connectivity.EdgeList(1,:) == currWire | connectivity.EdgeList(2,:) == currWire;
+                wireCurrents(currWire) = sum(abs(currents(relevantEdges))/2);                
+            end
+            wireCurrents(contacts) = 2*wireCurrents(contacts);
+            wireCurrents = log10(wireCurrents);
+            if ~isfield(axesLimits, 'CurrentCbar')
+                %axesLimits.CurrentCbar = [0, max(wireCurrents)];
+                axesLimits.CurrentCbar = [log10(6e-9), log10(2.8e-6)];                
+            end
+            
+            minCurr =  axesLimits.CurrentCbar(1);
+            maxCurr = axesLimits.CurrentCbar(2);
+            wireCurrents(wireCurrents > maxCurr) = maxCurr;
+            wireCurrents(wireCurrents < minCurr) = minCurr;
+
+            maxCurr
+            % linearly transform results to the range [0,1]:
+            currentColorCode = (wireCurrents - minCurr) / (maxCurr - minCurr);
+            rval = 0.85;
+            % construct RGB triplets (from green near contact(1) to red near contact(2)):
+            currentColorCode = [rval*ones(connectivity.NumberOfNodes,1), (1-currentColorCode)*rval,(1-currentColorCode)*rval];
+            
+        end
+        
         if whatToPlot.Nanowires
             if whatToPlot.Voltages    
                 % nanowires with a voltage color-code
                 lineColor = voltageColorCode;
+            elseif whatToPlot.EffectiveCurrents
+                lineColor = currentColorCode;
             else
                 % only (white) nanowires
                 lineColor = ones(connectivity.NumberOfNodes,3);
             end
             for currWire=1:connectivity.NumberOfNodes
-                    line([connectivity.WireEnds(currWire,1),connectivity.WireEnds(currWire,3)],[connectivity.WireEnds(currWire,2),connectivity.WireEnds(currWire,4)],'Color',lineColor(currWire,:),'LineWidth',0.5)
+                    line([connectivity.WireEnds(currWire,1),connectivity.WireEnds(currWire,3)],[connectivity.WireEnds(currWire,2),connectivity.WireEnds(currWire,4)],'Color',lineColor(currWire,:),'LineWidth',1.1)
             end
+            
         else
             if whatToPlot.Voltages
                 % no nanowires, only points at the centers of the nanowires with a voltage color-code
@@ -644,7 +695,7 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
             numSectionsDone = 0;
 
             % Calculate currents:
-            currents = 1e6*(snapshot.Voltage(1:end-1)).*(snapshot.Resistance(1:end-1)); % (nA)
+            currents = 1e6*(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
 
             % Calculate wire angles ([-pi/2,pi/2]):
                     % first [0,pi]
@@ -744,23 +795,77 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
             %quiver(sectionCenterX,sectionCenterY,sectionCurrentX,sectionCurrentY,'Color','w','LineWidth',1);
         end
 
+        
+%                 if whatToPlot.Contacts
+%             %Highlight Contacts
+%             colours = ['r';'g'];
+%             if whatToPlot.Nanowires
+%                 for i = 1:numel(contacts)
+%                     highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
+%                 end
+%                 if numel(contacts) > 2
+%                     text(p.XData(contacts(1)) + 0.25, p.YData(contacts(1)), 'A', 'FontSize', 36);
+%                     text(p.XData(contacts(2)) + 0.25, p.YData(contacts(2)), 'B', 'FontSize', 36);
+%                     text(p.XData(contacts(3)) - 0.5, p.YData(contacts(3)), 'drn', 'FontSize', 36);  
+%                 end
+%             else
+%                 source = contacts(logical(isSource));
+%                 drain  = contacts(~logical(isSource));
+%                 
+%                 scatter(p.XData(source),p.YData(source),15,[[0 1 0];[1 0 0]],'Marker', '*','g');
+%                 scatter(p.XData(drain),p.YData(drain),15,[[0 1 0];[1 0 0]],'Marker', '*','r');
+%             end
+%         end
 
         %% contacts:   
         if whatToPlot.Contacts
-            if whatToPlot.Currents
-                scatter([sourcePoint(1),drainPoint(1)],[sourcePoint(2),drainPoint(2)],200,[[0 1 0];[1 0 0]],'filled','h');
-                sourceTextPosition = sourcePoint;
-                drainTextPosition  = drainPoint;
-            else
-                line([connectivity.WireEnds(contacts(1),1),connectivity.WireEnds(contacts(1),3)],[connectivity.WireEnds(contacts(1),2),connectivity.WireEnds(contacts(1),4)],'Color','g','LineWidth',0.2)
-                line([connectivity.WireEnds(contacts(2),1),connectivity.WireEnds(contacts(2),3)],[connectivity.WireEnds(contacts(2),2),connectivity.WireEnds(contacts(2),4)],'Color','r','LineWidth',0.2)
-                sourceTextPosition = connectivity.VertexPosition(contacts(1),:);
-                drainTextPosition  = connectivity.VertexPosition(contacts(2),:);
+            if numel(contacts) == 2
+                if whatToPlot.Currents
+                    scatter([sourcePoint(1),drainPoint(1)],[sourcePoint(2),drainPoint(2)],200,[[0 1 0];[1 0 0]],'filled','h');
+                    sourceTextPosition = sourcePoint;
+                    drainTextPosition  = drainPoint;
+                else
+                    line([connectivity.WireEnds(contacts(1),1),connectivity.WireEnds(contacts(1),3)],[connectivity.WireEnds(contacts(1),2),connectivity.WireEnds(contacts(1),4)],'Color','g','LineWidth',0.2)
+                    line([connectivity.WireEnds(contacts(2),1),connectivity.WireEnds(contacts(2),3)],[connectivity.WireEnds(contacts(2),2),connectivity.WireEnds(contacts(2),4)],'Color','r','LineWidth',0.2)
+                    sourceTextPosition = connectivity.VertexPosition(contacts(1),:);
+                    drainTextPosition  = connectivity.VertexPosition(contacts(2),:);
+                end
+                text(sourceTextPosition(1), sourceTextPosition(2), strcat('A'),  'Color', 'g', 'FontSize', 16);
+                text(drainTextPosition(1),  drainTextPosition(2),  strcat('drn'),  'Color', 'r', 'FontSize', 16);
+            elseif numel(contacts) == 3
+                contactPoints = zeros(3,2);
+                for i = 1:numel(contacts)
+                    currWire = contacts(i);
+                    if connectivity.WireEnds(currWire,1) ~= connectivity.WireEnds(currWire,3)
+                        if connectivity.WireEnds(currWire,1) < connectivity.WireEnds(currWire,3)
+                            contactEnd = connectivity.WireEnds(currWire,3:4);
+                        else
+                            contactEnd = connectivity.WireEnds(currWire,1:2);
+                        end
+                    else
+                        if connectivity.WireEnds(currWire,2) < connectivity.WireEnds(currWire,4)
+                            contactEnd = connectivity.WireEnds(currWire,3:4);
+                        else
+                            contactEnd = connectivity.WireEnds(currWire,1:2);
+                        end
+                    end
+                    contactPoints(i,:) = contactEnd;
+                end
+                scatter(contactPoints(:,1),contactPoints(:,2),200,[[0 1 0];[0 1 0];[1 0 0]],'filled','h');
+                textPosition = contactPoints; %connectivity.VertexPosition(contacts,:);
+                textPosition(1:2,2) = textPosition(1:2,2)  - 10;
+                textPosition(3,1) = textPosition(3,1)  - 35;      
+                textPosition(3,2) = textPosition(3,2)  + 5;                      
+                textPosition(2,1) = textPosition(2,1) - 10;
+                text(textPosition(1,1), textPosition(1,2), strcat('A'),  'Color', 'g', 'FontSize', 16);
+                text(textPosition(2,1), textPosition(2,2), strcat('B'),  'Color', 'g', 'FontSize', 16);
+                text(textPosition(3,1), textPosition(3,2), strcat('GND'),  'Color', 'r', 'FontSize', 16);
+                
+                
             end
-            text(sourceTextPosition(1), sourceTextPosition(2), strcat('(1)'),  'Color', 'g', 'FontSize', 16);
-            text(drainTextPosition(1),  drainTextPosition(2),  strcat('(2)'),  'Color', 'r', 'FontSize', 16);
         end
 
+        
         %% Labels for junctions and nanowires
         if whatToPlot.Labels
                 % plots switch number next to switch and nanowire
@@ -779,12 +884,12 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
 
         end
         %% title, axes labels and limits:
-        title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 50);
+        %title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 50);
 
         xlabel('x (\mum)');
         ylabel('y (\mum)');
-        %shoulder = 800;
-        %axis([-shoulder,connectivity.GridSize(1)+shoulder,-shoulder,connectivity.GridSize(2)+shoulder]);
+        shoulder = connectivity.GridSize(1)*0.1;
+        axis([-shoulder,connectivity.GridSize(1)+shoulder,-shoulder,connectivity.GridSize(2)+shoulder]);
         %axis square;
     end
 end

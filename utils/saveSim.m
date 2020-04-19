@@ -17,7 +17,9 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         case 'quantCSwitch'
             swType = 'q';
         case 'tunnelSwitch2'
-            swType = 't2';        
+            swType = 't2';    
+        case 'tunnelSwitchL'
+            swType = 'tl';            
         case 'linearSwitch'
             swType = 'l';               
     end

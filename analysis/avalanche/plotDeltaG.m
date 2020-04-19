@@ -1,4 +1,4 @@
-function plotDeltaG(G, pn, fitP)
+function dGfit = plotDeltaG(G, pn, fitP)
 %{
     Plots the distribution of DeltaG
     Inputs:
@@ -12,11 +12,16 @@ function plotDeltaG(G, pn, fitP)
         fitP.ucn:    Upper cut-off of dG in units of G for dG < 0 fit
         fitP.toInc:  Vector of same length as G. Tells which time-points to
                         include
+        fitP.useML:  Uses Clauset 2007 maximum likelihood to get power law
+        exponent of tail.
 
     Option to fit if we provide cut-offs
 
 %}
-    
+
+    alpha = nan;
+    dalph = 0.0;
+
     if nargin == 2
         fitPL = 0;
     else
@@ -49,7 +54,15 @@ function plotDeltaG(G, pn, fitP)
 
         if ~isfield(fitP, 'ucn')
             fitP.ucn = 10*max(abs(dG));
-        end            
+        end    
+        
+        if ~isfield(fitP, 'cLevel')
+            fitP.cLevel = 0.95;
+        end    
+        
+        if ~isfield(fitP, 'useML')
+            fitP.useML = false;
+        end             
     end
 
 
@@ -91,6 +104,10 @@ function plotDeltaG(G, pn, fitP)
 %             title(strcat('\Delta G > 0: \Delta G^{-', ...
 %                 num2str(-fitresult.b,3),'}', ...
 %                 ',  \Delta G < 0: \Delta G^{-', num2str(-fitresult1.b,3),'}'))
+            alpha = -fitresult.b;
+            CI  = confint(fitresult, fitP.cLevel);
+            tCI = CI(:,2);
+            dalph = (tCI(2) - tCI(1))/2;
         else
             legend('\Delta G > 0', '\Delta G < 0')
             title('\Delta G distribution')
@@ -107,18 +124,37 @@ function plotDeltaG(G, pn, fitP)
         
         
         if fitPL
-            %only include bins within include range to fit
-            fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
-            cutFront = numel(edges(edges < fitP.lc));
-            cutEnd   = numel(edges(edges > fitP.uc));
-            edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
-            fitN     = N(1 + cutFront : end - cutEnd);
-         
-            %fit power law
-            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
-            plot(fitresult, 'b--', xData, yData, 'gx')
-            text(edgeCen(1), fitN(1)/3, strcat('\Delta G^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-            legend('not fit', 'inc fit', 'fit')        
+            
+            if fitP.useML 
+                [alpha,   lc, ~] = plfit(dG);
+                [dalph, dlc, ~]  = plvar(dG);
+                
+                x = lc:lc/1000:max(dG);
+                A = N(find(edges <= lc, 1));
+                y = A*x.^(-alpha);
+                loglog(x, y, 'r--');
+                text(x(2), y(2)/3, strcat('\Delta G^{-', num2str(tau,3),'}'), 'Color','r')
+            else
+                %only include bins within include range to fit
+                fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
+                cutFront = numel(edges(edges < fitP.lc));
+                cutEnd   = numel(edges(edges > fitP.uc));
+                edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
+                fitN     = N(1 + cutFront : end - cutEnd);
+
+                %fit power law
+                [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
+                plot(fitresult, 'b--', xData, yData, 'gx')
+                text(edgeCen(1), fitN(1)/3, strcat('\Delta G^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
+                legend('not fit', 'inc fit', 'fit') 
+
+                alpha = -fitresult.b;
+                CI  = confint(fitresult, fitP.cLevel);
+                tCI = CI(:,2);
+                dalph = (tCI(2) - tCI(1))/2;
+                lc = xData(1);
+            end
+            
         end
         
     end
@@ -126,5 +162,10 @@ function plotDeltaG(G, pn, fitP)
     set(gca, 'YScale', 'log')
     xlabel('\Delta G')
     ylabel('P(\Delta G)') 
-
+    
+    %put goodness of fit in as well
+    dGfit.alpha  = alpha;
+    dGfit.dalph  = dalph;
+    dGfit.lc     = lc;
+    
 end

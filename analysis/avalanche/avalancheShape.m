@@ -1,4 +1,4 @@
-function [dur, size_t, time_t] = avalancheShape(events, lifeAv)
+function [dur, size_t, time_t] = avalancheShape(events)
 %{
     Input:
         events (Nx1 array) - number of events at given time bin
@@ -18,9 +18,15 @@ function [dur, size_t, time_t] = avalancheShape(events, lifeAv)
        
 %}
 
-    avEdg  = find(events == 0); %edges for avalanches    
+    avEdg  = find(events == 0); %edges for avalanches   
+    A = numel(avEdg) - 1;
+    lifeAv = zeros(A,1);
     
-    dur = unique(lifeAv, 'sorted');
+    for avId = 1:A
+        lifeAv(avId) = avEdg(avId+1) - avEdg(avId) - 1;
+    end   
+    
+    dur = unique(lifeAv(lifeAv > 0), 'sorted');
     N   = numel(dur); 
     
     size_t = cell(N,1);
@@ -28,17 +34,17 @@ function [dur, size_t, time_t] = avalancheShape(events, lifeAv)
     
     %make time vectors
     for i = 1:N
-        time_t{i} = 0:(dur(i)); %duration + timesteps before and after
+        time_t{i} = 0:(dur(i) + 1); %duration + timesteps before and after
     end
     
     
     %make average event at each time point
     for i = 1:N %loop over event durations
-        size_t{i} = zeros(dur(i) + 1,1);
+        size_t{i} = zeros(dur(i) + 2,1);
         avIDs = find(lifeAv == dur(i)); %get the avalanche IDs
         nRelv = numel(avIDs); %Number of relevant avalanches
         
-        for j = 1:(dur(i) + 1) %loop over size of avalanche            
+        for j = 1:(dur(i) + 2) %loop over size of avalanche            
             for k = 1:nRelv %loop over the relevant avalanches
                 if avEdg(avIDs(k)) + j - 1 > numel(events)
                     break;
