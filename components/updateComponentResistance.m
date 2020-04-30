@@ -52,11 +52,11 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
             compPtr.comp.OnOrOff(compPtr.comp.identity == 0) = true; 
             
-            if ~sum(abs(oldOnOff - compPtr.comp.OnOrOff))
-                switchChange = false;
-                resistance = compPtr.comp.resistance;
-                return
-            end
+%             if ~sum(abs(oldOnOff - compPtr.comp.OnOrOff))
+%                 switchChange = false;
+%                 resistance = compPtr.comp.resistance;
+%                 return
+%             end
             
             % passive elements (resistors) are always considered as "open" switches
             
@@ -70,12 +70,12 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             
             compPtr.comp.OnOrOff = floor(abs(compPtr.comp.filamentState) / compPtr.comp.criticalFlux(1));
             compPtr.comp.OnOrOff(compPtr.comp.identity == 0) = true; 
-            
-            if ~sum(abs(oldOnOff - compPtr.comp.OnOrOff))
-                switchChange = false;
-                resistance = compPtr.comp.resistance;
-                return
-            end
+%             
+%             if ~sum(abs(oldOnOff - compPtr.comp.OnOrOff))
+%                 switchChange = false;
+%                 resistance = compPtr.comp.resistance;
+%                 return
+%             end
             
             % passive elements (resistors) are always considered as "open" switches
             
@@ -93,7 +93,7 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             resistance = tunnelSwitch(V,d,phi,0.4,compPtr.comp.offResistance(1));
             
             if max(abs(V)) > 2.5*phi %Checks conditions for Simmons is valid
-                'Results may be inaccurate'
+                disp('Results may be inaccurate');
             end    
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
 

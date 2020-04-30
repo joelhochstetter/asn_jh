@@ -49,6 +49,8 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
     sim.Comp.onR = Components.onResistance(1);
     sim.Comp.offR = Components.offResistance(1);
     sim.Comp.swType = swType;
+    sim.Comp.nonpolar = Components.nonpolar;
+    sim.Comp.stateEquation = Components.stateEquation;
     
     %Save extra parameters if need be
     if isfield(SimulationOptions, 'misc')
