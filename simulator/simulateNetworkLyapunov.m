@@ -109,7 +109,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         normDeltaLam = norm(deltaLam);
         if normDeltaLam == 0
             LyapunovMax(ii) = -inf;
-            %break
+            break
         end
         
         %Update trajectory
@@ -126,7 +126,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         end
     end
     
-    if SimulationOptions.saveSwitches
+    if ~SimulationOptions.saveSwitches
         % Calculate network resistance and save:
         OutputDynamics.electrodeCurrent   = electrodeCurrent;
         OutputDynamics.wireVoltage        = sol(1:V)';

@@ -28,12 +28,10 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     params.SimOpt.NodalAnal       = true;
 
 	%params.SimOpt.saveFolder      = '/import/silo2/joelh/Chaos/Lyapunov';
-	params.SimOpt.dt               = 1e-4;
+	params.SimOpt.dt               = 5e-4;
 	params.SimOpt.nameComment      = '';
     params.SimOpt.saveFolder       = strcat(lyFolder, '/', Attractor, '/');%strcat('/headnode2/joelh/bin/longAC_topo/Lyapunov/up/', Attractor, '/');
     mkdir(params.SimOpt.saveFolder)
-
-
     
     
     %Initialise paramaters from attractor file
