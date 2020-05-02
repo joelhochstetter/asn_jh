@@ -50,12 +50,14 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
     RHS             = zeros(V+numOfElectrodes,1); % the first E entries in the RHS vector.
     LHSinit         = zeros(V+numOfElectrodes, V+numOfElectrodes);
         
-    wireVoltage        = zeros(niterations, V);
     electrodeCurrent   = zeros(niterations, numOfElectrodes);
-    junctionVoltage    = zeros(niterations, E);
-    junctionResistance = zeros(niterations, E);
-    junctionFilament   = zeros(niterations, E);
-    
+
+    if SimulationOptions.saveSwitches    
+        wireVoltage        = zeros(niterations, V);
+        junctionVoltage    = zeros(niterations, E);
+        junctionResistance = zeros(niterations, E);
+        junctionFilament   = zeros(niterations, E);
+    end
   
     %Calculate the unperturbed orbit
     unpertFilState        = SimulationOptions.unpertFilState';
@@ -114,22 +116,33 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         compPtr.comp.filamentState =  unpertFilState(:,ii) + SimulationOptions.LyEps/normDeltaLam*deltaLam;
         
         LyapunovMax(ii) = log(normDeltaLam/SimulationOptions.LyEps);
-        
-        wireVoltage(ii,:)        = sol(1:V);
         electrodeCurrent(ii,:)   = sol(V+1:end);
-        junctionVoltage(ii,:)    = compPtr.comp.voltage;
-        junctionResistance(ii,:) = compPtr.comp.resistance;
-        junctionFilament(ii,:)   = compPtr.comp.filamentState;
-        
+
+        if SimulationOptions.saveSwitches
+            wireVoltage(ii,:)        = sol(1:V);
+            junctionVoltage(ii,:)    = compPtr.comp.voltage;
+            junctionResistance(ii,:) = compPtr.comp.resistance;
+            junctionFilament(ii,:)   = compPtr.comp.filamentState;
+        end
     end
     
-    % Calculate network resistance and save:
-    OutputDynamics.electrodeCurrent   = electrodeCurrent;
-    OutputDynamics.wireVoltage        = wireVoltage;
-    
-    OutputDynamics.storevoltage       = junctionVoltage;
-    OutputDynamics.storeCon           = junctionResistance;
-    OutputDynamics.lambda             = junctionFilament;
+    if SimulationOptions.saveSwitches
+        % Calculate network resistance and save:
+        OutputDynamics.electrodeCurrent   = electrodeCurrent;
+        OutputDynamics.wireVoltage        = sol(1:V)';
+
+        OutputDynamics.storevoltage       = compPtr.comp.voltage';
+        OutputDynamics.storeCon           = compPtr.comp.resistance';
+        OutputDynamics.lambda             =  compPtr.comp.filamentState';
+    else
+        % Calculate network resistance and save:
+        OutputDynamics.electrodeCurrent   = electrodeCurrent;
+        OutputDynamics.wireVoltage        = wireVoltage;
+
+        OutputDynamics.storevoltage       = junctionVoltage;
+        OutputDynamics.storeCon           = junctionResistance;
+        OutputDynamics.lambda             = junctionFilament;
+    end
 
     % Calculate network resistance and save:
     OutputDynamics.networkCurrent    = electrodeCurrent(:, 2);
