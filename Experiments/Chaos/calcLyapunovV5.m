@@ -75,8 +75,15 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
     
-    
-	initLamda                  = sim{1}.swLam(end,1:E)';
+    if isfield(sim{1}, 'swLam')
+        initLamda                  = sim{1}.swLam(end,1:E)';
+    elseif isfield(sim{1}, 'finalStates')
+        initLamda                  = sim{1}.finalStates';
+    else
+        disp('FAILED');
+        return;
+    end
+        
     params.Comp.filamentState = initLamda;
 	eps                        = 5e-4;%1e-5; %1e-5 / 1e-6 / 1e-7 / 1
     clear('swLam', 'sim')
