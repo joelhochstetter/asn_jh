@@ -97,6 +97,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.NodalAnal       = true;
         DSimulationOptions.useRK4          = false;
         DSimulationOptions.perturb         = false;
+        DSimulationOptions.saveSwitches    = true;    %false => saves no switch data except final filament states
         DSimulationOptions.numOfElectrodes = 2;
         DSimulationOptions.oneSrcMultiDrn  = false;
         DSimulationOptions.MultiSrcOneDrn  = false; 
@@ -323,6 +324,8 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             [Output, SimulationOptions] = simulateNetworkPerturb(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
         elseif SimulationOptions.useRK4
             [Output, SimulationOptions] = simulateNetworkRK4(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
+        elseif ~SimulationOptions.saveSwitches
+            [Output, SimulationOptions] = simulateNetworkLite(Connectivity, Components, Signals, SimulationOptions); % (Ohm)            
         elseif SimulationOptions.NodalAnal
             [Output, SimulationOptions] = simulateNetworkRuomin(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
         elseif SimulationOptions.useUncorrelated

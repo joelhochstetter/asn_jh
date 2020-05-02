@@ -1,6 +1,6 @@
-function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkRuomin(Connectivity, Components, Signals, SimulationOptions, varargin)
+function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity, Components, Signals, SimulationOptions, varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
+% Saves no switch data
 % Simulate network at each time step. Mostly the same as Ido's code.
 % Improved the simulation efficiency by change using nodal analysis.
 % Enabled multi-electrodes at the same time.
@@ -64,30 +64,14 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkRuomin(
     RHS             = zeros(V+numOfElectrodes,1); % the first E entries in the RHS vector.
     LHSinit         = zeros(V+numOfElectrodes, V+numOfElectrodes);
         
-    wireVoltage        = zeros(niterations, V);
     electrodeCurrent   = zeros(niterations, numOfElectrodes);
-    junctionVoltage    = zeros(niterations, E);
-    junctionResistance = zeros(niterations, E);
-    junctionFilament   = zeros(niterations, E);
-    %condition          = zeros(niterations, 1);
 
-    
-    %% If snapshots are requested, allocate memory for them:
-    if ~isempty(varargin)
-        snapshots           = cell(size(varargin{1}));
-        snapshots_idx       = sort(varargin{1}); 
-    else
-        nsnapshots          = 10;
-        snapshots           = cell(nsnapshots,1);
-        snapshots_idx       = ceil(logspace(log10(1), log10(niterations), nsnapshots));
-    end
-    kk = 1; % Counter    
     
     
     %% Solve equation systems for every time step and update:
     for ii = 1 : niterations
         % Show progress:
-        progressBar(ii,niterations);
+        %progressBar(ii,niterations);
         
         % Update resistance values:
         updateComponentResistance(compPtr); 
@@ -131,42 +115,22 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkRuomin(
         % Update element fields:
         updateComponentState(compPtr, SimulationOptions.dt);    % ZK: changed to allow retrieval of local values
         
-        wireVoltage(ii,:)        = sol(1:V);
-        electrodeCurrent(ii,:)   = sol(V+1:end);
-        junctionVoltage(ii,:)    = compPtr.comp.voltage;
-        junctionResistance(ii,:) = compPtr.comp.resistance;
-        junctionFilament(ii,:)   = compPtr.comp.filamentState;
-        
-
-        if find(snapshots_idx == ii) 
-            frame.Timestamp  = SimulationOptions.TimeVector(ii);
-            frame.Voltage    = compPtr.comp.voltage;
-            frame.Resistance = compPtr.comp.resistance;
-            frame.OnOrOff    = compPtr.comp.OnOrOff;
-            frame.filamentState = compPtr.comp.filamentState;
-            frame.netV = Signals{1}(ii);
-            frame.netI = electrodeCurrent(ii, 2);
-            frame.netC = frame.netI/frame.netV;
-            snapshots{kk} = frame;
-            kk = kk + 1;
-        end
-        
+        electrodeCurrent(ii,:)   = sol(V+1:end);     
         
     end
     
     % Calculate network resistance and save:
     OutputDynamics.electrodeCurrent   = electrodeCurrent;
-    OutputDynamics.wireVoltage        = wireVoltage;
+    OutputDynamics.wireVoltage        = sol(1:V)';
     
-    OutputDynamics.storevoltage       = junctionVoltage;
-    OutputDynamics.storeCon           = junctionResistance;
-    OutputDynamics.lambda             = junctionFilament;
+    OutputDynamics.storevoltage       = compPtr.comp.voltage';
+    OutputDynamics.storeCon           = compPtr.comp.resistance';
+    OutputDynamics.lambda             =  compPtr.comp.filamentState';
 
     % Calculate network resistance and save:
     OutputDynamics.networkCurrent    = electrodeCurrent(:, 2:end);
     OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent(:,end) ./ Signals{1});
 
-    %OutputDynamics.condition = condition;
-    %figure;plot(condition);
+
     
 end
