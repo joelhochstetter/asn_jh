@@ -73,7 +73,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 
 
     params.Comp.ComponentType = 'tunnelSwitch2';
-	params.SimOpt.T                = 10/params.Stim.Frequency;
+	params.SimOpt.T                = 100;%10/params.Stim.Frequency;
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
     
