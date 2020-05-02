@@ -80,7 +80,7 @@ function [sims] = multiImport (params)
                     sims{i} = sims{i}.sim;
                 end
                 
-                if isfield(sims{i}, 'hdfFile') && params.importSwitch
+                    if isfield(sims{i}, 'hdfFile') && params.importSwitch
                     h5file = split(sims{i}.hdfFile, '/');
                     h5file = char(strcat(params.SimOpt.saveFolder, '/',  h5file(end)));                    
                     
