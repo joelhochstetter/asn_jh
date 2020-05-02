@@ -211,7 +211,7 @@ function snapshotFigure = snapshotToFigure(snapshot, contacts, connectivity, wha
             highlight(p, highlightNodes, 'NodeColor','r','LineWidth',10)%,'Marker', 'square','MarkerSize',10)  
         end
         
-        highlightEdges = snapshot.Voltage(1:connectivity.NumberOfEdges) > 0;
+        highlightEdges =  [];%snapshot.Voltage(1:connectivity.NumberOfEdges) > 0;
         
         % Highlight an edge
         if numel(highlightEdges) > 0

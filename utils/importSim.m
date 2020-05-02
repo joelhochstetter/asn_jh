@@ -26,7 +26,11 @@ function sim = importSim(Components, Stimulus, T, num, saveFolder, nameComment, 
         case 'quantCSwitch'
             swType = 'q';
         case 'tunnelSwitch2'
-            swType = 't2';  
+            swType = 't2';    
+        case 'tunnelSwitchL'
+            swType = 'tl';            
+        case 'linearSwitch'
+            swType = 'l';               
     end
     
     switch Stimulus.BiasType

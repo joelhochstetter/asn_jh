@@ -23,7 +23,7 @@ function [con] = tunnelSwitch2(V, s, phi, A, Coff, Con)
     J2 = J2*A;
 
     %Low Voltage formula
-    tunL = 2*s.^2/phi^0.5.*exp(C0.*s*phi^2)/J1;
+    tunL = 2*s/phi^0.5.*exp(C0.*s*phi^2)/J1;
     b = 1 - V.^2/96./(phi-V/2).^2;
     
     %Intermediate voltage formula

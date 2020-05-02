@@ -82,4 +82,4 @@ function SimulationOptions = selectContacts(Connectivity, SimulationOptions)
             SimulationOptions.Drain = col;   
             
     end
-end
+    SimulationOptions.numOfElectrodes = numel(SimulationOptions.ContactNodes);

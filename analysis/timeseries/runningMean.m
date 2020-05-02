@@ -19,8 +19,6 @@ function [mx, fx] = runningMean(x, dt)
     
     %% Central datapoints
     for i = (dt1 + 1):(N-dt2)
-        dt1 = floor((dt - 1)/2);
-        dt2 = dt - dt1 - 1;
         mx(i) = mean(x(i - dt1:i + dt2));
     end
     

@@ -1,4 +1,4 @@
-function makeSnapshotMovie(Signal, netC, swV, swLam, timeVec, contacts, Components, Connectivity, whatToPlot, axesLimits)
+function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Components, Connectivity, whatToPlot, axesLimits, samplingTime, tend)
 %{
     Example usage:
         cd /import/silo2/joelh/Criticality/largeNetworks
@@ -21,7 +21,10 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, timeVec, contacts, Componen
         snapshotToFigure(snapshot, contacts, Connectivity, whatToPlot, axesLimits);
         set(gcf, 'visible','on')
 %}
-
+    if nargin < 11
+        samplingTime = 1;
+        tend = timeVec(end);
+    end
 
     fprintf('\nCompiling movie...\n');
 
@@ -30,16 +33,21 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, timeVec, contacts, Componen
     
     v = VideoWriter('networkMovie','Motion JPEG AVI');
 
-    v.FrameRate = floor(1/(timeVec(2)-timeVec(1))/10);
+    v.FrameRate = 20;%floor(1/(timeVec(2)-timeVec(1))/10);
     v.Quality = 100;
     open(v);
+    critLam = Components.critFlux(1);
     
-    for i = 1 : length(timeVec)
+    for i = 1 : samplingTime: length(timeVec)
+        if timeVec(i) > tend
+            break
+        end
         progressBar(i,length(timeVec));
         swVolt                = swV(i,:)';
         swLambda              = swLam(i,:)';
-        snapshot = generateSnapshotFromData(swVolt, swLambda, Components, Signal(i), netC(i), timeVec(i));
-        frameFig = snapshotToFigure(snapshot, contacts, Connectivity, whatToPlot, axesLimits);
+        swCon = swC(i,:)';
+        snapshot = generateSnapshotFromData(swVolt, swLambda, swCon, critLam,  Signal(i), netC(i), timeVec(i));
+        frameFig = snapshotToFigureThesis(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);
         writeVideo(v,getframe(frameFig));
         close(frameFig);
     end

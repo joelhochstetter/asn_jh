@@ -1,5 +1,6 @@
 function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkRuomin(Connectivity, Components, Signals, SimulationOptions, varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
 % Simulate network at each time step. Mostly the same as Ido's code.
 % Improved the simulation efficiency by change using nodal analysis.
 % Enabled multi-electrodes at the same time.
@@ -162,8 +163,8 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkRuomin(
     OutputDynamics.lambda             = junctionFilament;
 
     % Calculate network resistance and save:
-    OutputDynamics.networkCurrent    = electrodeCurrent(:, 2);
-    OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent ./ Signals{1});
+    OutputDynamics.networkCurrent    = electrodeCurrent(:, 2:end);
+    OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent(:,end) ./ Signals{1});
 
     %OutputDynamics.condition = condition;
     %figure;plot(condition);

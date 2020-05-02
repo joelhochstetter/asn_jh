@@ -163,7 +163,7 @@ function [OutputDynamics, SimulationOptions, snapshots] = longSimulateNetwork(Co
     OutputDynamics.lambda             = junctionFilament;
     
     % Calculate network resistance and save:
-    OutputDynamics.networkCurrent    = electrodeCurrent(:, 2);
+    OutputDynamics.networkCurrent    = electrodeCurrent(:, 2:end);
     OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent ./ Signals{1});
 
     OutputDynamics.EndTime            = ii;

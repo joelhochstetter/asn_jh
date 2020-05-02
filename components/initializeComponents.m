@@ -48,10 +48,27 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.resetVoltage  = 1e-2;%1e-3; %0.01
     default.criticalFlux  = 1e-4;%1e-1; %1e-4
     default.maxFlux       = 0.15;%0.15;
+    default.barrHeight    = 0.81; %potential barrier height for tunnelling in V
+    default.filArea       = 0.17; %area of filament tip 
     default.penalty       = 1;%10;
     default.boost         = 10;%10;
     default.nonpolar      = false;
     default.unipolar      = false;
+    default.fusePower =  2.5e-5; %for uni-polar switch only
+    default.fuseFactor = 1.1;
+    
+    %{    
+        Noise can be added to all junctions by the function junctionNoise.m
+        Fields are:
+            noiseType = 'powerLaw' (1/f^beta noise), 'gaussian'         
+            noiseBeta: power law exponent for powe law noise
+            noiseLevel: positive number according to size of noise
+    %}
+    
+    
+    default.noiseType = 'powerLaw';
+    default.noiseBeta  = 2;
+    default.noiseLevel = 0.0;
     
     fields = fieldnames(default);
     for i = 1:numel(fields)
@@ -65,7 +82,38 @@ function Components = initializeComponents(E,Components, NodalAnal)
     Components.identity      = ones(E,1);          % 0 for a passive resistor, 1 for an active element
         % If one wants an element to be active with probability p,
         % Components.identity      = [rand(E,1) <= p ; 0];
+        
     Components.type          = Components.ComponentType; % type of active elements ('atomicSwitch' \ 'memristor' \ ...)
+    
+    % this describes which equation the code runs by
+    %{
+        Options are:
+        'thresholdNonpolar' : evolution depends only on absolute sign of voltage
+        'thresholdUnipolar': nonpolar with off switchings if power exceeds threshold
+        'thresholdPolar': original model. Two possible polarities of switch
+            are allowed corresponding to filament growth in reverse direction
+        'HPnonpolar': an equivalent version to the HP model with rectangular window function
+        'thresholdQC': my original bad model for higher conductance quantum
+        
+        To implement (as of 26/4):
+        'HPbipolar': bipolar HP model. 
+        HP model with window functions. e.g. Biolek, Jogeskar, parabolic
+    %}
+    
+    
+    if ~isfield(Components, 'stateEquation')
+        if Components.nonpolar
+            Components.stateEquation = 'thresholdNonpolar';
+        elseif Components.unipolar
+            Components.stateEquation = 'thresholdUnipolar';
+        elseif strcmp(Components.ComponentType, 'quantCSwitch') || strcmp(Components.ComponentType, 'hybridSwitch')
+            Components.stateEquation = 'thresholdQC';
+        else
+            Components.stateEquation  = 'thresholdPolar';
+        end
+    end
+    
+    
     Components.voltage       = zeros(E,1);             % (Volt)
     Components.resistance    = ones(E,1)*1e7;             % (Ohm) (memory allocation)
     Components.onResistance  = ones(E,1)*Components.onResistance;   % (Ohm) 1/(12.9 kOhm) = conductance quantum
@@ -101,10 +149,9 @@ function Components = initializeComponents(E,Components, NodalAnal)
             Components.maxFlux       = ones(sz,1).*Components.maxFlux; %1.5e-1 % (Volt*sec) %% sawtooth: 0.1
             Components.penalty       = Components.penalty; %10
             Components.boost         = Components.boost; %10
-            
             Components.filamentState = ones(sz,1) .* Components.filamentState;        % (Volt*sec)
             Components.OnOrOff       = true(sz,1); %This gets fixed upon running sim
-
+            
             
         case 'resistor'
             Components.identity      = zeros(sz,1);        % 0 for a passive resistor, 1 for an active element

@@ -1,10 +1,10 @@
-function plotIEI(G, thr, dt, pn, fitP)
+function plotIEI(G, thr, t, pn, fitP)
 %{
     Plots the distribution of inter-event interval
     Inputs:
         G: Conductance time-series
       thr: Threshold in conductance to define an event
-       dt: sampling time of G in s
+       t: time-vector
        pn: if 1 plots +ve and -ve separately on the same axis. Else we plot
             them together
 
@@ -15,11 +15,13 @@ function plotIEI(G, thr, dt, pn, fitP)
         fitP.ucn:    Upper cut-off of IEI for neg event fit
         fitP.toInc:  Vector of same length as G. Tells which time-points to
                         include
+        fitP.logBins: binary depending on whether or not log bins are used
 
     Option to fit if we provide cut-offs
 
 %}
-
+    dt = t(2) - t(1);
+    
     if nargin == 4
         fitPL = 0;
     else
@@ -50,7 +52,11 @@ function plotIEI(G, thr, dt, pn, fitP)
 
         if ~isfield(fitP, 'ucn')
             fitP.ucn = Inf;
-        end            
+        end 
+        
+        if ~isfield(fitP, 'logBins')
+            fitP.logBins = false;
+        end
     end
 
     
@@ -58,19 +64,27 @@ function plotIEI(G, thr, dt, pn, fitP)
     if pn
        
         ddG = dG > thr;
-        ieiDat = IEI(ddG, 1)*dt;
-        [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
+        [~, ieiDat] = IEI(ddG, 1, t);
+        if fitP.logBins
+            N = floor(sqrt(ieiDat));         % number of bins
+            start = min(ieiDat); % first bin edge
+            stop = max(ieiDat);  % last bin edge
+            b = 2.^linspace(log2(start),log2(stop),N+1);
+            [Niei,edgesiei] = histcounts(ieiDat, b, 'Normalization', 'probability');
+        else
+            [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');            
+        end
+        
         loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
         hold on;
         
         %negative fluctuations        
         ddG = dG < thr;
-        ieiDat = IEI(ddG, 1)*dt;
+        [~, ieiDat] = IEI(ddG, 1, t);
         [Niei1,edgesiei1] = histcounts(ieiDat, 'Normalization', 'probability');
         loglog((edgesiei1(1:end-1) + edgesiei1(2:end))/2, Niei1, 'rx')        
         legend('\Delta G > 0', '\Delta G < 0')
-        xlabel('IEI (s)')
-        ylabel('P(IEI)') 
+
         
         if fitPL
             %only include bins within include range to fit
@@ -108,8 +122,16 @@ function plotIEI(G, thr, dt, pn, fitP)
     else %~pn
         
         ddG = abs(dG) > thr;
-        ieiDat = IEI(ddG, 1)*dt;
-        [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');
+        [~, ieiDat] = IEI(ddG, 1, t);
+        if fitP.logBins
+            N = floor(sqrt(ieiDat));         % number of bins
+            start = min(ieiDat); % first bin edge
+            stop = max(ieiDat);  % last bin edge
+            b = 2.^linspace(log2(start),log2(stop),N+1);
+            [Niei,edgesiei] = histcounts(ieiDat, b, 'Normalization', 'probability');
+        else
+            [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');            
+        end
         loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
         hold on;
         
@@ -131,6 +153,8 @@ function plotIEI(G, thr, dt, pn, fitP)
     end
     set(gca, 'XScale', 'log')
     set(gca, 'YScale', 'log')
+    xlabel('IEI (s)')
+    ylabel('P(IEI)') 
 
 
 end

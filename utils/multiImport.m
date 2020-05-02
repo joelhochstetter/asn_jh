@@ -60,11 +60,16 @@ function [sims] = multiImport (params)
                 if isfield(sims{i}, 'sim')
                     sims{i} = sims{i}.sim;
                 end
+                                
+
                 if isfield(sims{i}, 'hdfFile') && params.importSwitch
-                    sims{i}.swLam =  h5read(sims{i}.hdfFile, '/swLam');
-                    sims{i}.swV   =  h5read(sims{i}.hdfFile, '/swV');    
-                    sims{i}.swC   =  h5read(sims{i}.hdfFile, '/swC');  
-                end                
+                    h5file = split(sims{i}.hdfFile, '/');
+                    h5file = char(strcat(params.SimOpt.saveFolder, '/',  h5file(end)));
+                    sims{i}.swLam =  h5read(h5file, '/swLam');
+                    sims{i}.swV   =  h5read(h5file, '/swV');    
+                    sims{i}.swC   =  h5read(h5file, '/swC');  
+                end     
+            
             	sims{i}.filename = filenames{i};
             end
         else
@@ -75,11 +80,14 @@ function [sims] = multiImport (params)
                     sims{i} = sims{i}.sim;
                 end
                 
+				h5file = split(sims{i}.hdfFile, '/');
+				h5file = char(strcat(params.SimOpt.saveFolder, '/',  h5file(end)));
                 if isfield(sims{i}, 'hdfFile') && params.importSwitch
-                    sims{i}.swLam =  h5read(sims{i}.hdfFile, '/swLam');
-                    sims{i}.swV   =  h5read(sims{i}.hdfFile, '/swV');    
-                    sims{i}.swC   =  h5read(sims{i}.hdfFile, '/swC');  
-                end
+                    sims{i}.swLam =  h5read(h5file, '/swLam');
+                    sims{i}.swV   =  h5read(h5file, '/swV');    
+                    sims{i}.swC   =  h5read(h5file, '/swC');  
+                end     
+                
             	sims{i}.filename = filenames{i};
             end
         end        

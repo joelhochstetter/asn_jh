@@ -1,7 +1,5 @@
-function [con] = linearSwitch(lambda, critFlux, Coff, Con)
-    R = abs(lambda)/critFlux/Con + (1-abs(lambda)/critFlux)/Coff;
+function [con] = linearSwitch(lambda, maxFlux, Coff, Con)
+    R = abs(lambda)/maxFlux/Con + (1-abs(lambda)/maxFlux)/Coff;
     con = 1./R;
-    if min(con) <= 0
-        'fuck'
-    end
+    
 end

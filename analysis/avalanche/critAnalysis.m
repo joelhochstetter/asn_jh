@@ -1,103 +1,225 @@
-function results = critAnalysis(G1, dt, G, time, V, saveFolder)
+function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fitML, binSize)
 %{
     Given a conductance cut-off (G1) performs the criticality analysis
     on a given conductance dataset
 
     Input:
-        G1 (positive float): Delta G cut-off
+        events (Nx1 vectors): events
         dt (positive float): Time bin
         G  (Nx1 vector)    : Conductance time-series
         time (Nx1 vector)  : Time vector
         V (Nx1 vector)     : Voltage time-series
         savefolder (string): Folder to save the results struct and images
+        useML (boolean): use maximum likelihood methods for a slower but
+        more accurate fit
+        binSize (integer): number of time-steps. if number less than zero
+        is provided use the mean(IEI)
 
     Outputs:
         results (struct): Saves the results 
 %}
+    
+    if nargin < 9
+        binSize = -1;
+        if nargin < 8
+            fitML = false;
+        end
+    end
 
+
+    mkdir(saveFolder)
+    
     results = struct();
-
+    
+    results.filename = filename;
+    
     %% conductance
-    results.netG.G = G;    %network conductance
-    results.netG.t = time; %time vector
-    results.netG.V = V;    %voltage
+    results.net.G = G;    %network conductance
+    results.net.t = time; %time vector
+    results.net.dt = dt; %time vector
+    results.net.T = time(end) - time(1) + dt; %time vector
+    results.net.V = V;    %voltage
+    results.net.meanG = mean(G);
+    results.net.meanV = mean(V);
+    results.net.meanI = mean(G.*V);
+    results.net.mdGdt = (G(end) - G(1))/(time(end) - time(1));
+    results.net.mindG = min(abs(diff(G))/dt);
+    results.net.maxdG = max(abs(diff(G))/dt);
+    results.net.stddG = std(abs(diff(G))/dt);
     
-    
-    
-    %% dG
-    dG        = [diff(G), 0];
-    ddG       = abs(dG) >= G1;
-    [N,edges] = histcounts(abs(dG));
-    
-    
-    
+
+
     %% Fourier transform
-    [t_freq, conductance_freq] = fourier_analysis(time, G);
-    
-    
+    figure('visible','off');
+    [beta, dbeta] = plotPSD(time, G);
+    results.PSD.beta  = beta;
+    results.PSD.dbeta = dbeta;
+    %need to give uncertainity as well
+    saveas(gcf, strcat(saveFolder, '/PSD.png'))
+    close all;
     
     %% Auto correlation function
+    figure('visible','off');
+    [alpha, dalph] = plotACF(G, dt, true, struct('cLevel', 0.95));
+    results.ACF.alpha  = alpha;
+    results.ACF.dalph = dalph;
+    saveas(gcf, strcat(saveFolder, '/ACF.png'))
+    close all;
     
+    
+    %% dG distribution
+    figure('visible','off');
+    results.dG = plotDeltaG(G, 0, struct('useML', false));%fitML));
+    saveas(gcf, strcat(saveFolder, '/dG.png'))
+    close all;
+    
+    %% Event trains
+    results.events.eventTrain     = events;
+    results.events.numEvents      = sum(events);
+    results.events.eventFraction  = sum(events)/numel(time);
+    
+    dG = gradient(G);
+    dG(isnan(dG)) = 0;
+    
+    figure('units','normalized','outerposition',[0 0 1 1], 'visible','off');
+    subplot(2,2,1);
+    plot(time, G)
+    hold on;
+    plot(time(events), G(events), 'o')
+    xlabel('t (s)')
+    ylabel('G (S)')
+    legend('G', 'event')
+
+    subplot(2,2,2)
+    imagesc(time, 1, events)
+
+    subplot(2,2,3)
+    plot(time, dG)
+    hold on;
+    plot(time(events), dG(events), 'o')
+    xlabel('t (s)')
+    ylabel('\Delta G (S)')
+    legend('\Delta G', 'event')
+
+    subplot(2,2,4)
+    plot(time, G)
+    yyaxis right;
+    plot(time, dG)
+    xlabel('t (s)')
+    ylabel('\Delta G (S)')
+
+    saveas(gcf, strcat(saveFolder, '/eventTrain.png'))
+    close all;
     
     
     %% Inter-event interval
-    ieiDat = IEI(ddG,1);
-    [Niei,edgesiei] = histcounts(ieiDat);
-    results.IEI.pts  = Niei;
-    results.IEI.bins = edgesiei;
-    
-    
-    % Plot if a save-folder is provided and save
-    if nargin == 5
-        
-        
-    end
-    
-    
-    figure;
-    loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
-    [N1,edges1] = histcounts(abs(ieiDat(abs(ieiDat) >= 2)), edgesiei(4:end-2));
-    [fitresult, xData, yData, gof] = fitPowerLaw((edges1(1:end-1) + edges1(2:end))/2, N1);
-    hold on;
-    plot(fitresult, xData, yData, 'gx')
-    xlim([edgesiei(1), edgesiei(end)]);
-    legend('not fitted', 'data', 'fit');
-    xlabel('Time (dt)')
-    ylabel('P(t)')
-    text(10,500,strcat('t^{-', num2str(-fitresult.b,3),'}'))
-    savefig(gcf, '/import/silo2/joelh/modelValidation/Adrian/Network#4/DC/highC/Mallinson2019SciAdv/F2C.fig')
-    saveas(gcf, '/import/silo2/joelh/modelValidation/Adrian/Network#4/DC/highC/Mallinson2019SciAdv/F2C.png')
+    figure('visible','off');
+    results.IEI = plotIEIfromEvents(G, events, time, struct('useML', fitML));
+    saveas(gcf, strcat(saveFolder, '/IEIdist.png'))
+    close all;
 
     
-    %% Avalanche stats: 
     
+    %% Avalanche stats: 
+    if binSize < 1
+       binSize =  round(results.IEI.meanIEI);
+    end
+    binned = binData(events, binSize);
+    [sizeAv, lifeAv] = avalancheStats(binned, 1:numel(binned));
+    results.avalanche.sizeAv = sizeAv;
+    results.avalanche.lifeAv = lifeAv;
+    results.avalanche.binSize = binSize;   
     
     
     %% Avalanche size:
+    figure('visible','off');
+    [tau, dta, xmn, xmx, pvl, pcr, ksd] = plotAvalancheSize(sizeAv, struct('useML', fitML));
+    results.avalanche.sizeFit.tau = tau;
+    results.avalanche.sizeFit.dTau = dta;
+    results.avalanche.sizeFit.lc  = xmn;
+    results.avalanche.sizeFit.uc  = xmx;
+    results.avalanche.sizeFit.pvl = pvl;
+    results.avalanche.sizeFit.pcr = pcr;
+    results.avalanche.sizeFit.ksd = ksd;
+    saveas(gcf, strcat(saveFolder, '/avSize.png'))
+    close all;
     
     
     %% Avalanche lifetime:
+    figure('visible','off');
+    [alp, dal, xmn, xmx, pvl, pcr, ksd] = plotAvalancheLifetime(lifeAv, struct('useML', fitML));
+    results.avalanche.timeFit.alpha = alp;
+    results.avalanche.timeFit.dAlpha = dal;
+    results.avalanche.timeFit.lc  = xmn;
+    results.avalanche.timeFit.uc  = xmx;
+    results.avalanche.timeFit.pvl = pvl;
+    results.avalanche.timeFit.pcr = pcr;
+    results.avalanche.timeFit.ksd = ksd;    
+    saveas(gcf, strcat(saveFolder, '/avLife.png'))
+    close all;
     
     
     %% <S>(T)
+    figure('visible','off');
+    [gamma_m_1, dgamma_m_1] = plotAvalancheAveSize(sizeAv, lifeAv, struct('lc', xmn, 'uc', xmx, 'cLevel', 0.5));
+    saveas(gcf, strcat(saveFolder, '/avAvSize.png'))
+    close all;
+
     
     
     %% Avalanche shape analysis
+    [dur, size_t, time_t] = avalancheShape(binned);
+    results.avalanche.shape.dur    = dur;
+    results.avalanche.shape.size_t = size_t;
+    results.avalanche.shape.time_t = time_t;
     
+    %size distribution
+    figure('visible','off');
+    hold on;
+    for i = 2:numel(dur)
+        plot(time_t{i},size_t{i})
+    end
+    xlabel('t (bins)')
+    ylabel('s(t) (events)')
+    title('Average avalanche shape as a function of time');
+    saveas(gcf, strcat(saveFolder, '/avShape.png'))
+    close all;
+
     
     %% Shape collapse and scaling function
+    [re_tm,re_sz, scale, acoeff, gamma] = avalancheShapeCollapse(dur, size_t, time_t);
+    results.avalanche.shape.re_tm  = re_tm;
+    results.avalanche.shape.re_sz  = re_sz;
+    results.avalanche.shape.scale  = scale;
+    results.avalanche.shape.acoeff = acoeff;
+    results.avalanche.shape.gamma  = gamma;
     
-    
+    figure('visible','off');
+    hold on;
+    for i = 2:numel(dur)
+        plot(re_tm{i}, scale{i}, '.--')
+    end
+    tt = 0:1e-3:1;
+    plot(tt, scaleFunction(tt, 1, acoeff, 1), '-', 'LineWidth',4)
+    xlabel('t (bins)')
+    ylabel('s(t) (events)')
+    title('Scaling function')
+    saveas(gcf, strcat(saveFolder, '/avScalingFun.png'))    
+    close all;
+
     
     %% Comparison of independent measures of gamma+1
+    alpha = results.avalanche.timeFit.alpha;
+    dal   = results.avalanche.timeFit.dAlpha;
+    tau   = results.avalanche.sizeFit.tau;
+    dta   = results.avalanche.sizeFit.dTau;
+    
+    results.avalanche.gamma.x1  = (alpha - 1)/(tau - 1);
+    results.avalanche.gamma.dx1 = results.avalanche.gamma.x1 * sqrt((dta/tau)^2 + (dal/alpha)^2);   
+    results.avalanche.gamma.x2  = gamma_m_1; 
+    results.avalanche.gamma.dx2 = dgamma_m_1;
+    results.avalanche.gamma.x3  = 1 +gamma;
+    results.avalanche.gamma.dx3 = 0;
     
     
-    
-    % Plot if a save-folder is provided and save
-    if nargin == 5
-        
-        
-    end
-    
-
 end

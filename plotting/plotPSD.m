@@ -1,20 +1,25 @@
-function plotPSD(t, G)
+function [beta, dbeta] = plotPSD(t, G)
 %{
     Plots the conductance power spectrum to the current figure given time
     (t) and conductance (G)
 
 %}
     
+    cLevel = 0.95;
+
     G = reshape(G, size(t));
     
     [t_freq, conductance_freq] = fourier_analysis(t, G);
     conductance_freq = reshape(conductance_freq, size(t_freq));
     
     % Linear fit for log-log plot of PSD:
-    fitCoef = polyfit(log10(t_freq(t_freq~=0 & t_freq<max(t_freq))), log10(conductance_freq(t_freq~=0 & t_freq<max(t_freq))), 1);
+    fitRes = polyfitn(log10(t_freq(t_freq~=0 & t_freq<max(t_freq)))', log10(conductance_freq(t_freq~=0 & t_freq<max(t_freq)))', 1);
+    fitCoef = fitRes.Coefficients;
+    errors  = fitRes.ParameterStd;
+    
     fitCoef(2) = 10^fitCoef(2); 
     PSDfit = fitCoef(2)*t_freq.^fitCoef(1);
-
+    
     loglog(t_freq,conductance_freq);
     xlim([min(t_freq), max(t_freq)]);
     hold on;
@@ -28,5 +33,8 @@ function plotPSD(t, G)
     set(gca,'Ytick',10.^(-20:1:20));
     grid on;
 
+    beta = -fitCoef(1);
+    
+    dbeta = errors(1);
 
 end
