@@ -101,7 +101,7 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
             Stimulus.Signal = Stimulus.Amplitude*ones(size(Stimulus.TimeAxis));% + normrnd(0,0.2,size(Stimulus.TimeAxis));
             Stimulus.stimName   = strcat(Stimulus.BiasType,num2str( Stimulus.Amplitude,3),'V');
         case 'AC'
-            Stimulus.Signal = Stimulus.Amplitude*sin(2*pi*Stimulus.Frequency*Stimulus.TimeAxis);
+            Stimulus.Signal = Stimulus.Amplitude*sin(Stimulus.Phase + 2*pi*Stimulus.Frequency*Stimulus.TimeAxis);
             Stimulus.stimName = strcat(Stimulus.BiasType, num2str( Stimulus.Amplitude,3),'V_f',num2str(Stimulus.Frequency,3),'Hz');
         case 'ACsaw'
             Stimulus.stimName = strcat(Stimulus.BiasType, num2str( Stimulus.Amplitude,3),'V_f',num2str(Stimulus.Frequency,3),'Hz');
