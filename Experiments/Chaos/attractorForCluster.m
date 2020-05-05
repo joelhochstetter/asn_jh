@@ -1,4 +1,5 @@
-function attractorForCluster(idx, saveFolder)
+function attractorForCluster(idx, saveFolder, lyFolder)
+
 %%
 params = struct();
 
@@ -39,9 +40,11 @@ params.Comp.nonpolar       = false;
 
 
 %%%
-multiRun(params);
+s = multiRun(params);
 
-
+if nargin == 3
+    calcLyapunovV5(0, 1, saveFolder, s{1}.filename, lyFolder, 0);
+end
 
 end
 
