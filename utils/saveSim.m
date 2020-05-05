@@ -1,4 +1,4 @@
-function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Connectivity)
+function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Connectivity, filename)
     %saves dataset to a file as a struct
     %assumes that component parameters are the same at all switches
 
@@ -63,12 +63,12 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
 %         num2str(sim.Comp.boost,3),'_p',num2str(sim.Comp.pen,3),SimulationOptions.nameComment);
     
     
-    filename =  strcat(SimulationOptions.saveFolder, '/', swType,'_T',num2str(sim.T),'_',sim.Stim.stimName,'_s', ...
-    num2str(sim.Comp.setV,3), '_r', num2str(sim.Comp.resetV,3),'_c', ...
-    num2str(sim.Comp.critFlux,3), '_m', num2str(sim.Comp.maxFlux,3), '_b', ...
-    num2str(sim.Comp.boost,3),'_p',num2str(sim.Comp.pen,3),SimulationOptions.nameComment);
+%     filename =  strcat(SimulationOptions.saveFolder, '/', swType,'_T',num2str(sim.T),'_',sim.Stim.stimName,'_s', ...
+%     num2str(sim.Comp.setV,3), '_r', num2str(sim.Comp.resetV,3),'_c', ...
+%     num2str(sim.Comp.critFlux,3), '_m', num2str(sim.Comp.maxFlux,3), '_b', ...
+%     num2str(sim.Comp.boost,3),'_p',num2str(sim.Comp.pen,3),SimulationOptions.nameComment);
     
-
+    %this check occurs again in case of duplicities from parallel sim
     %check if the filename exists already and updates the name 
     if exist(strcat(filename,'.mat'), 'file') 
         num = 1;

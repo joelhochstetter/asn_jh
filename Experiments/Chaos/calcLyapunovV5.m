@@ -164,47 +164,44 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     
     
    %% Calculate lyapunov and save
-%     skipFraction = 0.2; %Skip for calculating mean
-%     numTStep = round(params.SimOpt.T/ params.SimOpt.dt*(1-skipFraction));
-%     numT = round(params.SimOpt.T * params.Stim.Frequency*(1-skipFraction));
-%     lambda = zeros(E,1);
-%     lij    = zeros(numT, E);
-%     netC   = zeros(numTStep, E);
-%     gij1   = gij(round(skipFraction*numT)+1:end,:);
-% 
-%     
-%     if useParFor == true		
-%         parfor j = 1:numT
-%             lij(j,:) = mean(gij1(1:round(numTStep/numT)*j,:));
-%         end
-%     else
-%         for j = 1:numT
-%             lij(j,:) = mean(gij1(1:round(numTStep/numT)*j,:));
-%         end
-%     end
-%     
-% 
-%     li = lij(end,:);
-%     ml = mean(li);
-%     
-%     hdfFile = strcat(params.SimOpt.saveFolder, '/LyCalc.h5');
-%     
-%     if ~exist(hdfFile, 'file')
-%         h5create(hdfFile,'/lij', size(lij)) 
-%         h5create(hdfFile,'/gij', size(gij))
-%     end
-% 
-%     h5write(hdfFile, '/lij', lij)
-%     h5write(hdfFile, '/gij',  gij)                 
-%     
-%     save(strcat(params.SimOpt.saveFolder, '/LyCalc.mat'), 'hdfFile', 'ml', 'params', 'li');
+    if useParFor > 0 || numel(idx) > 1
+        skipFraction = 0; %Skip for calculating mean
+        numTStep = round(params.SimOpt.T/ params.SimOpt.dt*(1-skipFraction));
+        numT = round(params.SimOpt.T * params.Stim.Frequency*(1-skipFraction));
+        lambda = zeros(E,1);
+        lij    = zeros(numT, E);
+        netC   = zeros(numTStep, E);
+        gij1   = gij(round(skipFraction*numT)+1:end,:);
 
-    
-            
-    
-    
-    if useParFor == true
-		delete(pool);
+
+        if useParFor == true		
+            parfor j = 1:numT
+                lij(j,:) = mean(gij1(1:floor(numTStep/numT)*j,:));
+            end
+        else
+            for j = 1:numT
+                lij(j,:) = mean(gij1(1:floor(numTStep/numT)*j,:));
+            end
+        end
+
+
+        li = lij(end,:);
+        ml = mean(li);
+
+        hdfFile = strcat(params.SimOpt.saveFolder, '/LyCalc.h5');
+        %delete(hdfFile)
+        if ~exist(hdfFile, 'file')
+            h5create(hdfFile,'/lij', size(lij)) 
+            h5create(hdfFile,'/gij', size(gij))
+        end
+
+        h5write(hdfFile, '/lij', lij)
+        h5write(hdfFile, '/gij',  gij)                 
+
+        save(strcat(params.SimOpt.saveFolder, '/LyCalc.mat'), 'hdfFile', 'ml', 'params', 'li');
+        if useParFor > 0
+            delete(pool);
+        end
     end
 
 

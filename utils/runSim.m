@@ -101,7 +101,8 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.numOfElectrodes = 2;
         DSimulationOptions.oneSrcMultiDrn  = false;
         DSimulationOptions.MultiSrcOneDrn  = false; 
-        
+        DSimulationOptions.stopIfDupName = false; %this parameter only runs simulation if the savename is not used.
+
         
         %% Simulation general options:
         rng(42); %Set the seed for PRNGs for reproducibility
@@ -203,6 +204,10 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         end
     end
      
+
+    
+    
+    
     %% Set mode
     if SimulationOptions.lyapunovSim  || SimulationOptions.useLong || SimulationOptions.perturb
         SimulationOptions.NodalAnal = true;
@@ -298,6 +303,16 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         Equations = getEquations(Connectivity,SimulationOptions.ContactNodes, strcmp(SimulationOptions.ContactMode, 'farthest'));
     end
         
+    %% generate saveName
+    if SimulationOptions.saveSim == 1 
+        [saveName, alreadyExists] = genSaveName(SimulationOptions, Components, Stimulus);
+        if SimulationOptions.stopIfDupName && alreadyExists
+                disp('Save name already in use');
+                disp('Terminating')
+                sim.saveName = saveName;
+                return; %early exit from the program
+        end
+    end
         
     %% Initialize snapshot time stamps:
     if SimulationOptions.takingSnapshots
@@ -344,7 +359,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
 
     %% Save important paramaters of simulation for later use
     if SimulationOptions.saveSim == 1 
-        saveName = saveSim(Stimulus,SimulationOptions,Output,Components, Connectivity)
+        saveName = saveSim(Stimulus,SimulationOptions,Output,Components, Connectivity, saveName)
     else 
         saveName = 'None';
     end
