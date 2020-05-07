@@ -21,6 +21,7 @@ function attractorsToLyapunov(idx, numAtt, attractorFolder, lyFolder, runMode)
         calcLyapunovV5(0, runIdx, attractorFolder, files(attIdx).name, lyFolder, 0)
     elseif runMode == 1
         for attIdx = 1:numAtt
+            disp(strcat('Attractor: ', files(attIdx).name, ', idx: ', num2str(idx)));
             calcLyapunovV5(0, idx, attractorFolder, files(attIdx).name, lyFolder, 0)
         end            
     end
