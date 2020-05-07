@@ -81,11 +81,16 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
 % Paula Sanz-Leon
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    %% Generate a runID - this is used to avoid duplicates in saving
+    %% duplicates avoided if SimulationOptions.reserveFilename = true
+    rng('shuffle');
+    runID = randi(intmax);
+
 
 
     %% Sets default paramaters
         %% Plot and analysis output flags:
-        DSimulationOptions.takingSnapshots = true; % true \ false
+        DSimulationOptions.takingSnapshots = false; % true \ false
         DSimulationOptions.compilingMovie  = false; % true \ false 
         DSimulationOptions.onlyGraphics    = true; % true \ false (no analysis is done and shown, only graphics (snapshots, movie) are generated).
         DSimulationOptions.saveSim         = true;  %true \ false. Saves important simulation paramaters with the details specified in saveSim.m
@@ -102,6 +107,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.oneSrcMultiDrn  = false;
         DSimulationOptions.MultiSrcOneDrn  = false; 
         DSimulationOptions.stopIfDupName = false; %this parameter only runs simulation if the savename is not used.
+        DSimulationOptions.reserveFilename = false; %this saves an empty mat file 
 
         
         %% Simulation general options:
@@ -312,6 +318,11 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
                 sim.saveName = saveName;
                 return; %early exit from the program
         end
+        
+        %reserves the filename
+        if ~alreadyExists && SimulationOptions.reserveFilename
+            save(strcat(saveName, '.mat'), 'runID')            
+        end
     end
         
     %% Initialize snapshot time stamps:
@@ -359,7 +370,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
 
     %% Save important paramaters of simulation for later use
     if SimulationOptions.saveSim == 1 
-        saveName = saveSim(Stimulus,SimulationOptions,Output,Components, Connectivity, saveName)
+        saveName = saveSim(Stimulus,SimulationOptions,Output,Components, Connectivity, saveName, runID)
     else 
         saveName = 'None';
     end

@@ -17,6 +17,11 @@ function [sims] = multiRun(params)
     %Generate save name before we run
         
 
+    %Initialise fields if they don't exist: will use default paramaters
+    if ~isfield(params, 'SimOpt')
+        params.SimOpt = struct();
+    end
+    
     %M = 10;
     runs = multify(params);
     if ~isfield(params.SimOpt, 'runIndex') || (params.SimOpt.runIndex < 0)
