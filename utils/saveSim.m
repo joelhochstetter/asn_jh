@@ -110,7 +110,10 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         else
             sim.swLam = Output.lambda;
             sim.swV   = Output.storevoltage;
-            sim.swC   = Output.storeCon;    
+            sim.swC   = Output.storeCon; 
+            if isfield(Output, 'wireVoltage')
+                sim.nwV = Output.wireVoltage;
+            end
         end
     else
         sim.finalStates = Output.lambda(end,:);

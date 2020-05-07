@@ -13,6 +13,17 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 %
 % Written by Joel Hochsteter
 
+    %% quit if file exists
+    if idx >= 1
+        files = dir(strcat(lyFolder, '/', Attractor, '/*_i', num2str(idx, '%03.f'), '.mat'));
+        if numel(files) > 0 
+            disp(strcat('idx ', num2str(idx), ' already exists for attractor ', Attractor));
+            return
+        end
+    end
+
+
+
 	%% Params
 	params = struct();
 

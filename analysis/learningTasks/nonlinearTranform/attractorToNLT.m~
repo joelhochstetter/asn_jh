@@ -7,7 +7,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
     files = dir(strcat(attractorFolder, '/*.mat'));
     
     dt = 1e-3;
-    T  = 80;
+    T  = 50;
     
     numTSteps = round(T/dt);
     
@@ -30,7 +30,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
     squRNMSE = zeros(numel(files), 1);
     squResult  = zeros(numel(files), numTSteps);         
     
-    parfor j = 1:numel(files)
+    for j = 1%:numel(files)
         sim = multiImport(struct('SimOpt', struct('saveFolder', attractorFolder), 'importByName', files(j).name));
         
         %% set-up parameters
@@ -96,11 +96,11 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         nwV = zeros(size(swV,1), connectivity.NumberOfNodes);
         
         if isfield(sim, 'nwV')
-            nwV = sim.nwV;
-        else
+            
             for i = 1:size(swV, 1)
                 nwV(i, :) = getAbsoluteVoltage(swV(i,:), connectivity, contacts);
-            end           
+            end
+            
         end
         
         
@@ -113,7 +113,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         targetPhase = 0;
    
 
-        mkdir(strcat(params.SimOpt.saveFolder, '/images/'));
+
         %% 2-frequency
         targetStim = struct('Amplitude', Amp, 'Frequency', 2*Frq, 'Phase', targetPhase, 'BiasType', SigType);
         targetSOpt = struct('T', sim.T, 'dt', sim.dt);
@@ -129,11 +129,11 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         ylabel('V (V)');
         legend('target', 'result');
         title(strcat('Double frequency, acc = ', num2str((1-rnmse)*100, 3), '%'));
-        xlim([0, 2/params.Stim.Frequency]);
+        xlim([0, 5/params.Stim.Frequency]);
         saveas(gcf, strcat(params.SimOpt.saveFolder, '/images/NLT_2freq_A', num2str(Amp), '_f', num2str(Frq), '.png'));
   
         dblMSE(j)      = mse;
-        dblRNMSE(j) = rnmse;
+        dblRNMSE(j) = rmnse;
         dblResult(j,:)  = y;     
 
         
@@ -152,11 +152,11 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         ylabel('V (V)');
         legend('target', 'result');
         title(strcat('\pi/2 Out of phase, acc = ', num2str((1-rnmse)*100, 3), '%'));
-        xlim([0, 2/params.Stim.Frequency]);
+        xlim([0, 5/params.Stim.Frequency]);
         saveas(gcf, strcat(params.SimOpt.saveFolder, '/images/NLT_pi2shift_A', num2str(Amp), '_f', num2str(Frq), '.png'));
   
         phsMSE(j)      = mse;
-        phsRNMSE(j) = rnmse;
+        phsRNMSE(j) = rmnse;
         phsResult(j,:)  = y;             
         
         
@@ -175,11 +175,11 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         ylabel('V (V)');
         legend('target', 'result');
         title(strcat('Sine wave, acc = ', num2str((1-rnmse)*100, 3), '%'));
-        xlim([0, 2/params.Stim.Frequency]);
+        xlim([0, 5/params.Stim.Frequency]);
         saveas(gcf, strcat(params.SimOpt.saveFolder, '/images/NLT_sine_A', num2str(Amp), '_f', num2str(Frq), '.png'));
 
         sinMSE(j)      = mse;
-        sinRNMSE(j) = rnmse;
+        sinRNMSE(j) = rmnse;
         sinResult(j,:)  = y;             
 
         %% square wave
@@ -197,11 +197,11 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         ylabel('V (V)');
         legend('target', 'result');
         title(strcat('Square wave, acc = ', num2str((1-rnmse)*100, 3), '%'));
-        xlim([0, 2/params.Stim.Frequency]);
+        xlim([0, 5/params.Stim.Frequency]);
         saveas(gcf, strcat(params.SimOpt.saveFolder, '/images/NLT_square_A', num2str(Amp), '_f', num2str(Frq), '.png'));
         
         squMSE(j)      = mse;
-        squRNMSE(j) = rnmse;
+        squRNMSE(j) = rmnse;
         squResult(j,:)  = y;     
         
     end
@@ -222,7 +222,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
     NLTres.squRNMSE = squRNMSE;
     NLTres.squResult = squResult;
 
-    save(strcat(attractorFolder, '/', saveFolder, '/NLTresults.mat'), 'NLTres');
+    save(strcat(attractorFolder, '/', saveFolder, '/NLTresults.mat'), NLTres);
 
 
 
