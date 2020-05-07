@@ -34,6 +34,12 @@ function [sims] = multiImport (params)
         params.importSwitch = true;
     end
     
+    
+    if ~isfield(params, 'importStateOnly')
+        params.importStateOnly = false;
+    end    
+    
+    
     if (isfield(params, 'importAll') && params.importAll == true) || (isfield(params, 'importByName') && ~isempty(params.importByName))
         if (isfield(params, 'importAll') && params.importAll == true)
             files = dir(strcat(params.SimOpt.saveFolder, '/*.mat'));
@@ -66,8 +72,10 @@ function [sims] = multiImport (params)
                     h5file = split(sims{i}.hdfFile, '/');
                     h5file = char(strcat(params.SimOpt.saveFolder, '/',  h5file(end)));
                     sims{i}.swLam =  h5read(h5file, '/swLam');
-                    sims{i}.swV   =  h5read(h5file, '/swV');    
-                    sims{i}.swC   =  h5read(h5file, '/swC');  
+                    if ~params.importStateOnly
+                        sims{i}.swV   =  h5read(h5file, '/swV');    
+                        sims{i}.swC   =  h5read(h5file, '/swC'); 
+                    end
                 end     
             
             	sims{i}.filename = filenames{i};
@@ -85,8 +93,10 @@ function [sims] = multiImport (params)
                     h5file = char(strcat(params.SimOpt.saveFolder, '/',  h5file(end)));                    
                     
                     sims{i}.swLam =  h5read(h5file, '/swLam');
-                    sims{i}.swV   =  h5read(h5file, '/swV');    
-                    sims{i}.swC   =  h5read(h5file, '/swC');  
+                    if ~params.importStateOnly
+                        sims{i}.swV   =  h5read(h5file, '/swV');    
+                        sims{i}.swC   =  h5read(h5file, '/swC');  
+                    end
                 end     
                 
             	sims{i}.filename = filenames{i};
@@ -110,13 +120,13 @@ function [sims] = multiImport (params)
             for i = 1:numel(runs) %
                 %for i = 1:numel(runs)
                sims{i} = importSim(runs{i}.Comp, runs{i}.Stim, runs{i}.SimOpt.T, ...
-               -1, runs{i}.SimOpt.saveFolder, runs{i}.SimOpt.nameComment, params.importSwitch);
+               -1, runs{i}.SimOpt.saveFolder, runs{i}.SimOpt.nameComment, params.importSwitch,  params.importStateOnly);
             end
         else
             parfor i = 1:numel(runs) %
             %for i = 1:numel(runs)
                sims{i} = importSim(runs{i}.Comp, runs{i}.Stim, runs{i}.SimOpt.T, ...
-               -1, runs{i}.SimOpt.saveFolder, runs{i}.SimOpt.nameComment, params.importSwitch);
+               -1, runs{i}.SimOpt.saveFolder, runs{i}.SimOpt.nameComment, params.importSwitch, params.importStateOnly);
             end
         end
         

@@ -1,4 +1,4 @@
-function sim = importSim(Components, Stimulus, T, num, saveFolder, nameComment, importSwitch)
+function sim = importSim(Components, Stimulus, T, num, saveFolder, nameComment, importSwitch, importStateOnly)
     %same params struct as used for multiRun
     %need to give stimulus and values for all components free paramaters +
     %component type
@@ -8,6 +8,7 @@ function sim = importSim(Components, Stimulus, T, num, saveFolder, nameComment, 
     
     if nargin == 6
        importSwitch = true; 
+       importStateOnly = false;
     end
     
     if num == -1 
@@ -56,8 +57,10 @@ function sim = importSim(Components, Stimulus, T, num, saveFolder, nameComment, 
     
     if isfield(sim, 'hdfFile') && importSwitch
         sim.swLam =  h5read(sim.hdfFile, '/swLam');
-        sim.swV   =  h5read(sim.hdfFile, '/swV');    
-        sim.swC   =  h5read(sim.hdfFile, '/swC');  
+        if ~importStateOnly
+            sim.swV   =  h5read(sim.hdfFile, '/swV');    
+            sim.swC   =  h5read(sim.hdfFile, '/swC');  
+        end
     end
     
     sim.filename = filename;

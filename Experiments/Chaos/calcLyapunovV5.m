@@ -37,7 +37,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 	params.SimOpt.hdfSave         = true;
 	params.SimOpt.lyapunovSim     = false;
     params.SimOpt.NodalAnal       = true;
-
+    
 	%params.SimOpt.saveFolder      = '/import/silo2/joelh/Chaos/Lyapunov';
 	params.SimOpt.dt               = 5e-4;
 	params.SimOpt.nameComment      = '';
@@ -46,7 +46,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     
     
     %Initialise paramaters from attractor file
-    sim = multiImport(struct('SimOpt', struct('saveFolder', attractorFolder), 'importByName', Attractor));
+    sim = multiImport(struct('SimOpt', struct('saveFolder', attractorFolder), 'importByName', Attractor, 'importStateOnly', true));
     params.Stim.BiasType = sim{1}.Stim.BiasType;
     params.Stim.Amplitude = sim{1}.Stim.Amplitude;    
     params.Stim.Frequency = sim{1}.Stim.Frequency;   
@@ -57,6 +57,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     params.Comp.boost = sim{1}.Comp.boost;
     params.Comp.penalty = sim{1}.Comp.pen;
     params.Comp.nonpolar = useNp;
+    
 	
 	params.SimOpt.ContactMode      = 'preSet';
 	params.SimOpt.ContactNodes  = sim{1}.ContactNodes;
@@ -103,6 +104,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     files = dir(strcat(params.SimOpt.saveFolder, '/*unperturbed.mat'));
     if numel(files)
         params.importByName = files(1).name;
+         params.importStateOnly = true;
         u = multiImport(params);
         params.SimOpt.unpertFilState = u{1}.swLam(:,1:E);
         NumTSteps                    = numel(u{1}.Stim.TimeAxis);
