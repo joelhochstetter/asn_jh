@@ -122,18 +122,19 @@ function dGfit = plotDeltaG(G, pn, fitP)
         xlabel('\Delta G')
         ylabel('P(\Delta G)') 
         
-        
+        dG = abs(dG);
         if fitPL
             
             if fitP.useML 
                 [alpha,   lc, ~] = plfit(dG);
-                [dalph, dlc, ~]  = plvar(dG);
+                [dalph, dlc, ~]  = plvar(dG,'xmin', lc);
                 
                 x = lc:lc/1000:max(dG);
                 A = N(find(edges <= lc, 1));
-                y = A*x.^(-alpha);
+                x1 = dG(find(edges <= lc, 1)); 
+                y = A*(x/x1).^(-alpha);
                 loglog(x, y, 'r--');
-                text(x(2), y(2)/3, strcat('\Delta G^{-', num2str(tau,3),'}'), 'Color','r')
+                text(x(2), y(2)*2, strcat('\Delta G^{-', num2str(alpha,3),'}'), 'Color','r')
             else
                 %only include bins within include range to fit
                 fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
