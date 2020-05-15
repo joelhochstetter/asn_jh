@@ -2,6 +2,8 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
     %saves dataset to a file as a struct
     %assumes that component parameters are the same at all switches
 
+    % save name is generated in genSaveName.m
+    
     sim.Stim = Stimulus;
     %sim.Stim = rmfield(sim.Stim,'TimeAxis'); %does not same timevector as this would be double stored
     sim.netI = Output.networkCurrent;
