@@ -28,11 +28,14 @@ function [filename, alreadyExists] = genSaveName(SimulationOptions, Components, 
     if exist(strcat(filename,'.mat'), 'file') 
         alreadyExists = true;
         num = 1;
-        while exist(strcat(filename, '_#', num2str(num), '.mat'), 'file') > 0
-            %filename = strcat(filename, num2str(num));
-            num = num + 1;
+        if SimulationOptions.stopIfDupName == false
+            while exist(strcat(filename, '_#', num2str(num), '.mat'), 'file') > 0
+                %filename = strcat(filename, num2str(num));
+                num = num + 1;
+            end
+            
+            filename = strcat(filename, '_#', num2str(num));
         end
-        filename = strcat(filename, '_#', num2str(num));
     end 
     
 end
