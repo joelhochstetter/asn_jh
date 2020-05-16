@@ -1,4 +1,4 @@
-function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, initStateFile)
+function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, initStateFile , initStateFolder)
 %{
     e.g. usuage
     attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
@@ -10,7 +10,10 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
 if nargin < 7
     initLamda = 0;
 else
-    sim = multiImport(struct('SimOpt', struct('saveFolder', saveFolder), 'importByName', initStateFile, 'importStateOnly', true));
+    if nargin == 7
+        initStateFolder = saveFolder;
+    end
+    sim = multiImport(struct('SimOpt', struct('saveFolder', initStateFolder), 'importByName', initStateFile, 'importStateOnly', true));
     if isfield(sim{1}, 'swLam')
         initLamda                  = sim{1}.swLam(end,:)';
     elseif isfield(sim{1}, 'finalStates')
