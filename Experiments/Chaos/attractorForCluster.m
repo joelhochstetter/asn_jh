@@ -59,7 +59,7 @@ params.Comp.criticalFlux   =  0.01;
 params.Comp.maxFlux        = 0.015;
 params.Comp.penalty        =    1;
 params.Comp.boost          =  [10];
-param.Comp.filamentState = initLamda;
+params.Comp.filamentState = initLamda;
 params.Comp.nonpolar       = false;
 
 
