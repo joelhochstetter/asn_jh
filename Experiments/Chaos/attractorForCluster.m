@@ -66,7 +66,7 @@ params.Comp.nonpolar       = false;
 %%%
 s = multiRun(params);
 
-if nargin == 3
+if isstring(lyFolder) || ischar(lyFolder)
     calcLyapunovV5(0, 1, saveFolder, s{1}.filename, lyFolder, 0);
 end
 
