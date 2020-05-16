@@ -65,9 +65,11 @@ params.Comp.nonpolar       = false;
 
 %%%
 s = multiRun(params);
-
+ [~,saveName,ext] = fileparts(s{1}.saveName);
+ saveName = strcat(saveName, ext);
+ 
 if isstring(lyFolder) || ischar(lyFolder)
-    calcLyapunovV5(0, 1, saveFolder, s{1}.saveName, lyFolder, 0);
+    calcLyapunovV5(0, 1, saveFolder, saveName, lyFolder, 0);
 end
 
 end
