@@ -61,7 +61,7 @@ params.Comp.resetVoltage   = 1e-2;
 params.Comp.criticalFlux   =  0.01;
 params.Comp.maxFlux        = 0.015;
 params.Comp.penalty        =    1;
-params.Comp.boost          =  [10];
+params.Comp.boost          =  1;
 params.Comp.filamentState = initLamda;
 params.Comp.nonpolar       = false;
 

@@ -87,7 +87,7 @@ function attractorImages(attractorFolder, saveFolder, num2Show)
         title('IV last 5 periods')    
         legend('tun I-V', 'tun G-V')
 
-        saveas(gcf, strcat(saveFolder, '/IV_A', num2str(t{i}.Stim.Amplitude,  '%.1f'), '_f', num2str(t{i}.Stim.Frequency,  '%.2f'), '_b', num2str(t{i}.Comp.boost), '.png'))
+        saveas(gcf, strcat(saveFolder, '/IV_A', num2str(t{i}.Stim.Amplitude,  '%.2f'), '_f', num2str(t{i}.Stim.Frequency,  '%.2f'), '_b', num2str(t{i}.Comp.boost), '.png'))
         close all;
 
     end
