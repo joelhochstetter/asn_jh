@@ -180,7 +180,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     
    %% Calculate lyapunov and save
     if useParFor > 0 || numel(idx) > 1
-        skipFraction = 0.5; %Skip for calculating mean
+        skipFraction = 0.3; %Skip for calculating mean
         numTStep = round(params.SimOpt.T/ params.SimOpt.dt*(1-skipFraction));
         numT = round(params.SimOpt.T * params.Stim.Frequency*(1-skipFraction));
         lambda = zeros(E,1);

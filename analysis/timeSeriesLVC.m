@@ -17,7 +17,7 @@ function timeSeriesLVC(sims, edges, tend, savePath)
     semilogy(tvec,abs(spRes))
     xlabel 'time (s)'
     ylabel 'Switch Conductance (S)'
-    title 'DC Activation (tunnelling model) - switch conductance values'
+    title 'switch conductance values'
     yyaxis right
     semilogy(tvec,sims{1}.netC,'--');
     ylabel 'Network Conductance (S)'
@@ -28,7 +28,7 @@ function timeSeriesLVC(sims, edges, tend, savePath)
     plot(tvec,abs(spLam))
     xlabel 'time (s)'
     ylabel '\lambda (Vs)'
-    title 'DC Activation (tunnelling model) - switch \lambda values'
+    title 'switch \lambda values'
     yyaxis right
     semilogy(tvec,sims{1}.netC,'--');
     ylabel 'Network Conductance (S)'
@@ -39,7 +39,7 @@ function timeSeriesLVC(sims, edges, tend, savePath)
     plot(tvec,abs(spVol))
     xlabel 'time (s)'
     ylabel '\Delta V (V)'
-    title 'DC Activation (tunnelling model) - switch V values'
+    title 'switch V values'
     yyaxis right
     semilogy(tvec,sims{1}.netC,'--');
     ylabel 'Network Conductance (S)'

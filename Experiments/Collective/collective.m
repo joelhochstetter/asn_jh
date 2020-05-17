@@ -74,7 +74,7 @@ figure;plot(abs(spVol(:,1:5)), abs(spLam(:,1:5)));legend(string(1:5), 'location'
 %figure; semilogy(abs(Output.storevoltage(:,spE)),Output.storeCon(:,spE));xlabel('Voltage (V)'); ylabel('Conductance (S)');legend(string(1:9))
 
 %% Plot time series analysis
-tend = 100;%timeVec(idx(j));
+tend = 3.0;%timeVec(idx(j));
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 subplot(3,1,1)
@@ -94,7 +94,7 @@ subplot(3,1,2)
 plot(timeVec,abs(spLam),'-')
 hold on 
 plot(timeVec, critLam);
-ylim([0,0.15])
+ylim([0,sim.Comp.maxFlux])
 xlabel 't (s)'
 ylabel '\lambda (Vs)'
 title(strcat('DC Activation (tunnelling model) - switch \lambda values along main current path, V = ', num2str(sim.Stim.Amplitude),'V'))

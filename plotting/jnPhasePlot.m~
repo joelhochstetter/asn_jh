@@ -16,16 +16,13 @@ function jnPhasePlot(sim, jn, trange, type)
     else
         tl = 1;
         tu = numel(timeVec); 
-    end
-    
-    if nargin < 4
-        type = 1;
+        type 
     end
     
     figure;
     hold on;
     for i = 1:numel(jn)
-        cb = phasePlot((sim.swV(tl:tu, jn(i))) , (sim.swLam(tl:tu, jn(i))) , [tl, tu], type);
+        cb = phasePlot(abs(sim.swV(tl:tu, jn(i))) , abs(sim.swLam(tl:tu, jn(i))) , [tl, tu], type);
         if ~isempty(cb)
             set(get(cb,'Title'),'String','timestep')
         end

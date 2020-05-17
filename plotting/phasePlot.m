@@ -27,7 +27,7 @@ function cb = phasePlot(x, y, t, type, color, symbol, varargin)
         u = x(qTimes) - x(qTimes - 1);
         v = y(qTimes) - y(qTimes - 1);
      
-        scale = 1;
+        scale = 5;
         %centres arrow at centre of datapoint
         x1 = x1 - u*scale/2;
         y1 = y1 - v*scale/2;
@@ -48,10 +48,11 @@ function cb = phasePlot(x, y, t, type, color, symbol, varargin)
     else
         cm = colormap(jet);                                             % Approximates Spectrum
         y(end) = NaN;                                                 % Set Last Value To ‘NaN’ To Create Line
-        %patch(x, y, t, 'EdgeColor','interp')
+        
+%        patch(x, y,t(1):t(2), 'EdgeColor','interp')
         %Plot as points instead
-        pointsize = 15; 
-        scatter(x, y, pointsize, t(1):t(2), symbol);
+         pointsize = 30; 
+         scatter(x, y, pointsize, t(1):t(2), symbol);
         cb = colorbar;
     end
 
