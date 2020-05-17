@@ -70,6 +70,9 @@ params.Comp.nonpolar       = false;
 s = multiRun(params);
  [~,saveName,ext] = fileparts(s{1}.saveName);
  saveName = strcat(saveName, ext);
+ if ~contains(saveName, '.mat')
+     saveName = strcat(saveName, '.mat');
+ end
  
 if isstring(lyFolder) || ischar(lyFolder)
     calcLyapunovV5(0, 1, saveFolder, saveName, lyFolder, 0);
