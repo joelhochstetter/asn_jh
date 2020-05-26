@@ -28,10 +28,12 @@ function [sims] = multiRun(params)
         sims = cell(1,numel(runs));
         if (isfield(params.SimOpt,'useParallel') == 0) || (params.SimOpt.useParallel == false)
             for i = 1:numel(runs)
+                disp(strcat('Running ', num2str(i),'/', numel(runs)));
                sims{i} = runSim(runs{i}.SimOpt, runs{i}.Stim, runs{i}.Comp, runs{i}.Conn);
             end
         else
             parfor i = 1:numel(runs)
+                disp(strcat('Running ', num2str(i),'/', numel(runs)));                
                sims{i} = runSim(runs{i}.SimOpt, runs{i}.Stim, runs{i}.Comp, runs{i}.Conn);
             end
         end

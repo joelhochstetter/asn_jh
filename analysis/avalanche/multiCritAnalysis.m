@@ -27,6 +27,7 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     tvals = {};
     numFiles = 0;
     fname = {};
+    filStates = {};
     
     switch importMode
         case 0 %simulated data

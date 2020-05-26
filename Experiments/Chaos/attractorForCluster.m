@@ -75,6 +75,7 @@ s = multiRun(params);
  end
  
 if isstring(lyFolder) || ischar(lyFolder)
+    disp(strcat('Ly for ', num2str(saveName)));
     calcLyapunovV5(0, 1, saveFolder, saveName, lyFolder, 0);
 end
 
