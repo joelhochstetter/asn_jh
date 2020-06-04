@@ -50,14 +50,23 @@ function [gamma_m_1, dgamma_m_1] = plotAvalancheAveSize(sizeAv, lifeAv, fitP)
 
         %fit power law
         [fitresult, xData, yData, gof] = fitPowerLaw(fitLives, fitSizes);    
-        plot(fitresult, 'b--', xData, yData, 'gx')
-
+        if ~isnan(fitresult.b)
+            plot(fitresult, 'b--', xData, yData, 'gx')
+        end
+        
         text(fitLives(1), fitSizes(1)/3, strcat('T^{', num2str(fitresult.b,3),'}'), 'Color','b')
         legend('not fit', 'inc fit', 'fit')   
+        
+        if numel(fitSizes) <= 2
+                dgamma_m_1 = inf;
+        else
+            CI  = confint(fitresult, fitP.cLevel);
+            tCI = CI(:,2);
+            dgamma_m_1 = (tCI(2) - tCI(1))/2;
+        end
+        
         gamma_m_1 = fitresult.b;
-        CI  = confint(fitresult, fitP.cLevel);
-        tCI = CI(:,2);
-        dgamma_m_1 = (tCI(2) - tCI(1))/2;
+
 
     end
 

@@ -111,16 +111,28 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
                              (compPtr.comp.resetVoltage - abs(compPtr.comp.voltage)) .* ...
                              sign(compPtr.comp.filamentState) ...
                              * dt .* compPtr.comp.boost;
-        
-    end
-    
+                         
+                         
+        case 'thresholdHybrid'
+            compPtr.comp.filamentState = - dt * compPtr.comp.boost* compPtr.comp.filamentState;
+            compPtr.comp.filamentState = compPtr.comp.filamentState + ...
+                                         (abs(compPtr.comp.voltage) > compPtr.comp.setVoltage) .* ...
+                                         (abs(compPtr.comp.voltage) - compPtr.comp.setVoltage) .* ...
+                                         sign(compPtr.comp.voltage) ...
+                                         * dt;
 
-    
-    
-    
-    
-                    
-               
+
+            if compPtr.comp.noiseLevel > 0.0
+                compPtr.comp.filamentState = compPtr.comp.filamentState + ...
+                    junctionNoise(compPtr.comp.noiseType, compPtr.comp.noiseBeta, ...
+                    compPtr.comp.noiseLevel, numel(compPtr.comp.filamentState));
+            end
+
+           compPtr.comp.filamentState (compPtr.comp.filamentState >  compPtr.comp.maxFlux) =  compPtr.comp.maxFlux(compPtr.comp.filamentState >  compPtr.comp.maxFlux);
+           compPtr.comp.filamentState (compPtr.comp.filamentState < -compPtr.comp.maxFlux) = -compPtr.comp.maxFlux(compPtr.comp.filamentState < -compPtr.comp.maxFlux);            
+                         
+        
+    end          
                
 
     % local values:

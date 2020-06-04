@@ -19,8 +19,11 @@ function dGfit = plotDeltaG(G, pn, fitP)
 
 %}
 
+    dGfit = struct();
+
     alpha = nan;
     dalph = 0.0;
+    lc = 0;
 
     if nargin == 2
         fitPL = 0;
@@ -29,9 +32,7 @@ function dGfit = plotDeltaG(G, pn, fitP)
     end
     
     dG = [diff(G), 0];
-    dG(isnan(dG)) = 0;    
-    
-    
+    dG(isnan(dG)) = 0;        
     
     if fitPL
         %if we exclude points then we do it here
@@ -108,6 +109,7 @@ function dGfit = plotDeltaG(G, pn, fitP)
             CI  = confint(fitresult, fitP.cLevel);
             tCI = CI(:,2);
             dalph = (tCI(2) - tCI(1))/2;
+
         else
             legend('\Delta G > 0', '\Delta G < 0')
             title('\Delta G distribution')
@@ -135,6 +137,10 @@ function dGfit = plotDeltaG(G, pn, fitP)
                 y = A*(x/x1).^(-alpha);
                 loglog(x, y, 'r--');
                 text(x(2), y(2)*2, strcat('\Delta G^{-', num2str(alpha,3),'}'), 'Color','r')
+                
+                            %put goodness of fit in as well
+
+                
             else
                 %only include bins within include range to fit
                 fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
@@ -157,6 +163,8 @@ function dGfit = plotDeltaG(G, pn, fitP)
             end
             
         end
+
+
         
     end
     set(gca, 'XScale', 'log')
@@ -164,7 +172,6 @@ function dGfit = plotDeltaG(G, pn, fitP)
     xlabel('\Delta G')
     ylabel('P(\Delta G)') 
     
-    %put goodness of fit in as well
     dGfit.alpha  = alpha;
     dGfit.dalph  = dalph;
     dGfit.lc     = lc;

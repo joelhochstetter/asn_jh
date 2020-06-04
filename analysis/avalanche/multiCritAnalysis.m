@@ -96,7 +96,7 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     
     defEvDet.method = 'hybrid';
     defEvDet.window = 1;
-    defEvDet.thresh = 5.0e-9; %threshold of form dG >= thr or dG./G >= thr
+    defEvDet.thresh = 5.0e-8; %threshold of form dG >= thr or dG./G >= thr
     defEvDet.k_std  = 0.0; %threshold of form dG >= k*std(dG) or dG./G = k*std(dG./G)
     defEvDet.k_mean = 0.0; %threshold of form dG >= k*mean(dG) or dG./G = k*mean(dG./G)
     defEvDet.relThresh = 0.01;

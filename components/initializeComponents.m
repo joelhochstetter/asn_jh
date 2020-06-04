@@ -54,6 +54,7 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.boost         = 10;%10;
     default.nonpolar      = false;
     default.unipolar      = false;
+    default.hybrid         = false;
     default.fusePower =  2.5e-5; %for uni-polar switch only
     default.fuseFactor = 1.1;
     
@@ -106,6 +107,8 @@ function Components = initializeComponents(E,Components, NodalAnal)
             Components.stateEquation = 'thresholdNonpolar';
         elseif Components.unipolar
             Components.stateEquation = 'thresholdUnipolar';
+        elseif Components.hybrid
+            Components.stateEquation = 'thresholdHybrid';
         elseif strcmp(Components.ComponentType, 'quantCSwitch') || strcmp(Components.ComponentType, 'hybridSwitch')
             Components.stateEquation = 'thresholdQC';
         else

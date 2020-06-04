@@ -53,6 +53,9 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
     sim.Comp.swType = swType;
     sim.Comp.nonpolar = Components.nonpolar;
     sim.Comp.stateEquation = Components.stateEquation;
+    sim.Comp.noiseType = Components.noiseType;
+    sim.Comp.noiseBeta = Components.noiseBeta;
+    sim.Comp.noiseLevel = Components.noiseLevel;
     
     %Save extra parameters if need be
     if isfield(SimulationOptions, 'misc')
@@ -129,8 +132,7 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
 
     sim.filename = filename;
     
-    filename = strcat(filename,'.mat');        
-    save(filename ,'sim');
+    save(strcat(SimulationOptions.saveFolder, '/', filename,'.mat'), 'sim');
     
     
     

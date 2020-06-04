@@ -74,16 +74,25 @@ function [tau, dta, xmin, xmax, p, pcrit, ks] = plotAvalancheSize(sizeAv, fitP)
 
             %fit power law
             [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
-            plot(fitresult, 'b--', xData, yData, 'gx')
+            
+            if ~isnan(fitresult.b)
+                plot(fitresult, 'b--', xData, yData, 'gx')
+            end
 
             text(edgeCen(1), fitN(1)/3, strcat('S^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
             legend('not fit', 'inc fit', 'fit')   
             tau = -fitresult.b;
-            CI  = confint(fitresult, fitP.cLevel);
-            tCI = CI(:,2);
-            dta = (tCI(2) - tCI(1))/2;
             xmin = fitP.lc;
+            
             xmax = fitP.uc;
+            if numel(fitN) <= 2
+                dta = inf;
+            else
+                CI  = confint(fitresult, fitP.cLevel);
+                tCI = CI(:,2);
+                dta = (tCI(2) - tCI(1))/2;
+            end
+            
         end
 
     end

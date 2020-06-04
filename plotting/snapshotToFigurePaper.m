@@ -1,4 +1,4 @@
-function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity, whatToPlot, axesLimits, highlightNodes, highlightEdges)
+function snapshotFigure = snapshotToFigurePaper(snapshot, contacts, connectivity, whatToPlot, axesLimits, highlightNodes, highlightEdges)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This funciton generates a visualization of a snapshot of the network.
 % This includes: the spatial distribution of wires, the location of
@@ -94,9 +94,6 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
     
     isSource = zeros(numel(contacts),1);
     isSource(1) = 1;
-    if numel(contacts) > 2
-        isSource(2) = 1;
-    end
     
     if ~isfield(whatToPlot, 'GraphRep')
        whatToPlot.GraphRep = false; 
@@ -143,14 +140,18 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
     if ~isfield(whatToPlot, 'Labels')
        whatToPlot.Labels = false; 
     end
-
-    if ~isfield(whatToPlot, 'Lyapunov')
-       whatToPlot.Lyapunov = false; 
-    end    
     
     if ~isfield(whatToPlot, 'VDrop')
        whatToPlot.VDrop = false; 
     end
+    
+    if ~isfield(whatToPlot, 'Conductance')
+       whatToPlot.Conductance = false; 
+    end        
+    
+    if ~isfield(whatToPlot, 'JnCurrents')
+       whatToPlot.JnCurrents = false; 
+    end    
     
     if ~isfield(axesLimits, 'DissipationCbar')
         axesLimits.DissipationCbar = [0,5];
@@ -175,6 +176,10 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
       axesLimits.VoltageCbar = [min(absoluteVoltage), max(absoluteVoltage)];
     end
 
+    if ~isfield(axesLimits, 'LyCbar') && isfield(snapshot, 'Lyapunov')
+      axesLimits.VoltageCbar = [min(snapshot.Lyapunov), max(snapshot.Lyapunov)];
+    end    
+    
     if ~isfield(axesLimits, 'LambdaCbar')
       axesLimits.LambdaCbar = [0, max(snapshot.filamentState(1:connectivity.NumberOfEdges))];
     end
@@ -185,10 +190,10 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
     if whatToPlot.GraphRep
         % https://au.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.graphplot-properties.html
         %Set-up figure and colour
-        snapshotFigure = figure('visible','off', 'units','normalized','outerposition',[0 0 1 1]);
-        set(gca,'Color',[0.75 0.75 0.75],'xtick',[],'ytick',[]);
-        
-        
+        snapshotFigure = figure('visible','off', 'color','w', 'units', 'centimeters', 'OuterPosition', [5 5 25 20]);
+        set(gca,'Color',[0.2 0.2 0.2],'xtick',[],'ytick',[]);
+%         set(0,'defaultAxesFontName', 'Times')
+%         set(0,'defaultTextFontName', 'Times')
         %set(gca,'xtick',[],'ytick',[]);
 
         
@@ -202,7 +207,7 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
         %G.Edges.Weight = full(snapshot.Voltage(1:connectivity.NumberOfEdges));
 
         hold all;
-        p = plot(G,'Layout','auto','LineStyle','-','LineWidth',2, 'MarkerSize',4);
+        p = plot(G, 'XData', connectivity.VertexPosition(:,1), 'YData', connectivity.VertexPosition(:,2), 'LineStyle','-','LineWidth',5, 'MarkerSize',8);
 
         % Highlight on switches
             % Find the edges which correspond to OFF switches:
@@ -213,21 +218,22 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
             % Remove the edges which correspond to OFF switches:
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(1,:),badPairs(2,:))) = 0;
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(2,:),badPairs(1,:))) = 0;
-        highlight(p, graph(adjacencyMatrix),'EdgeColor','w','LineWidth',2,'LineStyle','-')
+        %highlight(p, graph(adjacencyMatrix),'EdgeColor','w','LineWidth',3.5,'LineStyle','-')
 
-        ax=plot(NaN,NaN,'b-',NaN,NaN,'w'); %plotting invisible points of desired colors
+%         ax=plot(NaN,NaN,'b--',NaN,NaN,'w'); %plotting invisible points of desired colors
         %legend(ax,'OFF switch','ON switch');        %adding the legend
         
 
         % Highlight a nanowire
         if numel(highlightNodes) > 0
-            highlight(p, highlightNodes, 'NodeColor','r','LineWidth',10)%,'Marker', 'square','MarkerSize',10)  
+            highlight(p, highlightNodes, 'NodeColor','r','Marker', 'square','MarkerSize',10)  
         end
           
         % Highlight an edge
         if numel(highlightEdges) > 0
             highlight(p, connectivity.EdgeList(1,highlightEdges),connectivity.EdgeList(2,highlightEdges), 'LineWidth',10, 'LineStyle','-')%,'Marker', 'square','MarkerSize',10)
         end
+        
         
         if whatToPlot.Voltages    
 
@@ -256,11 +262,6 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
                 for i = 1:numel(contacts)
                     highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
                 end
-                if numel(contacts) > 2
-                    text(p.XData(contacts(1)) + 0.25, p.YData(contacts(1)), 'A', 'FontSize', 36);
-                    text(p.XData(contacts(2)) + 0.25, p.YData(contacts(2)), 'B', 'FontSize', 36);
-                    text(p.XData(contacts(3)) - 0.5, p.YData(contacts(3)), 'drn', 'FontSize', 36);  
-                end
             else
                 source = contacts(logical(isSource));
                 drain  = contacts(~logical(isSource));
@@ -271,30 +272,34 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
         end
             
         if whatToPlot.Labels
+            p.NodeLabel = {};
             %Show edge labels
-            %labeledge(p,1:numedges(G),1:numedges(G))   
-            labelnode(p,1:numnodes(G),1:numnodes(G))  
+            labeledge(p, connectivity.EdgeList(1,highlightEdges),connectivity.EdgeList(2,highlightEdges), 1:numel(highlightEdges))   
+%             p.EdgeLabelColor = 'white';
+%             p.EdgeFontSize   = 15;
         else
             %Hide Node Labels
             p.NodeLabel = {};
         end
+       
+
+        % Calculate currents:
+        currents = 5e3*full(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
+
+        %Lengths of quiver vectors
+        sectionCurrentX = (p.XData(connectivity.EdgeList(2,:)) -  p.XData(connectivity.EdgeList(1,:))).*currents'/axesLimits.CurrentArrowScaling;
+        sectionCurrentY = (p.YData(connectivity.EdgeList(2,:)) -  p.YData(connectivity.EdgeList(1,:))).*currents'/axesLimits.CurrentArrowScaling;          
+
+        %Positions of Current vectors. Centre of quivers are at the centre of edges
+        sectionCentreX  = (p.XData(connectivity.EdgeList(1,:)) +  p.XData(connectivity.EdgeList(2,:)))/2 - sectionCurrentX/2;
+        sectionCentreY  = (p.YData(connectivity.EdgeList(1,:)) +  p.YData(connectivity.EdgeList(2,:)))/2 - sectionCurrentY/2; 
         
         if whatToPlot.Currents
-            % Calculate currents:
-            currents = 5e3*full(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
-
-            %Lengths of quiver vectors
-            sectionCurrentX = (p.XData(connectivity.EdgeList(2,:)) -  p.XData(connectivity.EdgeList(1,:))).*currents'/axesLimits.CurrentArrowScaling;
-            sectionCurrentY = (p.YData(connectivity.EdgeList(2,:)) -  p.YData(connectivity.EdgeList(1,:))).*currents'/axesLimits.CurrentArrowScaling;          
-
-            %Positions of Current vectors. Centre of quivers are at the centre of edges
-            sectionCentreX  = (p.XData(connectivity.EdgeList(1,:)) +  p.XData(connectivity.EdgeList(2,:)))/2 - sectionCurrentX/2;
-            sectionCentreY  = (p.YData(connectivity.EdgeList(1,:)) +  p.YData(connectivity.EdgeList(2,:)))/2 - sectionCurrentY/2; 
             %sectionCentreX(1)
             quiver(sectionCentreX,sectionCentreY,sectionCurrentX,sectionCurrentY,0,'Color','w','LineWidth',1.5);
             %sectionCentreX(1)
         end
-
+        
 
         % Can currently plot one out of dissipations, lambda and VDrop
         % Defaults order (if multiple are suggested): diss > lam > VDrop
@@ -343,21 +348,60 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
                 end            
                 labeledge(p,1:numedges(G),edgeLabels)                                       
             end
-            
+            cbar.FontSize = 15;
+
         elseif whatToPlot.Lyapunov
-            p.EdgeCData = (snapshot.Lyapunov(1:connectivity.NumberOfEdges));
-            cbar  = colorbar;    
-            cbar.Label.String = '\lambda (tstep^{-1})';    
+            colormap('parula');
+            p.EdgeCData = snapshot.Lyapunov(1:connectivity.NumberOfEdges);
+            colorbar
+            caxis(axesLimits.LyCbar);
+%             myColors = log10(abs(snapshot.Lyapunov(1:connectivity.NumberOfEdges)));
+%             upper = ceil(max(myColors));
+%             cRange = 4;
+%             myColors(highlightEdges) =upper - cRange;
+%             p.EdgeCData = myColors;
+%             caxis([upper - cRange, upper]);
+%             cbar  = colorbar; 
+%             for i = 2:numel(cbar.Ticks)
+%                 cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
+%             end
+%             cbar.TickLabels{1} = '';
+%             cbar.FontSize = 15;
+%             cbar.Label.String = 'l_j (s^{-1})';  
+%             
+%             shiftX = zeros(size(highlightEdges));
+%             shiftY = zeros(size(highlightEdges));
+%             shiftY(1) = -0.31;           
+%             shiftY(7) = -0.25;
+%             shiftX(7) = -0.23;
+%             shiftY(6) = 0.4;
+%             shiftX(4) = 0.20;
+%             shiftY(5) = 0.34;
+%             shiftX(5) = -0.06;
+%             shiftY(2) = 0.44;
+%             shiftY(3) = -0.35;
+%             shiftY(8) = -0.26;
+%             for i = 1:numel(highlightEdges)
+%                 text(sectionCentreX(highlightEdges(i)) + shiftX(i), sectionCentreY(highlightEdges(i)) + shiftY(i), num2str(i), 'FontSize', 25, 'Color', 'w')
+%             end
+%             cbar.FontSize = 11.5;
+
             %upperLimit = 0.15;
-            caxis(axesLimits.LyapunovCbar);
-            if whatToPlot.Weights 
-                edgeLabels = cell(numedges(G),1);
-                for i = 1:numedges(G)
-                   edgeLabels{i} = num2str(abs(snapshot.Voltage(i)), '%.2e');
-                end            
-                labeledge(p,1:numedges(G),edgeLabels)                                       
-            end
+            %caxis([log10(axesLimits.ConCbar(1)/7.77e-5),round(log10(axesLimits.ConCbar(2)/7.77e-5))]);
+%             cbar.Label.String = 'Junction Conductance (units of G_0)';
+%             for i = 1:numel(cbar.Ticks)
+%                 cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
+%             end           
+%             cbar.TickLabels = string(10.^(cbar.Ticks));          
+%             colormap('parula');
             
+             parula1 = parula(1000);
+%             parula1 = [[1 0 0]; parula1(10:end,:)];
+             parula1 = parula1(10:end,:);
+% 
+             colormap(parula1);
+        
+        
         elseif whatToPlot.Conductance
             % calculate power consumption:
             p.EdgeCData = log10(snapshot.Resistance(1:connectivity.NumberOfEdges)/7.77e-5);          
@@ -366,7 +410,8 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
             %caxis([log10(axesLimits.ConCbar(1)),round(log10(axesLimits.ConCbar(2)))]);
             
             % colorbar:               
-            cbar.Label.String = 'Conductance (units of G_0)';
+            cbar.Label.String = 'Junction Conductance (units of G_0)';
+            cbar.FontSize = 18;
             for i = 1:numel(cbar.Ticks)
                 cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
             end
@@ -374,11 +419,31 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
 %             cbar.TickLabels = string(10.^(cbar.Ticks));          
             colormap('parula');
 
+        elseif whatToPlot.JnCurrents
+            currents =(abs(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges))); % (nA)
+            p.EdgeCData = currents;
+
+            if ~isfield(axesLimits, 'CurrentCbar')
+                axesLimits.CurrentCbar = [min(currents), max(currents)];
+                %axesLimits.CurrentCbar = [log10(6e-9), log10(2.8e-6)];                
+            end
+            
+            % linearly transform results to the range [0,1]:
+            currentColorCode = (0:0.005:1)';%(wireCurrents - minCurr) / (maxCurr - minCurr);
+            rval = 0.85;
+            % construct RGB triplets (from green near contact(1) to red near contact(2)):
+            currentColorCode = [rval*ones(numel(currentColorCode),1), (1-currentColorCode)*rval,(1-currentColorCode)*rval];            
+            colormap(currentColorCode)
+            cbar  = colorbar;    
+            cbar.Label.String = 'I (A)';    
+            %upperLimit = 0.15;
+            caxis(axesLimits.CurrentCbar);
+            cbar.FontSize = 15;            
+            
+            
             
         end
-        parula1 = parula(256);
-        parula1 = parula1(50:end,:);
-        colormap(parula1);
+
 
         
         if whatToPlot.Weights 
@@ -388,20 +453,26 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
             end            
             labeledge(p,1:numedges(G),edgeLabels)                                       
         end
+        
+
 
         %Set title
-        title(strcat(sprintf('Time = %.2f (s)', snapshot.Timestamp), ',    Conductance = ', sprintf('%.2e (S)',snapshot.netC),',    Voltage =', sprintf('%.2e (V)',snapshot.netV)), 'fontsize', 20);
-        ax = gca;
-        outerpos = ax.OuterPosition;
-        ti = ax.TightInset; 
-        left = outerpos(1) + ti(1);
-        bottom = outerpos(2) + ti(2)+0.02;
-        ax_width = outerpos(3) - ti(1) - ti(3) - 0.03;
-        ax_height = outerpos(4) - ti(2) - ti(4)-0.025;
-        ax.Position = [left bottom ax_width ax_height];
-        ax.TitleFontSizeMultiplier = 3;
-        %set(gcf, 'visible','on')
+      %  title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 18);
+%         ax = gca;
+%         outerpos = ax.OuterPosition;
+%         ti = ax.TightInset; 
+%         left = outerpos(1) + ti(1);
+%         bottom = outerpos(2) + ti(2) + 0.01;
+%         ax_width = outerpos(3) - ti(1) - ti(3) - 0.06;
+%         ax_height = outerpos(4) - ti(2) - ti(4) - 0.02;
+%         ax.Position = [left bottom ax_width ax_height];
+%         ax.TitleFontSizeMultiplier = 3;
+%         %set(gcf, 'visible','on')
        
+%         xl = xlim;
+%         yl = ylim;
+%         xlim([-4.0,4.3])
+%         ylim([-3.5,4.5])
         
         hold off;
         
@@ -414,8 +485,8 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
         end
 
         %% preliminaries
-        snapshotFigure = figure('visible','off', 'units','normalized','outerposition',[0 0 1 1]);
-        set(gca,'Color',[0.75 0.75 0.75],'xtick',[],'ytick',[]);
+        snapshotFigure = figure('visible','off', 'color','w', 'units', 'centimeters', 'OuterPosition', [5 5 25 20]);
+        set(gca,'Color',[0.2 0.2 0.2],'xtick',[],'ytick',[]);
         hold all;
 
         %% nanowires and voltage distribution:  
@@ -451,10 +522,10 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
                 wireCurrents(currWire) = sum(abs(currents(relevantEdges))/2);                
             end
             wireCurrents(contacts) = 2*wireCurrents(contacts);
-            wireCurrents = log10(wireCurrents);
+            %wireCurrents = log10(wireCurrents);
             if ~isfield(axesLimits, 'CurrentCbar')
-                %axesLimits.CurrentCbar = [0, max(wireCurrents)];
-                axesLimits.CurrentCbar = [log10(6e-9), log10(2.8e-6)];                
+                axesLimits.CurrentCbar = [0, max(wireCurrents)];
+                %axesLimits.CurrentCbar = [log10(6e-9), log10(2.8e-6)];                
             end
             
             minCurr =  axesLimits.CurrentCbar(1);
@@ -482,7 +553,7 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
                 lineColor = ones(connectivity.NumberOfNodes,3);
             end
             for currWire=1:connectivity.NumberOfNodes
-                    line([connectivity.WireEnds(currWire,1),connectivity.WireEnds(currWire,3)],[connectivity.WireEnds(currWire,2),connectivity.WireEnds(currWire,4)],'Color',lineColor(currWire,:),'LineWidth',1.1)
+                    line([connectivity.WireEnds(currWire,1),connectivity.WireEnds(currWire,3)],[connectivity.WireEnds(currWire,2),connectivity.WireEnds(currWire,4)],'Color',lineColor(currWire,:),'LineWidth',1.5)
             end
             
         else
@@ -820,18 +891,21 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
         %% contacts:   
         if whatToPlot.Contacts
             if numel(contacts) == 2
-                if whatToPlot.Currents
-                    scatter([sourcePoint(1),drainPoint(1)],[sourcePoint(2),drainPoint(2)],200,[[0 1 0];[1 0 0]],'filled','h');
-                    sourceTextPosition = sourcePoint;
-                    drainTextPosition  = drainPoint;
-                else
-                    line([connectivity.WireEnds(contacts(1),1),connectivity.WireEnds(contacts(1),3)],[connectivity.WireEnds(contacts(1),2),connectivity.WireEnds(contacts(1),4)],'Color','g','LineWidth',0.2)
-                    line([connectivity.WireEnds(contacts(2),1),connectivity.WireEnds(contacts(2),3)],[connectivity.WireEnds(contacts(2),2),connectivity.WireEnds(contacts(2),4)],'Color','r','LineWidth',0.2)
-                    sourceTextPosition = connectivity.VertexPosition(contacts(1),:);
-                    drainTextPosition  = connectivity.VertexPosition(contacts(2),:);
-                end
-                text(sourceTextPosition(1), sourceTextPosition(2), strcat('A'),  'Color', 'g', 'FontSize', 16);
-                text(drainTextPosition(1),  drainTextPosition(2),  strcat('drn'),  'Color', 'r', 'FontSize', 16);
+%                 if whatToPlot.Currents
+%                     scatter([sourcePoint(1),drainPoint(1)],[sourcePoint(2),drainPoint(2)],200,[[0 1 0];[1 0 0]],'filled','h');
+%                     sourceTextPosition = sourcePoint;
+%                     drainTextPosition  = drainPoint;
+%                 else
+%                     line([connectivity.WireEnds(contacts(1),1),connectivity.WireEnds(contacts(1),3)],[connectivity.WireEnds(contacts(1),2),connectivity.WireEnds(contacts(1),4)],'Color','g','LineWidth',0.2)
+%                     line([connectivity.WireEnds(contacts(2),1),connectivity.WireEnds(contacts(2),3)],[connectivity.WireEnds(contacts(2),2),connectivity.WireEnds(contacts(2),4)],'Color','r','LineWidth',0.2)
+%                     sourceTextPosition = connectivity.VertexPosition(contacts(1),:);
+%                     drainTextPosition  = connectivity.VertexPosition(contacts(2),:);
+%                 end
+                    sourcePoint = connectivity.WireEnds(contacts(1),3:4);
+                    drainPoint     = connectivity.WireEnds(contacts(2),1:2);
+                    scatter([sourcePoint(1),drainPoint(1)],[sourcePoint(2),drainPoint(2)],200,[[0 1 0];[1 0 0]],'*');                
+%                 text(sourceTextPosition(1), sourceTextPosition(2), strcat('A'),  'Color', 'g', 'FontSize', 16);
+%                 text(drainTextPosition(1),  drainTextPosition(2),  strcat('drn'),  'Color', 'r', 'FontSize', 16);
             elseif numel(contacts) == 3
                 contactPoints = zeros(3,2);
                 for i = 1:numel(contacts)
@@ -884,12 +958,12 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
 
         end
         %% title, axes labels and limits:
-        %title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 50);
-
-        xlabel('x (\mum)');
-        ylabel('y (\mum)');
-        shoulder = connectivity.GridSize(1)*0.1;
-        axis([-shoulder,connectivity.GridSize(1)+shoulder,-shoulder,connectivity.GridSize(2)+shoulder]);
+%         title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 50);
+% 
+%         xlabel('x (\mum)');
+%         ylabel('y (\mum)');
+        %shoulder = 800;
+        %axis([-shoulder,connectivity.GridSize(1)+shoulder,-shoulder,connectivity.GridSize(2)+shoulder]);
         %axis square;
     end
 end

@@ -33,6 +33,9 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     results.filename = filename;
     
+    V = reshape(V, 1, numel(V));    
+    G = reshape(G, 1, numel(G));
+    
     %% conductance
     results.net.G = G;    %network conductance
     results.net.t = time; %time vector
@@ -47,8 +50,11 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.net.maxdG = max(abs(diff(G))/dt);
     results.net.stddG = std(abs(diff(G))/dt);
     
+    if results.net.maxdG <= eps
+        return
+    end
 
-
+    
     %% Fourier transform
     figure('visible','off');
     [beta, dbeta] = plotPSD(time, G);
@@ -59,12 +65,12 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     close all;
     
     %% Auto correlation function
-    figure('visible','off');
-    [alpha, dalph] = plotACF(G, dt, true, struct('cLevel', 0.95));
-    results.ACF.alpha  = alpha;
-    results.ACF.dalph = dalph;
-    saveas(gcf, strcat(saveFolder, '/ACF.png'))
-    close all;
+%     figure('visible','off');
+%     [alpha, dalph] = plotACF(G, dt, true, struct('cLevel', 0.95));
+%     results.ACF.alpha  = alpha;
+%     results.ACF.dalph = dalph;
+%     saveas(gcf, strcat(saveFolder, '/ACF.png'))
+%     close all;
     
     
     %% dG distribution
@@ -77,6 +83,11 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.events.eventTrain     = events;
     results.events.numEvents      = sum(events);
     results.events.eventFraction  = sum(events)/numel(time);
+    
+    if results.events.numEvents == 0
+        return;
+    end
+    
     
     dG = gradient(G);
     dG(isnan(dG)) = 0;
@@ -146,6 +157,10 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     
     %% Avalanche lifetime:
+    if numel(unique(lifeAv)) <= 1
+        return
+    end
+    
     figure('visible','off');
     [alp, dal, xmn, xmx, pvl, pcr, ksd] = plotAvalancheLifetime(lifeAv, struct('useML', fitML));
     results.avalanche.timeFit.alpha = alp;
