@@ -46,7 +46,7 @@ params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the 
 params.SimOpt.saveFolder      = saveFolder;
 mkdir(params.SimOpt.saveFolder);
 
-params.SimOpt.T                = 1000;
+params.SimOpt.T                = 200;
 params.SimOpt.dt               = 1e-3;
 params.SimOpt.nameComment      = '';
 params.SimOpt.ContactMode = 'topoFarthest';
