@@ -53,7 +53,7 @@ function SimulationOptions = selectContacts(Connectivity, SimulationOptions)
             
         case 'specifiedDistance'           
             % Choosing two wires that are about biProbeDistance um apart
-            devFromProbe = abs(Connectivity.wireDistances(:) - Options.BiProbeDistance);
+            devFromProbe = abs(Connectivity.wireDistances(:) - SimulationOptions.BiProbeDistance);
             [contA,contB] = ind2sub(size(Connectivity.wireDistances), find(devFromProbe == min(devFromProbe),1));
             SimulationOptions.ContactNodes = [contA,contB];
             SimulationOptions.Source = contA;
@@ -80,6 +80,20 @@ function SimulationOptions = selectContacts(Connectivity, SimulationOptions)
             SimulationOptions.ContactNodes = [row, col];
             SimulationOptions.Source = row;
             SimulationOptions.Drain = col;   
+            
+        case 'fixedTopoDistance'
+        	pathDist = distances(graph(single(Connectivity.weights)));
+            possible = find(pathDist == SimulationOptions.ContactGraphDist);
+            if numel(possible) == 0
+                error('No contacts of specfied distance'); 
+            end
+            %then choose the maximum physical distance such that graph
+            %distance is picked
+            linIdx = find(max(Connectivity.wireDistances(possible)) == Connectivity.wireDistances, 1);
+            [row, col] = ind2sub(size(Connectivity.weights), linIdx);
+            SimulationOptions.ContactNodes = [row, col];            
+            SimulationOptions.Source = row;
+            SimulationOptions.Drain = col;               
             
     end
     SimulationOptions.numOfElectrodes = numel(SimulationOptions.ContactNodes);

@@ -103,12 +103,13 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.useRK4          = false;
         DSimulationOptions.perturb         = false;
         DSimulationOptions.saveSwitches    = true;    %false => saves no switch data except final filament states
+        DSimulationOptions.saveFilStateOnly = false;
         DSimulationOptions.numOfElectrodes = 2;
         DSimulationOptions.oneSrcMultiDrn  = false;
         DSimulationOptions.MultiSrcOneDrn  = false; 
         DSimulationOptions.stopIfDupName = false; %this parameter only runs simulation if the savename is not used.
         DSimulationOptions.reserveFilename = false; %this saves an empty mat file 
-
+        
         
         %% Simulation general options:
         rng(42); %Set the seed for PRNGs for reproducibility
@@ -120,6 +121,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         %% Simulation recording options:
         DSimulationOptions.ContactMode  = 'farthest';    % 'farthest' \ 'specifiedDistance' \ 'random' (the only one relevant for 'randAdjMat' (no spatial meaning)) \ 'preSet'
         DSimulationOptions.ContactNodes = [9, 10]; % only really required for preSet, other modes will overwrite this
+        DSimulationOptions.ContactGraphDist = 10;
 
         %% Generate Connectivity: - LATER UPDATE THIS TO GIVE A CHANCE TO INPUT
         if isfield(Connectivity, 'WhichMatrix') == 1

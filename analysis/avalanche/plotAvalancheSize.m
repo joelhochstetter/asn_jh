@@ -57,13 +57,14 @@ function [tau, dta, xmin, xmax, p, pcrit, ks] = plotAvalancheSize(sizeAv, fitP)
     if fitPL
         
         if fitP.useML
-            [tau, xmin, xmax, dta, p, pcrit, ks] = plparams(sizeAv);
-            x = xmin:0.01:xmax;
-            A = N(find(edges <= xmin, 1));
-            y = A*x.^(-tau);
-            loglog(x, y, 'r--');
-            text(x(2), y(2)/3, strcat('S^{-', num2str(tau,3),'}'), 'Color','r')
-            
+            if numel(unique(sizeAv)) > 2
+                [tau, xmin, xmax, dta, p, pcrit, ks] = plparams(sizeAv);
+                x = xmin:0.01:xmax;
+                A = N(find(edges <= xmin, 1));
+                y = A*x.^(-tau);
+                loglog(x, y, 'r--');
+                text(x(2), y(2)/3, strcat('S^{-', num2str(tau,3),'}'), 'Color','r')
+            end
         else
             %only include bins within include range to fit
             fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));

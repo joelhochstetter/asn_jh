@@ -66,7 +66,10 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         
     electrodeCurrent   = zeros(niterations, numOfElectrodes);
 
-    
+    if SimulationOptions.saveFilStateOnly == true
+        filamentStates = zeros(niterations, E);
+    end
+
     
     %% Solve equation systems for every time step and update:
     for ii = 1 : niterations
@@ -113,9 +116,13 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         compPtr.comp.voltage = tempWireV(edgeList(:,1)) - tempWireV(edgeList(:,2));
         
         % Update element fields:
-        updateComponentState(compPtr, SimulationOptions.dt);    % ZK: changed to allow retrieval of local values
+        [lambda, ~] = updateComponentState(compPtr, SimulationOptions.dt);    % ZK: changed to allow retrieval of local values
         
-        electrodeCurrent(ii,:)   = sol(V+1:end);     
+        if SimulationOptions.saveFilStateOnly == true
+            filamentStates(ii,:) = lambda;
+        end
+        
+        electrodeCurrent(ii,:)   = sol(V+1:end); 
         
     end
     
@@ -125,7 +132,13 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
     
     OutputDynamics.storevoltage       = compPtr.comp.voltage';
     OutputDynamics.storeCon           = compPtr.comp.resistance';
-    OutputDynamics.lambda             =  compPtr.comp.filamentState';
+    
+    if SimulationOptions.saveFilStateOnly == true
+         OutputDynamics.lambda = filamentStates;
+    else
+         OutputDynamics.lambda             =  compPtr.comp.filamentState';
+    end    
+   
 
     % Calculate network resistance and save:
     OutputDynamics.networkCurrent    = electrodeCurrent(:, 2:end);

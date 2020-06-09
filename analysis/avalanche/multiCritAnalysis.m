@@ -36,8 +36,9 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
             for i = 1:numel(sims)
                 Gvals{i} = sims{i}.netC;
                 Vvals{i} = sims{i}.Stim.Signal;
-                tvals{i} = sims{i}.Stim.TimeAxis;       
-                fname{i} = sims{i}.filename;
+                tvals{i} = sims{i}.Stim.TimeAxis;   
+                fn = split(sims{i}.filename, '/');
+                fname{i} = char(fn(end));
             end
         case 1 %TDMS file, datatype of Adrian's file from labview
             files = dir(strcat(importFolder, '/*.tdms'));
@@ -145,7 +146,7 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     
     %% Run criticality analysis
     critResults = cell(numFiles , 1);
-    parfor i = 1:numFiles
+    for i = 1:numFiles
         dt = (tvals{i}(end) - tvals{i}(1))/(numel(tvals{i}) - 1);
         critResults{i} = critAnalysis(eventVals{i}, dt, Gvals{i}, tvals{i}, Vvals{i}, fname{i}, strcat(saveFolder, '/', fname{i}, '/'), fitML, binSize);
     end

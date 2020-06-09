@@ -236,5 +236,6 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.avalanche.gamma.x3  = 1 +gamma;
     results.avalanche.gamma.dx3 = 0;
     
+    save(strcat(saveFolder, '/critResults.mat'), 'results');
     
 end

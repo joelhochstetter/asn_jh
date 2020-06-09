@@ -103,20 +103,20 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
     if ~isfield(SimulationOptions, 'saveSwitches') || (isfield(SimulationOptions, 'saveSwitches') && SimulationOptions.saveSwitches)
         if isfield(SimulationOptions, 'hdfSave') && SimulationOptions.hdfSave
             sim.hdfFile = strcat(filename, '.h5');
-            h5path = strcat(SimulationOptions.saveFolder, '/', sim.hdfFile);
+            
             %https://au.mathworks.com/help/matlab/ref/h5write.html
             %https://au.mathworks.com/help/matlab/ref/h5create.html
             
-            if ~exist(h5path, 'file')
-                h5create(h5path,'/swLam', size(Output.lambda)) 
-                h5create(h5path,'/swV', size(Output.storevoltage))
-                h5create(h5path,'/swC', size(Output.storeCon))
+            if ~exist(sim.hdfFile, 'file')
+                h5create(sim.hdfFile,'/swLam', size(Output.lambda)) 
+                h5create(sim.hdfFile,'/swV', size(Output.storevoltage))
+                h5create(sim.hdfFile,'/swC', size(Output.storeCon))
             end
             
 
-            h5write(h5path, '/swLam', Output.lambda)
-            h5write(h5path, '/swV', Output.storevoltage)        
-            h5write(h5path, '/swC', Output.storeCon)            
+            h5write(sim.hdfFile, '/swLam', Output.lambda)
+            h5write(sim.hdfFile, '/swV', Output.storevoltage)        
+            h5write(sim.hdfFile, '/swC', Output.storeCon)            
             
         else
             sim.swLam = Output.lambda;
@@ -128,16 +128,8 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         end
     else
         sim.finalStates = Output.lambda(end,:);
-        if SimulationOptions.saveFilStateOnly
-            sim.hdfFile = strcat(filename, '.h5');
-            h5path = strcat(SimulationOptions.saveFolder, '/', sim.hdfFile);
-            
-            if ~exist(h5path, 'file')
-                h5create(h5path,'/swLam', size(Output.lambda)) 
-            end              
-            h5write(h5path, '/swLam', Output.lambda) 
-            
-        end
+        if SimulationOptions.saveFilStateOnly && 
+            sim.hdfFile = strcat(filename, '.h5');        
     end    
 
     sim.filename = filename;

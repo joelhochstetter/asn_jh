@@ -11,7 +11,7 @@ if nargin < 6
     connFile = '2016-09-08-155153_asn_nw_00100_nj_00261_seed_042_avl_100.00_disp_10.00.mat';
 end
 
-if nargin < 7 || initStateFile == 0
+if nargin < 7
     initLamda = 0;
 else
     if nargin == 7
@@ -47,9 +47,8 @@ params.SimOpt.onlyGraphics    = true; %does not plot anything
 params.SimOpt.compilingMovie  = false;
 params.SimOpt.useParallel     = false;
 params.SimOpt.runIndex = idx;
-params.SimOpt.hdfSave         = true;
-params.SimOpt.saveSwitches = false;
-params.SimOpt.saveFilStateOnly = true;
+params.SimOpt.hdfSave         = false;
+params.SimOpt.saveSwitches = true;
 params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
 params.SimOpt.saveFolder      = saveFolder;
 mkdir(params.SimOpt.saveFolder);
@@ -69,11 +68,11 @@ params.Comp.ComponentType  = 'tunnelSwitchL'; %tunnelSwitch2
 params.Comp.onResistance   = 7.77e-5;
 params.Comp.offResistance  = 1e-8;
 params.Comp.setVoltage     = 1e-2;
-params.Comp.resetVoltage   = 5e-3;
+params.Comp.resetVoltage   = 5e-2;
 params.Comp.criticalFlux   =  0.01;
 params.Comp.maxFlux        = 0.015;
 params.Comp.penalty        =    1;
-params.Comp.boost          =   2;
+params.Comp.boost          =   1;
 params.Comp.filamentState = initLamda;
 
 %Set connect file

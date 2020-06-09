@@ -155,6 +155,10 @@ rank = lnRInv.^2;
 support = support(idx,:);
 
 %% Initiate greedy search for optimal support
+if nSupport < 1
+    'fuck'
+end
+
 
 % Try support pairs in ranked order until p = pCrit
 sweepFlag = true;
@@ -181,6 +185,8 @@ while sweepFlag && iSupport <= nSupport
         iSupport = iSupport + 1;
     end
 end
+
+
 
 %% Compute final statistics and full p-value
 
