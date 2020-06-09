@@ -186,7 +186,7 @@ function snapshotFigure = snapshotToFigurePres(snapshot, contacts, connectivity,
         % https://au.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.graphplot-properties.html
         %Set-up figure and colour
         snapshotFigure = figure('visible','off', 'units','normalized','outerposition',[0 0 1 1]);
-        set(gca,'Color',[0.75 0.75 0.75],'xtick',[],'ytick',[]);
+        set(gca,'Color',[0.1 0.1 0.1],'xtick',[],'ytick',[]);
         
         
         %set(gca,'xtick',[],'ytick',[]);
