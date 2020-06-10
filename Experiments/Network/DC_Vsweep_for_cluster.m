@@ -1,4 +1,4 @@
-function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance)
+function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T)
 %{
     e.g. usuage
     attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
@@ -28,13 +28,16 @@ else
     end
 end
 
-if nargin < 9
-    contactMode =  'topoFarthest';
+if nargin < 9 || contactDistance < 0
+    contactMode =  'farthest';
     contactDistance = -1;
 else
     contactMode = 'fixedTopoDistance';
 end
 
+if nargin < 10
+    T = 50;
+end
 
 %%
 params = struct();
@@ -54,7 +57,7 @@ params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the 
 params.SimOpt.saveFolder      = saveFolder;
 mkdir(params.SimOpt.saveFolder);
 
-params.SimOpt.T                = 50;
+params.SimOpt.T                = T;
 params.SimOpt.dt               = 1e-3;
 params.SimOpt.nameComment      = '';
 params.SimOpt.ContactMode = contactMode;
