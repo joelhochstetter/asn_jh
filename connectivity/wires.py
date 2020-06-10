@@ -299,6 +299,7 @@ def select_largest_component(wires_dict):
     logging.info("The largest component has %5d nodes and %6d edges", nw, nj)
 
     # Replace values in the dictionary
+    wires_dict['generating_number_of_wires']     =  wires_dict['number_of_wires']    
     wires_dict['number_of_wires']     = nw
     wires_dict['number_of_junctions'] = nj
     wires_dict['xa'] = wires_dict['xa'][wires_dict['G'].nodes()] 

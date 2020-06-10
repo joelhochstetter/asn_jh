@@ -11,7 +11,7 @@ if nargin < 6
     connFile = '2016-09-08-155153_asn_nw_00100_nj_00261_seed_042_avl_100.00_disp_10.00.mat';
 end
 
-if nargin < 7 || initStateFile == 0
+if nargin < 7 || (isnumeric(initStateFile) && initStateFile == 0)
     initLamda = 0;
 else
     if nargin == 7
