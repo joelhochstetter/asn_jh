@@ -29,7 +29,6 @@ function [shortestPaths, totalCosts] = kShortestPath(netCostMatrix, source, dest
 netCostMatrix(netCostMatrix == 0) = inf;
 
 
-
 if source > size(netCostMatrix,1) || destination > size(netCostMatrix,1)
     warning('The source or destination node are not part of netCostMatrix');
     shortestPaths=[];
@@ -37,7 +36,7 @@ if source > size(netCostMatrix,1) || destination > size(netCostMatrix,1)
 else
     %---------------------INITIALIZATION---------------------
     k=1;
-    [path cost] = dijkstra(netCostMatrix, source, destination);
+    [path, cost] = dijkstra(netCostMatrix, source, destination);
     %P is a cell array that holds all the paths found so far:
     if isempty(path)
         shortestPaths=[];
@@ -158,4 +157,3 @@ else
     end
 end
 %--------------------------------------------------------
-

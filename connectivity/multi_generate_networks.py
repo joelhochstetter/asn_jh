@@ -52,9 +52,9 @@ std_length      = 1.6
 shape           = 100.0
 cent_dispersion = 350.0
 seed            = 1
-Lx              = 40
-Ly              = 125
-folder          = '/import/silo2/joelh/papers/li2020/NewNetworks/'
+Lx              = 70
+Ly              = 70
+folder          = '/import/silo2/joelh/papers/li2020/NewNetworks1/'
 seedList = range(10)
 wireList = range(600, 3200, 200) 
 
