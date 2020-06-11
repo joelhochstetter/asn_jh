@@ -109,7 +109,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.MultiSrcOneDrn  = false; 
         DSimulationOptions.stopIfDupName = false; %this parameter only runs simulation if the savename is not used.
         DSimulationOptions.reserveFilename = false; %this saves an empty mat file 
-        
+        DSimulationOptions.megaLiteSave = false; %Does not save current or time-vector to save memory in the save file
         
         %% Simulation general options:
         rng(42); %Set the seed for PRNGs for reproducibility

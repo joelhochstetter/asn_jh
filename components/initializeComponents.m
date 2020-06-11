@@ -67,7 +67,7 @@ function Components = initializeComponents(E,Components, NodalAnal)
     %}
     
     
-    default.noiseType = 'powerLaw';
+    default.noiseType = 'gaussian';
     default.noiseBeta  = 2;
     default.noiseLevel = 0.0;
     

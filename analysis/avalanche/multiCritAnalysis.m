@@ -146,7 +146,7 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     
     %% Run criticality analysis
     critResults = cell(numFiles , 1);
-    for i = 1:numFiles
+    parfor i = 1:numFiles
         dt = (tvals{i}(end) - tvals{i}(1))/(numel(tvals{i}) - 1);
         critResults{i} = critAnalysis(eventVals{i}, dt, Gvals{i}, tvals{i}, Vvals{i}, fname{i}, strcat(saveFolder, '/', fname{i}, '/'), fitML, binSize);
     end

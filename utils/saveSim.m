@@ -6,9 +6,14 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
     
     sim.Stim = Stimulus;
     %sim.Stim = rmfield(sim.Stim,'TimeAxis'); %does not same timevector as this would be double stored
-    sim.netI = Output.networkCurrent;
     sim.netC = Output.networkResistance;
     
+    if SimulationOptions.megaLiteSave
+        sim.Stim = rmfield(sim.Stim,'TimeAxis'); %does not same timevector as this would be double stored
+    else
+        sim.netI = Output.networkCurrent;
+    end
+     
     switch(Components.ComponentType)
         case 'atomicSwitch' 
             swType = 'a'; 
