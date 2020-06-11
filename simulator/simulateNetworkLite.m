@@ -123,7 +123,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         end
         
         electrodeCurrent(ii,:)   = sol(V+1:end); 
-        break;
+
     end
     
     % Calculate network resistance and save:
@@ -141,7 +141,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
    
 
     % Calculate network resistance and save:
-    OutputDynamics.networkCurrent    =  (1:niterations)';%electrodeCurrent(:, 2:end);
+    OutputDynamics.networkCurrent    =  electrodeCurrent(:, 2:end);
     OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent(:,end) ./ Signals{1});
 
 
