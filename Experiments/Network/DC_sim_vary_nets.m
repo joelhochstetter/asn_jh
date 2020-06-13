@@ -8,7 +8,7 @@ function DC_sim_vary_nets(idx, netFolder, saveFolder)
 %     mkdir(saveF1)
     %DC_Vsweep_for_cluster(Vidx, saveF1, 45*0.25*0.01, 45*2.00*0.01, 45*0.25*0.01, nets(netIdx).name, 0 , '.', 45)
 %     DC_Vsweep_for_cluster(Vidx, saveF1, 45*5*0.01, 2.5, 1.0, nets(netIdx).name, 0 , '.', 45, 10, 0)
-     DC_Vsweep_for_cluster(Vidx, saveF1, 45*0.25*0.01, 45*2.00*0.01, 45*0.25*0.01, nets(netIdx).name, 'tl_T10_DC2.25V_s0.01_r0.005_c0.01_m0.015_b2_p1.mat', saveF1, 45, 50, 0)
+     DC_Vsweep_for_cluster(Vidx, saveF1, 45*0.25*0.01, 45*2.00*0.01, 45*0.25*0.01, nets(netIdx).name, 'tl_T10_DC2.25V_s0.01_r0.005_c0.01_m0.015_b2_p1.mat', saveF1, 45, 45, 1)
      
      
 end
