@@ -31,8 +31,9 @@ function getThresholdVaryNets(idx, netFolder, saveFolder)
     params.SimOpt.useParallel     = false;
     params.SimOpt.T               = 150;
     params.SimOpt.dt              = 1e-2;
-    params.SimOpt.saveFolder = saveFolder;
-    params.SimOpt.nameComment = num2str(idx, '%03. f');
+    params.SimOpt.saveFolder = strcat(saveFolder, '/Ramp', connFilename, '/');
+    mkdir(params.SimOpt.saveFolder);
+    params.SimOpt.nameComment = strcat('idx_', num2str(idx, '%03. f'));
     
     %Set Stimulus
     params.Stim.BiasType = 'Ramp';
