@@ -135,6 +135,8 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
             
         case 'Ramp'
             Stimulus.Signal = linspace(Stimulus.AmplitudeMin, Stimulus.AmplitudeMax, length(Stimulus.TimeAxis))';
+            Stimulus.stimName = strcat(Stimulus.BiasType, 'max', num2str( Stimulus.AmplitudeMax,3),'V_min',num2str(Stimulus.AmplitudeMin,3),'V');              
+            
         case 'Custom'
             Stimulus.Signal = Stimulus.Signal;
         case 'Triangle'
