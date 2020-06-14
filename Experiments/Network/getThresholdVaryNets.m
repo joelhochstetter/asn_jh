@@ -31,14 +31,14 @@ function getThresholdVaryNets(idx, netFolder, saveFolder)
     params.SimOpt.useParallel     = false;
     params.SimOpt.T               = 150;
     params.SimOpt.dt              = 1e-2;
-    params.SimOpt.saveFolder = strcat(saveFolder, '/Ramp', connFilename, '/');
+    params.SimOpt.saveFolder =saveFolder;
     mkdir(params.SimOpt.saveFolder);
-    params.SimOpt.nameComment = strcat('idx_', num2str(idx, '%03. f'));
+    params.SimOpt.nameComment = strcat('_idx', num2str(idx));
     
     %Set Stimulus
     params.Stim.BiasType = 'Ramp';
-    params.Stim.AmplitudeMin = 150;
-    params.Stim.AmplitudeMax = 0;
+    params.Stim.AmplitudeMin = 0.01;
+    params.Stim.AmplitudeMax = 150;
 
 
     %Set Components
