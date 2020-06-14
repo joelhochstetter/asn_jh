@@ -58,6 +58,8 @@ function getThresholdVaryNets(idx, netFolder, saveFolder)
 
     params.SimOpt.ContactNodes    = [srcA, srcB, drn];
     
+    params.Conn.filename = connFilename;
+    
 
 	t = multiRun(params);
 
