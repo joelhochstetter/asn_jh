@@ -37,8 +37,8 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     G = reshape(G, 1, numel(G));
     
     %% conductance
-    results.net.G = G;    %network conductance
-    results.net.t = time; %time vector
+%     results.net.G = G;    %network conductance
+%     results.net.t = time; %time vector
     results.net.dt = dt; %time vector
     results.net.T = time(end) - time(1) + dt; %time vector
     results.net.V = V;    %voltage
@@ -96,7 +96,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     subplot(2,2,1);
     plot(time, G)
     hold on;
-    plot(time(events), G(events), 'o')
+    plot(time(events > 0), G(events > 0), 'o')
     xlabel('t (s)')
     ylabel('G (S)')
     legend('G', 'event')
@@ -107,7 +107,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     subplot(2,2,3)
     plot(time, dG)
     hold on;
-    plot(time(events), dG(events), 'o')
+    plot(time(events > 0), dG(events > 0), 'o')
     xlabel('t (s)')
     ylabel('\Delta G (S)')
     legend('\Delta G', 'event')
