@@ -25,7 +25,7 @@ function multiCritAnalysisGoodMemory(importFolder, saveFolder, importMode, event
     numFiles = howManyFiles(importMode, importFolder);
     parfor i = 1:numFiles
         %import file
-        [G, V, t, fname] = importByType(importMode, importFolder, idx);
+        [G, V, t, fname] = importByType(importMode, importFolder, i);
          dt = (t(end) - t(1))/(numel(t) - 1);
    
         % detect events

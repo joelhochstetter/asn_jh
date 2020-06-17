@@ -3,7 +3,7 @@ function [G, V, t, fname] = importByType(importMode, importFolder, idx)
     switch importMode
         case 0 %simulated data
             files = dir(strcat(importFolder, '/*.mat'));
-            sims = multiImport(struct('importByName', files(idx).name, struct('SimOpt', struct('saveFolder', importFolder))));
+            sims = multiImport(struct('importByName', files(idx).name, 'SimOpt', struct('saveFolder', importFolder)));
             G = sims{1}.netC;
             V = sims{1}.Stim.Signal;
             t = sims{1}.Stim.dt:sims{1}.Stim.dt:sims{1}.Stim.T;   
