@@ -1,4 +1,4 @@
-function snapshotFigure = snapshotToFigurePaper(snapshot, contacts, connectivity, whatToPlot, axesLimits, highlightNodes, highlightEdges)
+function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connectivity, whatToPlot, axesLimits, highlightNodes, highlightEdges)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This funciton generates a visualization of a snapshot of the network.
 % This includes: the spatial distribution of wires, the location of
