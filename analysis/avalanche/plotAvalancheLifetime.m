@@ -1,4 +1,4 @@
-function [alpha, dal, xmin, xmax, p, pcrit, ks] = plotAvalancheLifetime(lifeAv, fitP)
+function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifetime(lifeAv, fitP)
 %{
     Plots the avalanche size distribution
     Inputs:
@@ -6,6 +6,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks] = plotAvalancheLifetime(lifeAv, 
      fitP: A struct containing parameters to fit
         fitP.lc:    Lower cut-off of IEI
         fitP.uc:    Upper cut-off of IEI
+        fitP.logBin: plot data with logarithmic binning 
 
 
     Option to fit if we provide cut-offs
@@ -38,7 +39,11 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks] = plotAvalancheLifetime(lifeAv, 
         
          if ~isfield(fitP, 'useML')
             fitP.useML = false;
-        end       
+         end       
+ 
+         if ~isfield(fitP, 'logBin')
+            fitP.logBin = false;
+        end                
         
     end
 
@@ -48,9 +53,15 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks] = plotAvalancheLifetime(lifeAv, 
     pcrit = 0.0;
     ks = 0.0;
     
+    if fitP.logBin
+        nbins = 2*iqr(lifeAv)/(numel(lifeAv)^(1/3)); %calculated by Freeman Diaconis rule
+        [bins, N, edges]=lnbin(lifeAv, nbins);
+    else 
+        [N,edges] = histcounts(lifeAv, 'Normalization', 'probability');
+        bins = (edges(1:end-1) + edges(2:end))/2;
+    end
     
-    [N,edges] = histcounts(lifeAv, 'Normalization', 'probability');
-    loglog((edges(1:end-1) + edges(2:end))/2, N, 'bx')
+    loglog(bins, N, 'bx')
     hold on;
 
     if fitPL
@@ -79,7 +90,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks] = plotAvalancheLifetime(lifeAv, 
             plot(fitresult, 'b--', xData, yData, 'gx')
 
             text(edgeCen(1), fitN(1)/3, strcat('T^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-            legend('not fit', 'inc fit', 'fit')   
+%             legend('not fit', 'inc fit', 'fit')   
             alpha = -fitresult.b;
             if numel(unique(lifeAv)) > 2  
                 CI  = confint(fitresult, fitP.cLevel);
@@ -97,5 +108,6 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks] = plotAvalancheLifetime(lifeAv, 
     xlabel('T (bins)')
     ylabel('P(T)')
     
-
+    prob = N;
+    
 end

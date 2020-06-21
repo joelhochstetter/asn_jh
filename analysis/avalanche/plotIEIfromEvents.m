@@ -1,4 +1,4 @@
-function IEIres = plotIEIfromEvents(G, ddG, t, fitP, joinperiod)
+function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
 %{
     Plots the distribution of inter-event interval
     Inputs:
@@ -25,25 +25,23 @@ function IEIres = plotIEIfromEvents(G, ddG, t, fitP, joinperiod)
 %}
     dt = (t(end) - t(1))/(numel(t) - 1);
     
-    if nargin < 5
+    if nargin < 4
         joinperiod = -1;
     end
     
     IEIres = struct();
     
-    if nargin == 3
+    if nargin == 2
         fitPL = 0;
     else
         fitPL = 1;
     end
     
-    dG = [diff(G), 0];
-    dG(isnan(dG)) = 0;    
     
     if fitPL
         %if we exclude points then we do it here
         if isfield(fitP, 'toInc')
-            dG = dG(fitP.toInc);
+            events = events(fitP.toInc);
         end
         
         %add defaults for cut-offs for PL
@@ -75,11 +73,11 @@ function IEIres = plotIEIfromEvents(G, ddG, t, fitP, joinperiod)
 
     
     
-    ieiDat = IEI(ddG, 1);
+    [ieiDat, ieiTime] = IEI(events, 1, joinperiod);
     ieiDat = ieiDat(ieiDat > 0);
     IEIres.ieiDat = ieiDat;
     IEIres.meanIEI = mean(ieiDat);
-    
+    IEIres.ieiTime = ieiTime;
     
     %[~, ieiDat] = IEI(ddG, 1, t); %uses time-vector
     if fitP.logBins
@@ -118,17 +116,21 @@ function IEIres = plotIEIfromEvents(G, ddG, t, fitP, joinperiod)
             edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
             fitN     = Niei(1 + cutFront : end - cutEnd);         
             %fit power law
-            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
-            plot(fitresult, 'b--', xData, yData, 'gx')
-
-            text(edgeCen(1), fitN(1)/3, strcat('t^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-            legend('not fit', 'inc fit', 'fit')    
+            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );  
+            if numel(edgeCen) > 1
+                plot(fitresult, 'b--', xData, yData, 'gx')
+                text(edgeCen(1), fitN(1)/3, strcat('t^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
+                legend('not fit', 'inc fit', 'fit')   
+            end
         end
     end
+    
     set(gca, 'XScale', 'log')
     set(gca, 'YScale', 'log')
     xlabel('IEI (s)')
     ylabel('P(IEI)') 
 
+    IEIres.bins = (edgesiei(1:end-1) + edgesiei(2:end))/2;
+    IEIres.prob = Niei;
     
 end

@@ -131,7 +131,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     %% Inter-event interval
     figure('visible','off');
-    results.IEI = plotIEIfromEvents(G, events, time, struct('useML', fitML), joinperiod);
+    results.IEI = plotIEIfromEvents(events, time, struct('useML', fitML), joinperiod);
     saveas(gcf, strcat(saveFolder, '/IEIdist.png'))
     close all;
 
@@ -142,15 +142,16 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
        binSize =  round(results.IEI.meanIEI);
     end
     binned = binData(events, binSize);
-    [sizeAv, lifeAv] = avalancheStats(binned, 1:numel(binned));
+    [sizeAv, lifeAv, timeAv] = avalancheStats(binned, 1:numel(binned));
     results.avalanche.sizeAv = sizeAv;
     results.avalanche.lifeAv = lifeAv;
+    results.avalanche.timeAv = timeAv;    
     results.avalanche.binSize = binSize;   
     
     
     %% Avalanche size:
     figure('visible','off');
-    [tau, dta, xmn, xmx, pvl, pcr, ksd] = plotAvalancheSize(sizeAv, struct('useML', fitML));
+    [tau, dta, xmn, xmx, pvl, pcr, ksd, bins, prob] = plotAvalancheSize(sizeAv, struct('useML', fitML));
     results.avalanche.sizeFit.tau = tau;
     results.avalanche.sizeFit.dTau = dta;
     results.avalanche.sizeFit.lc  = xmn;
@@ -158,6 +159,8 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.avalanche.sizeFit.pvl = pvl;
     results.avalanche.sizeFit.pcr = pcr;
     results.avalanche.sizeFit.ksd = ksd;
+    results.avalanche.sizeFit.bins = bins;
+    results.avalanche.sizeFit.prob = prob;
     saveas(gcf, strcat(saveFolder, '/avSize.png'))
     close all;
     
@@ -168,21 +171,27 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     end
     
     figure('visible','off');
-    [alp, dal, xmn, xmx, pvl, pcr, ksd] = plotAvalancheLifetime(lifeAv, struct('useML', fitML));
+    [alp, dal, xmn, xmx, pvl, pcr, ksd, bins, prob] = plotAvalancheLifetime(lifeAv, struct('useML', fitML));
     results.avalanche.timeFit.alpha = alp;
     results.avalanche.timeFit.dAlpha = dal;
     results.avalanche.timeFit.lc  = xmn;
     results.avalanche.timeFit.uc  = xmx;
     results.avalanche.timeFit.pvl = pvl;
     results.avalanche.timeFit.pcr = pcr;
-    results.avalanche.timeFit.ksd = ksd;    
+    results.avalanche.timeFit.ksd = ksd;  
+    results.avalanche.timeFit.bins = bins;
+    results.avalanche.timeFit.prob = prob;    
     saveas(gcf, strcat(saveFolder, '/avLife.png'))
     close all;
     
     
     %% <S>(T)
     figure('visible','off');
-    [gamma_m_1, dgamma_m_1] = plotAvalancheAveSize(sizeAv, lifeAv, struct('lc', xmn, 'uc', xmx, 'cLevel', 0.5));
+    [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, lifeAv, struct('lc', xmn, 'uc', xmx, 'cLevel', 0.5));
+    results.avalanche.avSizeFit.mSize = mSize;
+    results.avalanche.avSizeFit.mLife = mLife;
+    results.avalanche.avSizeFit.gamma_m_1 = gamma_m_1;
+    results.avalanche.avSizeFit.dgamma_m_1 = dgamma_m_1;    
     saveas(gcf, strcat(saveFolder, '/avAvSize.png'))
     close all;
 

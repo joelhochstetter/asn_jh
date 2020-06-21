@@ -1,10 +1,9 @@
-function [ieiData, ieiTimes] = IEI(events, dt, t, joinperiod)
+function [ieiData, ieiTime] = IEI(events, dt, joinperiod, t)
 %{
     Calculates inter-event interval given  binarised
     time-series data and time-step
-    Other option is to give the IEI times. Then the IEI is calculated in
-    seconds
-    joinperiod: for time series which join an ensemble of
+   ieiTime associated with  first event from IEI pair
+   joinperiod: for time series which join an ensemble of
     different simulations stores periodicity so ignores events calculated 
     between adjacent simulations
 
@@ -13,13 +12,13 @@ function [ieiData, ieiTimes] = IEI(events, dt, t, joinperiod)
 
 %}
 
-    if nargin == 2
+    if nargin < 4
         runMode = 1; %
     else
         runMode = 2;
     end
     
-    if nargin < 4
+    if nargin < 3
         joinperiod = -1;        
     end
     
@@ -28,16 +27,17 @@ function [ieiData, ieiTimes] = IEI(events, dt, t, joinperiod)
     end
         
     ieiData   = [];
-    ieiTimes  = [];
+    ieiTime  = []; %event times
     ieiIdx    = 1;
     prevEvent = find(events, 1);
     
     if runMode == 1
         for i = (prevEvent + 1):numel(events)
             if events(i)
-                if mod(i-1, joinperiod) == mod(prevEvent-1, joinperiod)
+                if floor((i-1)/joinperiod) == floor((prevEvent-1)/joinperiod)
                     ieiData(ieiIdx) = i - prevEvent;
                     ieiIdx = ieiIdx + 1;
+                    ieiTime(ieiIdx) = prevEvent;                     
                 end
                 prevEvent = i;
             end
@@ -47,16 +47,16 @@ function [ieiData, ieiTimes] = IEI(events, dt, t, joinperiod)
     elseif runMode == 2
         for i = (prevEvent + 1):numel(events)
             if events(i)
-                if mod(i-1, joinperiod) == mod(prevEvent-1, joinperiod)
+                if floor((i-1)/joinperiod) == floor((prevEvent-1)/joinperiod)
                     ieiData(ieiIdx)  = i - prevEvent;
-                    ieiTimes(ieiIdx) = t(i) - t(prevEvent); 
+                    ieiTime(ieiIdx) = prevEvent; 
                     ieiIdx = ieiIdx + 1;
                 end
                 prevEvent = i;                
             end
         end        
-        ieiData  = ieiData(ieiTimes > 0);
-        ieiTimes = ieiTimes(ieiTimes > 0);
+        ieiData  = ieiData(ieiData > 0);
+        ieiTime = ieiTime(ieiData > 0);
         
     end
 

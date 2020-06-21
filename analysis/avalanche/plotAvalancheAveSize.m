@@ -1,4 +1,4 @@
-function [gamma_m_1, dgamma_m_1] = plotAvalancheAveSize(sizeAv, lifeAv, fitP)
+function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, lifeAv, fitP)
 %{
     Plots the avalanche average size as a function of lifetime
 

@@ -184,8 +184,12 @@ function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
     xlabel('\Delta G')
     ylabel('P(\Delta G)') 
     
+    bins = (edges(1:end-1) + edges(2:end))/2;
+    
     dGfit.alpha  = alpha;
     dGfit.dalph  = dalph;
     dGfit.lc     = lc;
+    dGfit.bins = bins;
+    dGfit.prob = N;
     
 end
