@@ -57,7 +57,7 @@ parser.add_argument('--Lx',
 
 parser.add_argument('--Ly',
     type    = float,
-    default = args.Lx,
+    default = -1,
     help    ='The vertical length of the network''s physical substrate in micrometres.')
 
 parser.add_argument('--cent_dispersion', 
@@ -82,6 +82,9 @@ if args.nwiresMax == -1:
     
 if args.seedMax == -1:
     args.seedMax = args.seed
+
+if args.Ly == -1:
+    args.Ly = args.Lx
 
 mean_length     = args.mean_length
 std_length      = args.std_length
