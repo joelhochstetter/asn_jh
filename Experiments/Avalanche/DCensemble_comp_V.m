@@ -126,3 +126,8 @@ errorbar(V,x3, dx3);
 xlabel('V (V)')
 ylabel('1/\sigma\tau\nu')
 title('Crackling relationship')
+
+
+%% 
+timeVec = 1:1:(50*100*1000);
+timeVec = mod(timeVec, 50*1000)*1e-3;
