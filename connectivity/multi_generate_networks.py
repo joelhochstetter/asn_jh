@@ -103,8 +103,11 @@ Ly              = args.Ly
 folder          = args.folder
 
 wireList = list(np.unique(np.linspace(args.nwires, args.nwiresMax, args.numSims, dtype = int)))
-seedList = list(np.unique(np.linspace(args.seed,   args.seedMax,   args.numSims, dtype = int)))
+seedList = range(args.seed, args.seedMax)
 LxList   = list(np.unique(np.linspace(args.Lx,     args.LxMax,     args.numSims, dtype = int))) 
+print('Seeds: ', list(seedList))
+print('Wires: ', list(wireList))
+print('Sizes: ', list(LxList))
 
 for nwires in wireList: 
     for seed in seedList:
