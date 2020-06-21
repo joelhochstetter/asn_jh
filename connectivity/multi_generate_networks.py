@@ -5,7 +5,7 @@
 
 import wires
 import numpy as np
-'''
+
 nwires          = 2000
 mean_length     = 10.0
 std_length      = 2.0
@@ -15,7 +15,7 @@ seed            = 1
 Lx              = 150
 Ly              = 150
 folder          = '/import/silo2/joelh/Criticality/Avalanche/BigNetwork/Lx150Ly150/'
-seedList = range(100)
+seedList = range(100, 300)
 
 for seed in seedList:
     # Generate the network
@@ -85,4 +85,4 @@ for nwires in wireList:
         wires_dict = wires.analyse_network(wires_dict)
 
         wires.export_to_matlab(wires_dict, folder = folder)        
-
+'''

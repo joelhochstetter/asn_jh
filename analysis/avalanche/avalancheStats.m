@@ -1,4 +1,4 @@
-function [sizeAv, lifeAv] = avalancheStats(events, t)
+function [sizeAv, lifeAv] = avalancheStats(events, t, joinperiod)
 %{
     Input:
         events (Nx1 array) - number of events at given time bin
@@ -12,6 +12,11 @@ function [sizeAv, lifeAv] = avalancheStats(events, t)
     runMode = 1: use time-step
     runMode = 2: use time-vector to calculate IEI
 
+    joinperiod: for time series which join an ensemble of
+    different simulations stores periodicity so ignores events calculated 
+    between adjacent simulations
+
+
     Output:
         sizeAv (Ax1 array) - number of events in given avalanche
         lifeAv (Ax1 array) - number of bins avalanche goes for 
@@ -21,10 +26,17 @@ function [sizeAv, lifeAv] = avalancheStats(events, t)
 
     if nargin == 1
         runMode = 1; %
-    elseif nargin == 2
+    else
         runMode = 2;
     end
     
+    if nargin < 3
+        joinperiod = -1;
+    end
+    
+    if joinperiod == -1
+        joinperiod = numel(events) + 1;
+    end    
     
     avEdg  = find(events == 0); %edges for avalanches
     
@@ -35,13 +47,23 @@ function [sizeAv, lifeAv] = avalancheStats(events, t)
     
     if runMode == 1
         for avId = 1:A
-            sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
-            lifeAv(avId) = avEdg(avId+1) - avEdg(avId) - 1;
+            if mod(avEdg(avId)-1, joinperiod) == mod(avEdg(avId + 1)-1, joinperiod)
+                sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
+                lifeAv(avId) = avEdg(avId+1) - avEdg(avId) - 1;
+            else
+                sizeAv(avId) = 0;
+                lifeAv(avId)   = 0;
+            end
         end   
     elseif runMode == 2
         for avId = 1:A
-            sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
-            lifeAv(avId) = t(avEdg(avId+1)) - t(avEdg(avId)) - 1;
+            if mod(avEdg(avId)-1, joinperiod) == mod(avEdg(avId + 1)-1, joinperiod)
+                sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
+                lifeAv(avId) = t(avEdg(avId+1)) - t(avEdg(avId)) - 1;
+            else
+                sizeAv(avId) = 0;
+                lifeAv(avId)   = 0;                
+            end
         end   
     end
     

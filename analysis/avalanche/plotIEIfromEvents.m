@@ -1,4 +1,4 @@
-function IEIres = plotIEIfromEvents(G, ddG, t, fitP)
+function IEIres = plotIEIfromEvents(G, ddG, t, fitP, joinperiod)
 %{
     Plots the distribution of inter-event interval
     Inputs:
@@ -16,12 +16,18 @@ function IEIres = plotIEIfromEvents(G, ddG, t, fitP)
                         include
         fitP.logBins: binary depending on whether or not log bins are used
         fitP.useML: use a maxium likelihood method for fitting
-
+        joinperiod: for time series which join an ensemble of
+        different simulations stores periodicity so ignores events calculated 
+        between adjacent simulations
 
     Option to fit if we provide cut-offs
 
 %}
     dt = (t(end) - t(1))/(numel(t) - 1);
+    
+    if nargin < 5
+        joinperiod = -1;
+    end
     
     IEIres = struct();
     

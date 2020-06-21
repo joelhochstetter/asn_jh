@@ -14,24 +14,20 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
         more accurate fit
         binSize (integer): number of time-steps. if number less than zero
         is provided use the mean(IEI)
-        joinperiod (integer):  for time series which join an ensemble of
-        different simulations stores periodicity so ignores events calculated 
-        between adjacent simulations
-        Use -1 for simulations which aren't joins
+        joinperiod (integer): for simulations which join an ensemble of
+        different simulations stores periodici. Use -1 for simulations which aren't joins
 
     Outputs:
         results (struct): Saves the results 
 %}
     
-    if nargin < 10
-        joinperiod = -1;
-        if nargin < 9
-            binSize = -1;
-            if nargin < 8
-                fitML = false;
-            end
+    if nargin < 9
+        binSize = -1;
+        if nargin < 8
+            fitML = false;
         end
     end
+
 
     mkdir(saveFolder)
     
@@ -81,7 +77,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     %% dG distribution
     figure('visible','off');
-    results.dG = plotDeltaG(G, 0, struct('useML', false), joinperiod);%fitML));
+    results.dG = plotDeltaG(G, 0, struct('useML', false));%fitML));
     saveas(gcf, strcat(saveFolder, '/dG.png'))
     close all;
     
@@ -131,7 +127,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     %% Inter-event interval
     figure('visible','off');
-    results.IEI = plotIEIfromEvents(G, events, time, struct('useML', fitML), joinperiod);
+    results.IEI = plotIEIfromEvents(G, events, time, struct('useML', fitML));
     saveas(gcf, strcat(saveFolder, '/IEIdist.png'))
     close all;
 

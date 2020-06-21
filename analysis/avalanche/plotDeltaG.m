@@ -1,4 +1,4 @@
-function dGfit = plotDeltaG(G, pn, fitP)
+function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
 %{
     Plots the distribution of DeltaG
     Inputs:
@@ -14,10 +14,18 @@ function dGfit = plotDeltaG(G, pn, fitP)
                         include
         fitP.useML:  Uses Clauset 2007 maximum likelihood to get power law
         exponent of tail.
+        joinperiod: for time series which join an ensemble of
+        different simulations stores periodicity so ignores events calculated 
+        between adjacent simulations
 
     Option to fit if we provide cut-offs
 
 %}
+
+    if nargin < 4
+        joinperiod = -1;
+    end
+
 
     dGfit = struct();
 
@@ -25,7 +33,7 @@ function dGfit = plotDeltaG(G, pn, fitP)
     dalph = 0.0;
     lc = 0;
 
-    if nargin == 2
+    if nargin < 2
         fitPL = 0;
     else
         fitPL = 1;
@@ -33,6 +41,10 @@ function dGfit = plotDeltaG(G, pn, fitP)
     
     dG = [diff(G), 0];
     dG(isnan(dG)) = 0;        
+    
+    if joinperiod > 0
+        dG(joinperiod:joinperiod:numel(dG)) = 0;
+    end
     
     if fitPL
         %if we exclude points then we do it here

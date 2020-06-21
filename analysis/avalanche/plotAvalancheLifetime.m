@@ -81,9 +81,13 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks] = plotAvalancheLifetime(lifeAv, 
             text(edgeCen(1), fitN(1)/3, strcat('T^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
             legend('not fit', 'inc fit', 'fit')   
             alpha = -fitresult.b;
-            CI  = confint(fitresult, fitP.cLevel);
-            tCI = CI(:,2);
-            dal = (tCI(2) - tCI(1))/2;
+            if numel(unique(lifeAv)) > 2  
+                CI  = confint(fitresult, fitP.cLevel);
+                tCI = CI(:,2);
+                dal = (tCI(2) - tCI(1))/2;
+            else
+                dal = inf;
+            end
         end
 
     end
