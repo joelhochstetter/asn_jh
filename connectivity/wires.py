@@ -654,10 +654,17 @@ def export_to_matlab(wires_dict, filename=None, save_pkl=False, folder = 'connec
         avl  = wires_dict['avg_length']
         disp = wires_dict['dispersion']
         seed = wires_dict['this_seed'] 
+        Lx = wires_dict['length_x']
+        Ly = wires_dict['length_y']
+        '''
         gns = wires_dict['gennorm_shape']
         cdisp = wires_dict['centroid_dispersion']
-
+        
         pars_values = '_asn_nw_%05d_nj_%05d_seed_%03d_avl_%05.2f_disp_%05.2f_gns_%05.2f_cdisp_%05.2f' % (nw, nj, seed, avl, disp, gns, cdisp)
+        '''
+        
+        pars_values = '_asn_nw_%05d_nj_%05d_seed_%03d_avl_%05.2f_disp_%05.2f_lx_%05.2f_ly_%05.2f' % (nw, nj, seed, avl, disp, Lx, Ly)
+        
         filename = timestamp + pars_values
 
     # Save the dictionary for later use in python

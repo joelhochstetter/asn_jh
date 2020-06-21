@@ -44,7 +44,7 @@ function [sizeAv, lifeAv, avTime] = avalancheStats(events, t, joinperiod)
     A      = numel(avEdg) - 1;    
     sizeAv = zeros(A,1);
     lifeAv = zeros(A,1);
-    avTime = zeros(A,A);
+    avTime = zeros(A,1);
     
     if runMode == 1
         for avId = 1:A
