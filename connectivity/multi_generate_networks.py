@@ -26,7 +26,7 @@ parser.add_argument('--nwires',
     
 parser.add_argument('--nwiresMax',
     type    = int,
-    default = args.nwires,
+    default = -1,
     help    = 'The number of nanowires in the network.')
 
 
@@ -47,7 +47,7 @@ parser.add_argument('--seed',
 
 parser.add_argument('--seedMax',
     type    = int, 
-    default = args.seed,
+    default = -1,
     help    ='The maximum seed for the random number generator.')
 
 parser.add_argument('--Lx',
@@ -76,6 +76,12 @@ parser.add_argument('--folder',
     help    ='The folder where the output files will be stored.')
 
 args = parser.parse_args()
+
+if args.nwiresMax == -1:
+    args.nwiresMax = args.nwires
+    
+if args.seedMax == -1:
+    args.seedMax = args.seed
 
 mean_length     = args.mean_length
 std_length      = args.std_length
