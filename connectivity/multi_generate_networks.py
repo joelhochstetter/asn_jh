@@ -55,6 +55,11 @@ parser.add_argument('--Lx',
     default = 100,
     help    ='The horizontal length of the network''s physical substrate in micrometres.')
 
+parser.add_argument('--LxMax',
+    type    = float, 
+    default = -1,
+    help    ='The horizontal length of the network''s physical substrate in micrometres.')
+
 parser.add_argument('--Ly',
     type    = float,
     default = -1,
@@ -86,6 +91,9 @@ if args.seedMax == -1:
 if args.Ly == -1:
     args.Ly = args.Lx
 
+if args.LxMax == -1:
+    args.LxMax = args.Lx
+
 mean_length     = args.mean_length
 std_length      = args.std_length
 shape           = args.shape
@@ -96,33 +104,37 @@ folder          = args.folder
 
 wireList = list(np.unique(np.linspace(args.nwires, args.nwiresMax, args.numSims, dtype = int)))
 seedList = list(np.unique(np.linspace(args.seed,   args.seedMax,   args.numSims, dtype = int)))
+LxList   = list(np.unique(np.linspace(args.Lx,     args.LxMax,     args.numSims, dtype = int))) 
 
 for nwires in wireList: 
     for seed in seedList:
-        # Generate the network
-        wires_dict = wires.generate_wires_distribution(number_of_wires = nwires,
-                                                 wire_av_length = mean_length,
-                                                 wire_dispersion = std_length,
-                                                 gennorm_shape = shape,
-                                                 centroid_dispersion= cent_dispersion,
-                                                 this_seed = seed,
-                                                 Lx = Lx,
-                                                 Ly = Ly)
+        for Lx in LxList:
+        
+            Ly = Lx
+            # Generate the network
+            wires_dict = wires.generate_wires_distribution(number_of_wires = nwires,
+                                                     wire_av_length = mean_length,
+                                                     wire_dispersion = std_length,
+                                                     gennorm_shape = shape,
+                                                     centroid_dispersion= cent_dispersion,
+                                                     this_seed = seed,
+                                                     Lx = Lx,
+                                                     Ly = Ly)
 
 
-        # Get junctions list and their positions
-        wires_dict = wires.detect_junctions(wires_dict)
+            # Get junctions list and their positions
+            wires_dict = wires.detect_junctions(wires_dict)
 
-        # Genreate graph object and adjacency matrix
-        wires_dict = wires.generate_graph(wires_dict)
+            # Genreate graph object and adjacency matrix
+            wires_dict = wires.generate_graph(wires_dict)
 
-        if not wires.check_connectedness(wires_dict):
-            wires_dict = wires.select_largest_component(wires_dict)
+            if not wires.check_connectedness(wires_dict):
+                wires_dict = wires.select_largest_component(wires_dict)
 
-        #Calculate network statistics
-        wires_dict = wires.analyse_network(wires_dict)
+            #Calculate network statistics
+            wires_dict = wires.analyse_network(wires_dict)
 
-        wires.export_to_matlab(wires_dict, folder = folder)
+            wires.export_to_matlab(wires_dict, folder = folder)
     
     
 '''
