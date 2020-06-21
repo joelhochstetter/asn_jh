@@ -75,7 +75,7 @@ parser.add_argument('--folder',
     default = 'connectivity_data',
     help    ='The folder where the output files will be stored.')
 
-
+args = parser.parse_args()
 
 mean_length     = args.mean_length
 std_length      = args.std_length
