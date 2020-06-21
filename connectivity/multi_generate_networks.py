@@ -8,8 +8,6 @@ import numpy as np
 
 import argparse
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
-
 # Create parser for options
 parser = argparse.ArgumentParser(
     description='Handle parameters to generate a network of nanowires and junctions.')
