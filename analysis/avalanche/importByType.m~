@@ -27,12 +27,10 @@ function [G, V, t, fname] = importByType(importMode, importFolder, idx)
                     t = t1;
                     G = abs(I./V);
                     G = [G(2), G, G(end-1)]; 
-                    %fix weird anomalies
                     G(G == inf) = max(G(G < inf));  
                     G(G == 0) = min(G(G > 0)); 
-                    G(isnan(G)) = min(G(~isnan(G)));   
-                    V(1) = V(1) + 1e-6;
-                    V(end) = V(end) + 1e-6;                    
+                    G(isnan(G)) = min(G(~isnan(G))); 
+                    
                     G(abs(V)< 1e-6) = (G(find(abs(V)< 1e-6)-1) + G(find(abs(V)< 1e-6)+1))/2;                  
                     G = G(2:end-1);
                 else
@@ -42,15 +40,12 @@ function [G, V, t, fname] = importByType(importMode, importFolder, idx)
                     [t, I] = fixDupTimes(t, I);
                     V = str2double(my_tdms_struct.Props.Source__V_or_A_)*ones(size(I));
                     G = abs(I./V);
-                    G = [G(2), G, G(end-1)]; 
-                    %fix weird anomalies
-                    G(G == inf) = max(G(G < inf));  
-                    G(G == 0) = min(G(G > 0)); 
-                    G(isnan(G)) = min(G(~isnan(G)));  
-                    V(1) = V(1) + 1e-6;
-                    V(end) = V(end) + 1e-6;                       
-                    G(abs(V)< 1e-6) = (G(find(abs(V)< 1e-6)-1) + G(find(abs(V)< 1e-6)+1))/2;                  
-                    G = G(2:end-1);                
+                    G = [G(2), G, G(end-1)];                                                          
+                    G(abs(V)< 1e-6) = (G(find(abs(V)< 1e-6)-1) + G(find(abs(V)< 1e-6)+1))/2;
+                    G(G == inf) = max(G(G < inf)); 
+                    G(G == 0) = min(G(G > 0));                      
+                    G = G(2:end-1);
+                    G(isnan(G)) = min(G(~isnan(G)));                    
                 end
                 fname = file.name;   
             end

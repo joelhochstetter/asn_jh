@@ -37,7 +37,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
         fname = strcat(fname, importFolder{j}, ',');
         for i = 1:numFiles
             %import file
-            [G, V, t, fname] = importByType(importMode, importFolder{j}, i);
+            [G, V, t, ~] = importByType(importMode, importFolder{j}, i);
             t = t + tjoin(end);
             tjoin = [tjoin, t];
             Gjoin = [Gjoin, G];

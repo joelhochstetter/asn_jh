@@ -6,14 +6,26 @@ function [beta, dbeta] = plotPSD(t, G)
 %}
     
     cLevel = 0.95;
-
+    beta = 0;
+    dbeta = inf;
     G = reshape(G, size(t));
+
+    dt = (t(end) - t(1))/(numel(t) - 1);
+    t  = t(1):dt:t(end);
     
     [t_freq, conductance_freq] = fourier_analysis(t, G);
     conductance_freq = reshape(conductance_freq, size(t_freq));
+   
+    if numel(t_freq) < 2 
+        return
+    end
+    
+%     conductance_freq(conductance_freq <= 0) = 1e-10;
+%     log10(t_freq(t_freq ~= 0 & t_freq<max(t_freq)))'
+%     log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)))'
     
     % Linear fit for log-log plot of PSD:
-    fitRes = polyfitn(log10(t_freq(t_freq~=0 & t_freq<max(t_freq)))', log10(conductance_freq(t_freq~=0 & t_freq<max(t_freq)))', 1);
+    fitRes = polyfitn(log10(t_freq(t_freq ~= 0 & t_freq<max(t_freq)))', log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)))', 1);
     fitCoef = fitRes.Coefficients;
     errors  = fitRes.ParameterStd;
     

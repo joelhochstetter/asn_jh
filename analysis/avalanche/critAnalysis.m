@@ -92,7 +92,8 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.events.numEvents      = sum(events);
     results.events.eventFraction  = sum(events)/numel(time);
     
-    if results.events.numEvents == 0
+    if results.events.numEvents < 2
+        'TERMINATING: No events';
         return;
     end
     

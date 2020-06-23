@@ -78,6 +78,13 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     IEIres.ieiDat = ieiDat;
     IEIres.meanIEI = mean(ieiDat);
     IEIres.ieiTime = ieiTime;
+    IEIres.tau = 1;
+    IEIres.xmin = 1;
+    IEIres.xmax = 1;
+    IEIres.sigmaTau = 1;
+    IEIres.p = 1;
+    IEIres.pCrit = 1;
+    IEIres.ks = 1;  
     
     %[~, ieiDat] = IEI(ddG, 1, t); %uses time-vector
     if fitP.logBins
@@ -92,7 +99,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     loglog((edgesiei(1:end-1) + edgesiei(2:end))/2,Niei, 'bx')
     hold on;
 
-    if fitPL
+    if fitPL && numel(unique(ieiDat)) > 2
         if fitP.useML
             [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(ieiDat);
             IEIres.tau = tau;

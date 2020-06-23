@@ -1,11 +1,11 @@
-function totalCritAnalysis(baseFolder, subfolders, importMode, fitML, ncpu, Gthresh, relthresh, noisefloor)
+function totalCritAnalysis(baseFolder, subfolders, importMode, fitML, ncpu, whatMethods, Gthresh, relthresh, noisefloor)
 %{
 Given a base folder and subfolders:
 - Runs criticality analysis of each file from subfolder (either .mat,
     .tdms, .txt)
 - Runs joint criticality analysis on each subfolder
 - Runs joint criticality analysis on all data combined
-
+- methods is a vector [1,1,1] means run all. [1,0,0] is just threshold
 %}
     cd(baseFolder);
     
@@ -13,8 +13,9 @@ Given a base folder and subfolders:
         subfolders = {subfolders};
     end
 
-    methods = {'hybrid', 'threshold', 'ratioThreshold'};
-
+    methods = {'threshold', 'ratioThreshold', 'hybrid'};
+    methods = methods(whatMethods);
+    
     eventDetect = struct();
     eventDetect.thresh     = Gthresh;
     eventDetect.relThresh  = relthresh;
