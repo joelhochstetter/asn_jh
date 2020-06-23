@@ -33,7 +33,7 @@ function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
     dalph = 0.0;
     lc = 0;
 
-    if nargin < 2
+    if nargin < 3
         fitPL = 0;
     else
         fitPL = 1;

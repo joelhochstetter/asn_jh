@@ -49,6 +49,8 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.net.T = time(end) - time(1) + dt; %time vector
     results.net.V = V;    %voltage
     results.net.meanG = mean(G);
+    results.net.Grat  = max(G)/min(G);
+
     results.net.meanV = mean(V);
     results.net.meanI = mean(G.*V);
     results.net.mdGdt = (G(end) - G(1))/(time(end) - time(1));

@@ -5,7 +5,8 @@ function events =  findEvents(G, eventDetect)
     defEvDet.k_std  = 0.0; %threshold of form dG >= k*std(dG) or dG./G = k*std(dG./G)
     defEvDet.k_mean = 0.0; %threshold of form dG >= k*mean(dG) or dG./G = k*mean(dG./G)
     defEvDet.relThresh = 0.01;
-     
+    defEvDet.noiseFloor = 5e-10;     
+    
     fields = fieldnames(defEvDet);
     for i = 1:numel(fields)
         if isfield(eventDetect, fields{i}) == 0
@@ -15,14 +16,15 @@ function events =  findEvents(G, eventDetect)
     dG = abs(gradient(G));
     dG(isnan(dG)) = 0;
     events = zeros(size(dG));
-
+    dG(dG < eventDetect.noiseFloor) = 0.0;
+    
     switch eventDetect.method 
         case 'threshold'
             dG = abs(dG);
-            events = (dG >= eventDetect.thresh) & (dG >= k_std*std(dG)) & (dG >= k_mean*mean(dG));
+            events = (dG >= eventDetect.thresh) & (dG >= eventDetect.k_std*std(dG)) & (dG >= eventDetect.k_mean*mean(dG));
         case 'ratioThreshold'
             dGG = abs(dG./G);
-            events = (dGG >= eventDetect.thresh) & (dGG >= k_std*std(dGG)) & (dGG >= k_mean*mean(dGG));
+            events = (dGG >= eventDetect.relThresh) & (dGG >= eventDetect.k_std*std(dGG)) & (dGG >= eventDetect.k_mean*mean(dGG));
         case 'hybrid'
             dG = abs(dG);
             dGG = abs(dG./G);

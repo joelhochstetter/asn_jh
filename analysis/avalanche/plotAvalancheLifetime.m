@@ -78,21 +78,21 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
             
         else
             
-            %only include bins within include range to fit
-            fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
-            cutFront = numel(edges(edges < fitP.lc));
-            cutEnd   = numel(edges(edges > fitP.uc));
-            edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
-            fitN     = N(1 + cutFront : end - cutEnd);         
+                %only include bins within include range to fit
+                fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
+                cutFront = numel(edges(edges < fitP.lc));
+                cutEnd   = numel(edges(edges > fitP.uc));
+                edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
+                fitN     = N(1 + cutFront : end - cutEnd);         
+            if numel(unique(edgeCen)) > 2 
+                %fit power law
+                [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
+                plot(fitresult, 'b--', xData, yData, 'gx')
 
-            %fit power law
-            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
-            plot(fitresult, 'b--', xData, yData, 'gx')
-
-            text(edgeCen(1), fitN(1)/3, strcat('T^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-%             legend('not fit', 'inc fit', 'fit')   
-            alpha = -fitresult.b;
-            if numel(unique(lifeAv)) > 2  
+                text(edgeCen(1), fitN(1)/3, strcat('T^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
+    %             legend('not fit', 'inc fit', 'fit')   
+                alpha = -fitresult.b;
+             
                 CI  = confint(fitresult, fitP.cLevel);
                 tCI = CI(:,2);
                 dal = (tCI(2) - tCI(1))/2;
