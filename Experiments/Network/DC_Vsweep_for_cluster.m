@@ -28,7 +28,7 @@ else
             initLamda = sim{1}.swLam(end,:)';
             nameComment = strcat('_initCon', num2str(sim{1}.netC(end)), 'S');
         else
-            [~, tidx] = min(abs(sim.netC - initCon));
+            [~, tidx] = min(abs(sim{1}.netC - initCon));
             initLamda = sim{1}.swLam(tidx,:)';
             nameComment = strcat('_initCon', num2str(sim{1}.netC(tidx)), 'S');
         end
