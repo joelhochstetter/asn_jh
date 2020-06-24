@@ -31,6 +31,7 @@ opts = fitoptions( 'Method', 'NonlinearLeastSquares',  'Lower', [0, -10] );
 opts.Display = 'Off';
 %opts.StartPoint = [0.0902089522168906 0.000276577088656382 -2.77226238631911e-10];
 
+
 % Fit model to data.
 [fitresult, gof] = fit( xData, yData, ft, opts );
 

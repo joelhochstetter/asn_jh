@@ -68,12 +68,12 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
         
         if fitP.useML
             if numel(unique(lifeAv)) > 2             
-                [tau, xmin, xmax, dal, p, pcrit, ks] = plparams(lifeAv);
+                [alpha, xmin, xmax, dal, p, pcrit, ks] = plparams(lifeAv);
                 x = xmin:0.01:xmax;
                 A = N(find(edges <= xmin, 1));
-                y = A*x.^(-tau);
+                y = A*x.^(-alpha);
                 loglog(x, y, 'r--');
-                text(x(2), y(2)/3, strcat('T^{-', num2str(tau,3),'}'), 'Color','r')
+                text(x(2), y(2)/3, strcat('T^{-', num2str(alpha,3),'}'), 'Color','r')
             end
             
         else
