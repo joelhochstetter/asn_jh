@@ -51,11 +51,11 @@ function [sizeAv, lifeAv, avTime] = avalancheStats(events, t, joinperiod)
             if floor((avEdg(avId)-1)/joinperiod) == floor((avEdg(avId + 1)-1)/joinperiod)
                 sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
                 lifeAv(avId) = avEdg(avId+1) - avEdg(avId) - 1;
-                avTime(avEdg(avId)) = avEdg(avId);
+                avTime(avId) = avEdg(avId);
             else
                 sizeAv(avId) = 0;
                 lifeAv(avId)   = 0;
-                avTime(avEdg(avId)) = avEdg(avId);                
+                avTime(avId) = avEdg(avId);                
             end
         end   
     elseif runMode == 2
@@ -63,11 +63,11 @@ function [sizeAv, lifeAv, avTime] = avalancheStats(events, t, joinperiod)
             if floor((avEdg(avId)-1)/joinperiod) == floor((avEdg(avId + 1)-1)/joinperiod)
                 sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
                 lifeAv(avId) = t(avEdg(avId+1)) - t(avEdg(avId)) - 1;
-                avTime(avEdg(avId)) = avEdg(avId);                
+                avTime(avId) = avEdg(avId);                
             else
                 sizeAv(avId) = 0;
                 lifeAv(avId)   = 0;    
-                avTime(avEdg(avId)) = avEdg(avId);                
+                avTime(avId) = 0;                
             end
         end   
     end
