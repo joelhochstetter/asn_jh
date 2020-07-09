@@ -371,23 +371,20 @@ clc
 
     end
     
-    %add new nodes
-    numNew = numel(Connectivity.addNodes);
-    if numNew > 0
-        oldNumNodes = Connectivity.NumberOfNodes;
-        Connectivity.NumberOfNodes = oldNumNodes + numNew;
-        for i = 1:numNew
-            Connectivity.weights(oldNumNodes + i, Connectivity.addNodes{i}) = 1;
-            Connectivity.weights(Connectivity.addNodes{i}, oldNumNodes + i) = 1;
-            if strcmp(Connectivity.WhichMatrix, 'nanoWires')
-            %if nanowire rep then places nanowire at centroid and 
-                Connectivity.wireDistances(oldNumNodes + i) = 1;
-                Connectivity.VertexPosition(oldNumNodes + i,:) = mean(Connectivity.VertexPosition(oldNumNodes + i,:), 1);
-                Connectivity.WireEnds(oldNumNodes + i,:) = [Connectivity.VertexPosition(oldNumNodes + i,:), Connectivity.VertexPosition(oldNumNodes + i,:)] + [-0.5,0,0.5,0];
-                Connectivity.EdgePosition(end + 1:numel(Connectivity.addNodes{i}),:) = Connectivity.VertexPosition(Connectivity.addNodes{i},:);
-            end
-        end
-    end
+    
+    if numel(Connectivity.addNodes) > 0
+        Connectivity.NumberOfNodes = Connectivity.NumberOfNodes + numel(Connectivity.addNodes);
+        Connectivity.we
+    end    
+    
+    
+                Connectivity.GridSize       = [length_x,length_y];
+            Connectivity.NumberOfNodes  = number_of_wires;
+            Connectivity.weights        = adj_matrix;
+            Connectivity.wireDistances  = wire_distances;
+            Connectivity.VertexPosition = [xc;yc].';
+            Connectivity.WireEnds       = [xa;ya;xb;yb].';
+            Connectivity.EdgePosition   = [xi;yi].';
     
     
     % Generate fields that are common to all matrices
