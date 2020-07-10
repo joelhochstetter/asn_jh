@@ -149,7 +149,11 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
                 % row rather than a column vector.
                 
         case 'nonlinearres'
-                resistance =  compPtr.comp.voltage.^2+1e-7;
+            resistance =  compPtr.comp.voltage.^2+1e-7;
+                
+        case 'brownModel'
+            %updated in updateComponentState.m
+%             resistance = (compPtr.comp.OnOrOff.*(compPtr.comp.onResistance - compPtr.comp.offResistance)) + compPtr.comp.offResistance;
     end    
     
     % Components that are resistors have resistance 'onResistance',

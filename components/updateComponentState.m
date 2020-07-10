@@ -130,8 +130,42 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
 
            compPtr.comp.filamentState (compPtr.comp.filamentState >  compPtr.comp.maxFlux) =  compPtr.comp.maxFlux(compPtr.comp.filamentState >  compPtr.comp.maxFlux);
            compPtr.comp.filamentState (compPtr.comp.filamentState < -compPtr.comp.maxFlux) = -compPtr.comp.maxFlux(compPtr.comp.filamentState < -compPtr.comp.maxFlux);            
-                         
         
+           
+        case 'brownModel'
+            onOrOff = compPtr.comp.OnOrOff;
+            electricField = abs(compPtr.comp.voltage./compPtr.comp.filamentState);
+            current       = abs(compPtr.comp.voltage.*compPtr.comp.resistance);
+            
+            %update filament length
+            compPtr.comp.filamentState(electricField > compPtr.comp.setEField) = ...
+                compPtr.comp.filamentState(electricField > compPtr.comp.setEField) - ...
+                (electricField - compPtr.comp.setEField) ...
+                .* compPtr.comp.setRate * dt;
+            
+            compPtr.comp.filamentState(compPtr.comp.filamentState < 0.0) = 0.0;
+            
+            %update filament width
+            compPtr.comp.filamentWidth(current > compPtr.comp.resetCurrent) = ...
+                compPtr.comp.filamentWidth(current > compPtr.comp.resetCurrent) - ...
+                (current - compPtr.comp.resetCurrent) ...
+                .* compPtr.comp.decayRate * dt; 
+            
+            compPtr.comp.filamentWidth(compPtr.comp.filamentWidth < 0.0) = 0.0;
+            
+            compPtr.comp.OnOrOff = (compPtr.comp.filamentState == 0.0);
+           
+            %switched on:
+            switchOn = compPtr.comp.OnOrOff > onOrOff;
+            compPtr.comp.filamentWidth(switchOn) = compPtr.comp.maxFilWidth;
+            compPtr.comp.resistance(switchOn) = compPtr.comp.onResistance;
+            
+            %switched off:
+            switchOff = compPtr.comp.OnOrOff < onOrOff;         
+            compPtr.comp.filamentState(switchOff) = compPtr.comp.gapDistance;
+            compPtr.comp.resistance(switchOff) = compPtr.comp.offResistance;
+            
+            
     end          
                
 
