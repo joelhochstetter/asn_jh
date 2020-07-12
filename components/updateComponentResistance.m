@@ -153,12 +153,13 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
                 
         case 'brownModel'
             %updated in updateComponentState.m
-%             resistance = (compPtr.comp.OnOrOff.*(compPtr.comp.onResistance - compPtr.comp.offResistance)) + compPtr.comp.offResistance;
+            resistance = (compPtr.comp.OnOrOff.*(compPtr.comp.onResistance - compPtr.comp.offResistance)) + compPtr.comp.offResistance;
     end    
     
-    % Components that are resistors have resistance 'onResistance',
+    % Components that are resistors have resistance 'lowResistance':
+    % treated as having negligible resistance
     % regardless of anything else:
-    resistance(compPtr.comp.identity == 0) = compPtr.comp.onResistance(compPtr.comp.identity == 0);
+    resistance(compPtr.comp.identity == 0) = compPtr.comp.lowResistance;
     
     % Modify the input with the updated resistance values:
     compPtr.comp.resistance = resistance;

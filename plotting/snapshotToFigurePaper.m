@@ -226,12 +226,12 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
 
         % Highlight a nanowire
         if numel(highlightNodes) > 0
-            highlight(p, highlightNodes, 'NodeColor','r','Marker', 'square','MarkerSize',10)  
+            highlight(p, highlightNodes, 'NodeColor','r','Marker', 'square','MarkerSize',6)  
         end
           
         % Highlight an edge
         if numel(highlightEdges) > 0
-            highlight(p, connectivity.EdgeList(1,highlightEdges),connectivity.EdgeList(2,highlightEdges), 'LineWidth',10, 'LineStyle','-')%,'Marker', 'square','MarkerSize',10)
+            highlight(p, connectivity.EdgeList(1,highlightEdges),connectivity.EdgeList(2,highlightEdges), 'LineWidth',6, 'LineStyle','-')%,'Marker', 'square','MarkerSize',10)
         end
         
         
@@ -411,7 +411,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             
             % colorbar:               
             cbar.Label.String = 'Junction Conductance (units of G_0)';
-            cbar.FontSize = 18;
+            cbar.FontSize = 9;
             for i = 1:numel(cbar.Ticks)
                 cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
             end
@@ -457,7 +457,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
 
 
         %Set title
-      %  title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 18);
+       title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV)), 'fontsize', 10);
 %         ax = gca;
 %         outerpos = ax.OuterPosition;
 %         ti = ax.TightInset; 

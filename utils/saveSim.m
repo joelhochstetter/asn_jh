@@ -28,7 +28,9 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         case 'tunnelSwitchL'
             swType = 'tl';            
         case 'linearSwitch'
-            swType = 'l';               
+            swType = 'l';            
+        case 'brownModel'
+            swType = 'b';                 
     end
     
     sim.T = SimulationOptions.T;
@@ -45,7 +47,10 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         sim.LyapunovMax = Output.LyapunovMax;
     end
         
-
+    if numel(Connectivity.NewNodes) > 0
+        sim.NewNodes = Connectivity.NewNodes;
+        sim.NewEdges = Connectivity.NewEdges;        
+    end
     sim.ContactNodes = SimulationOptions.ContactNodes;
     sim.Comp.setV = Components.setVoltage(1);
     sim.Comp.resetV = Components.resetVoltage(1);
@@ -67,16 +72,6 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         sim.misc = SimulationOptions.misc;
     end
     
-%     filename =  strcat(SimulationOptions.saveFolder, '/', swType,'_T',num2str(sim.T),'_',sim.Stim.stimName,'_s', ...
-%         num2str(sim.Comp.setV,3), '_r', num2str(sim.Comp.resetV,3),'_c', ...
-%         num2str(sim.Comp.critFlux,3), '_m', num2str(sim.Comp.maxFlux,3), '_b', ...
-%         num2str(sim.Comp.boost,3),'_p',num2str(sim.Comp.pen,3),SimulationOptions.nameComment);
-    
-    
-%     filename =  strcat(SimulationOptions.saveFolder, '/', swType,'_T',num2str(sim.T),'_',sim.Stim.stimName,'_s', ...
-%     num2str(sim.Comp.setV,3), '_r', num2str(sim.Comp.resetV,3),'_c', ...
-%     num2str(sim.Comp.critFlux,3), '_m', num2str(sim.Comp.maxFlux,3), '_b', ...
-%     num2str(sim.Comp.boost,3),'_p',num2str(sim.Comp.pen,3),SimulationOptions.nameComment);
     
     %this check occurs again in case of duplicities from parallel sim
     %check if the filename exists already and updates the name 

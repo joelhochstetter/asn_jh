@@ -198,7 +198,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
         %G.Edges.Weight = full(snapshot.Voltage(1:connectivity.NumberOfEdges));
 
         hold all;
-        p = plot(G,'Layout','auto','LineStyle','-','LineWidth',2.5, 'MarkerSize',5);
+        p = plot(G,'Layout','auto','LineStyle','-','LineWidth',4, 'MarkerSize',5);
 
         % Highlight on switches
             % Find the edges which correspond to OFF switches:
@@ -402,7 +402,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             
             % colorbar:               
             cbar.Label.String = 'Junction Conductance (units of G_0)';
-            cbar.FontSize = 18;
+            cbar.FontSize = 10;
             for i = 1:numel(cbar.Ticks)
                 cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
             end
@@ -426,7 +426,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
 
 
         %Set title
-        title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 18);
+        title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV)), 'fontsize', 10);
 %         ax = gca;
 %         outerpos = ax.OuterPosition;
 %         ti = ax.TightInset; 
@@ -440,8 +440,8 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
        
         xl = xlim;
         yl = ylim;
-        xlim([-4.0,4.3])
-        ylim([-3.5,4.5])
+%         xlim([-4.0,4.3])
+%         ylim([-3.5,4.5])
         
         hold off;
         

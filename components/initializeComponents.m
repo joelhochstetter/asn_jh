@@ -43,6 +43,8 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.offResistance = 1e-8;
     default.filamentState = 0.0;
     default.resistance    = 1e-7; %conductance of passive elements
+    default.lowResistance = 1; %for passive elements with fixed resistance
+    default.passiveRes     = []; %list of passive resistive elements
     %default.OnOrOff       = 0.0;
     default.setVoltage    = 0.3;%1e-2; %0.3
     default.resetVoltage  = 1e-2;%1e-3; %0.01
@@ -58,6 +60,8 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.fusePower =  2.5e-5; %for uni-polar switch only
     default.fuseFactor = 1.1;
     
+    
+    
     if strcmp(Components.ComponentType, 'brownModel')
         %parameters for Brown model
         default.setRate       = 5e-7;
@@ -68,7 +72,9 @@ function Components = initializeComponents(E,Components, NodalAnal)
         default.setEField     = 10;
         default.resetCurrent  = 0.01;
         default.barrHeight    = 100;
-        default.onResistance  = 10;        
+        default.onResistance  = 10;     
+        default.filamentWidth = default.maxFilWidth;
+        default.filamentState  = default.gapDistance;
     end    
     
     
@@ -94,8 +100,12 @@ function Components = initializeComponents(E,Components, NodalAnal)
     end
       
 
+    Components.identity      = ones(E,1);          % 0 for a passive resistor, 1 for an active element    
+    for i = Components.passiveRes
+        Components.identity(i) = 0;
+    end
     
-    Components.identity      = ones(E,1);          % 0 for a passive resistor, 1 for an active element
+
         % If one wants an element to be active with probability p,
         % Components.identity      = [rand(E,1) <= p ; 0];
         
@@ -138,9 +148,10 @@ function Components = initializeComponents(E,Components, NodalAnal)
 
     
     Components.voltage       = zeros(E,1);             % (Volt)
-    Components.resistance    = ones(E,1)*1e7;             % (Ohm) (memory allocation)
+    Components.resistance    = ones(E,1)*100;             % (Ohm) (memory allocation)
     Components.onResistance  = ones(E,1)*Components.onResistance;   % (Ohm) 1/(12.9 kOhm) = conductance quantum
     Components.offResistance = ones(E,1)*Components.offResistance; %*1e7;   % (Ohm) literature values
+    
     
     if NodalAnal
         sz = E;
