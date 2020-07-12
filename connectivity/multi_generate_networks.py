@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--numSims',
     type    = int,
     default = 10,
-    help    = 'The number of nanowires in the network.')
+    help    = 'The number of sims in the network.')
 
 
 parser.add_argument('--nwires',
@@ -86,7 +86,7 @@ if args.nwiresMax == -1:
     args.nwiresMax = args.nwires
     
 if args.seedMax == -1:
-    args.seedMax = args.seed
+    args.seedMax = args.seed + 1
 
 if args.Ly == -1:
     args.Ly = args.Lx
