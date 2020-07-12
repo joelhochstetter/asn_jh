@@ -43,6 +43,8 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.offResistance = 1e-8;
     default.filamentState = 0.0;
     default.resistance    = 1e-7; %conductance of passive elements
+    default.lowResistance = 1; %for passive elements with fixed resistance
+    default.passiveRes     = []; %list of passive resistive elements
     %default.OnOrOff       = 0.0;
     default.setVoltage    = 0.3;%1e-2; %0.3
     default.resetVoltage  = 1e-2;%1e-3; %0.01
@@ -57,6 +59,25 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.hybrid         = false;
     default.fusePower =  2.5e-5; %for uni-polar switch only
     default.fuseFactor = 1.1;
+    
+    
+    
+    if strcmp(Components.ComponentType, 'brownModel')
+        %parameters for Brown model
+        default.setRate       = 5e-7;
+        default.decayRate     = 3e-5;
+        default.tunRes        = 1;
+        default.gapDistance   = 0.3454;
+        default.maxFilWidth   = 1.0;
+        default.setEField     = 10;
+        default.resetCurrent  = 0.01;
+        default.barrHeight    = 100;
+        default.onResistance  = 10;     
+        default.filamentWidth = default.maxFilWidth;
+        default.filamentState  = default.gapDistance;
+    end    
+    
+    
     
     %{    
         Noise can be added to all junctions by the function junctionNoise.m
@@ -79,8 +100,12 @@ function Components = initializeComponents(E,Components, NodalAnal)
     end
       
 
+    Components.identity      = ones(E,1);          % 0 for a passive resistor, 1 for an active element    
+    for i = Components.passiveRes
+        Components.identity(i) = 0;
+    end
     
-    Components.identity      = ones(E,1);          % 0 for a passive resistor, 1 for an active element
+
         % If one wants an element to be active with probability p,
         % Components.identity      = [rand(E,1) <= p ; 0];
         
@@ -95,7 +120,8 @@ function Components = initializeComponents(E,Components, NodalAnal)
             are allowed corresponding to filament growth in reverse direction
         'HPnonpolar': an equivalent version to the HP model with rectangular window function
         'thresholdQC': my original bad model for higher conductance quantum
-        
+        'brownModel':  Simon Brown's atomic switch model
+    
         To implement (as of 26/4):
         'HPbipolar': bipolar HP model. 
         HP model with window functions. e.g. Biolek, Jogeskar, parabolic
@@ -111,16 +137,21 @@ function Components = initializeComponents(E,Components, NodalAnal)
             Components.stateEquation = 'thresholdHybrid';
         elseif strcmp(Components.ComponentType, 'quantCSwitch') || strcmp(Components.ComponentType, 'hybridSwitch')
             Components.stateEquation = 'thresholdQC';
+        elseif strcmp(Components.ComponentType, 'brownModel') 
+        %Model from Pike et. al 2020 Nano Lettters: doi:10.1021/acs.nanolett.0c01096
+        %Described in MyNotes200710
+            Components.stateEquation = 'brownModel';
         else
             Components.stateEquation  = 'thresholdPolar';
         end
     end
-    
+
     
     Components.voltage       = zeros(E,1);             % (Volt)
-    Components.resistance    = ones(E,1)*1e7;             % (Ohm) (memory allocation)
+    Components.resistance    = ones(E,1)*100;             % (Ohm) (memory allocation)
     Components.onResistance  = ones(E,1)*Components.onResistance;   % (Ohm) 1/(12.9 kOhm) = conductance quantum
     Components.offResistance = ones(E,1)*Components.offResistance; %*1e7;   % (Ohm) literature values
+    
     
     if NodalAnal
         sz = E;
@@ -162,6 +193,14 @@ function Components = initializeComponents(E,Components, NodalAnal)
             
         case 'nonlinearres'
            Components.OnOrOff        = [];
+           
+        case 'brownModel'
+            Components.gapDistance   = ones(sz,1).*Components.gapDistance;
+            Components.filamentState = ones(sz,1).*Components.filamentState;
+            Components.filamentWidth = ones(sz,1).*Components.filamentWidth;
+            Components.OnOrOff       = true(sz,1); 
+            Components.offResistance = Components.tunRes.*exp(Components.gapDistance .* Components.barrHeight);
 
+            
     end
 end

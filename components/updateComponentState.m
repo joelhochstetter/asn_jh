@@ -114,13 +114,13 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
                          
                          
         case 'thresholdHybrid'
-            compPtr.comp.filamentState = - dt * compPtr.comp.boost* compPtr.comp.filamentState;
+            wasOpen = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;            
+            compPtr.comp.filamentState = compPtr.comp.filamentState - dt * compPtr.comp.boost* compPtr.comp.filamentState;
             compPtr.comp.filamentState = compPtr.comp.filamentState + ...
                                          (abs(compPtr.comp.voltage) > compPtr.comp.setVoltage) .* ...
                                          (abs(compPtr.comp.voltage) - compPtr.comp.setVoltage) .* ...
                                          sign(compPtr.comp.voltage) ...
                                          * dt;
-
 
             if compPtr.comp.noiseLevel > 0.0
                 compPtr.comp.filamentState = compPtr.comp.filamentState + ...
@@ -128,10 +128,48 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
                     compPtr.comp.noiseLevel, numel(compPtr.comp.filamentState));
             end
 
+           % Filaments that have just disconnected suffer a blow:
+           justClosed = wasOpen & (abs(compPtr.comp.filamentState) < compPtr.comp.criticalFlux);
+           compPtr.comp.filamentState(justClosed) = compPtr.comp.filamentState(justClosed) / compPtr.comp.penalty(1);            
+            
            compPtr.comp.filamentState (compPtr.comp.filamentState >  compPtr.comp.maxFlux) =  compPtr.comp.maxFlux(compPtr.comp.filamentState >  compPtr.comp.maxFlux);
            compPtr.comp.filamentState (compPtr.comp.filamentState < -compPtr.comp.maxFlux) = -compPtr.comp.maxFlux(compPtr.comp.filamentState < -compPtr.comp.maxFlux);            
-                         
-        
+            
+           
+        case 'brownModel'
+            onOrOff = compPtr.comp.OnOrOff;
+            electricField = abs(compPtr.comp.voltage./compPtr.comp.filamentState);
+            current       = abs(compPtr.comp.voltage.*compPtr.comp.resistance);
+            
+            %update filament length
+            compPtr.comp.filamentState(electricField > compPtr.comp.setEField) = ...
+                compPtr.comp.filamentState(electricField > compPtr.comp.setEField) - ...
+                (electricField(electricField > compPtr.comp.setEField) - compPtr.comp.setEField) ...
+                .* compPtr.comp.setRate * dt;
+            
+            compPtr.comp.filamentState(compPtr.comp.filamentState < 0.0) = 0.0;
+            
+            %update filament width
+            compPtr.comp.filamentWidth(current > compPtr.comp.resetCurrent) = ...
+                compPtr.comp.filamentWidth(current > compPtr.comp.resetCurrent) - ...
+                (current(current > compPtr.comp.resetCurrent) - compPtr.comp.resetCurrent) ...
+                .* compPtr.comp.decayRate * dt; 
+            
+            compPtr.comp.filamentWidth(compPtr.comp.filamentWidth < 0.0) = 0.0;
+            
+            compPtr.comp.OnOrOff = (compPtr.comp.filamentState == 0.0);
+           
+            %switched on:
+            switchOn = compPtr.comp.OnOrOff > onOrOff;
+            compPtr.comp.filamentWidth(switchOn) = compPtr.comp.maxFilWidth(switchOn);
+%             compPtr.comp.resistance(switchOn) = compPtr.comp.onResistance(switchOn);
+            
+            %switched off:
+            switchOff = compPtr.comp.OnOrOff < onOrOff;         
+            compPtr.comp.filamentState(switchOff) = compPtr.comp.gapDistance(switchOff);
+%             compPtr.comp.resistance(switchOff) = compPtr.comp.offResistance(switchOff);
+            
+            
     end          
                
 

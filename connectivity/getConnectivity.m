@@ -1,4 +1,4 @@
-function [Connectivity] = getConnectivity(Connectivity)
+function Connectivity = getConnectivity(Connectivity)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generates a structure with an adjacency matrix and its properties.
 %
@@ -90,6 +90,9 @@ clc
 % Paula Sanz-Leon
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    NewNodes = [];
+    NewEdges = [];
+
 % Assign default values:
     if ~isfield(Connectivity,'NumberOfNodes')
         Connectivity.NumberOfNodes = 42;
@@ -106,6 +109,19 @@ clc
     if ~isfield(Connectivity,'WhichMatrix')
         Connectivity.WhichMatrix = 'nanoWires';
     end
+    
+    
+    %{
+        in order to implement different electrode
+        must be a cell array of arrays. Each element of cell array is list
+        of nodes connected to by this node.
+        e.g. {[1,2,6], 8} would add 2 extra nodes. One is connected to
+        [1,2,6] and other is connected to 8
+    %}
+    if ~isfield(Connectivity,'addNodes')
+        Connectivity.addNodes = {};
+    end    
+    
     
 % Add fields that are specific to Connectivity types
     switch Connectivity.WhichMatrix    
@@ -357,14 +373,55 @@ clc
     %---------------------------------------------------------------------%  
 
     end
- 
+    
+    %add new nodes
+    numNew = numel(Connectivity.addNodes);
+    if numNew > 0
+        oldNumNodes = double(Connectivity.NumberOfNodes);
+        Connectivity.NumberOfNodes = oldNumNodes + numNew;
+        adjMat = Connectivity.weights;
+        Connectivity.weights = single(zeros(Connectivity.NumberOfNodes));
+        Connectivity.weights(1:oldNumNodes,1:oldNumNodes) = adjMat;
+        
+        for i = 1:numNew
+            Connectivity.weights(oldNumNodes + i, Connectivity.addNodes{i}) = 1;
+            Connectivity.weights(Connectivity.addNodes{i}, oldNumNodes + i) = 1;
+            if strcmp(Connectivity.WhichMatrix, 'nanoWires')
+            %if nanowire rep then places nanowire at centroid and 
+                Connectivity.wireDistances(oldNumNodes + i) = 1;
+                Connectivity.VertexPosition(oldNumNodes + i,1:2) = mean(Connectivity.VertexPosition(Connectivity.addNodes{i},1:2), 1);
+                Connectivity.WireEnds(oldNumNodes + i,1:4) = [Connectivity.VertexPosition(oldNumNodes + i,1:2), Connectivity.VertexPosition(oldNumNodes + i,1:2)] + [-0.5,0,0.5,0];
+%                 AddEdges = size(Connectivity.EdgePosition, 1)  + (1:numel(Connectivity.addNodes{i}));
+                %Edge position currently doesn't work
+                Connectivity.EdgePosition(end + (1:numel(Connectivity.addNodes{i})),1:2) = Connectivity.VertexPosition(Connectivity.addNodes{i},1:2);
+            end
+%             if isfield(Connectivity,'EdgeList')
+%                 Connectivity.EdgeList(1:2, end + (1:numel(Connectivity.addNodes{i}))) = [Connectivity.addNodes{i}; oldNumNodes + i];
+%             end
+%             NewEdges = [NewEdges, AddEdges];
+        end
+        NewNodes = [oldNumNodes + (1:numNew)];
+        if isfield(Connectivity,'EdgeList')        
+            Connectivity = rmfield(Connectivity, 'EdgeList');
+        end
+    end
+    
+    
     % Generate fields that are common to all matrices
     if ~isfield(Connectivity,'EdgeList')
         [ii, jj] = find(tril(Connectivity.weights)); 
         Connectivity.EdgeList = [jj ii]'; 
         % (2XE matrix, must follow the conventions specified above)
     end
- 
+    
+    %get new edges
+    if numNew > 0
+        for i = NewNodes
+            [~,NE] = find(Connectivity.EdgeList == i);
+            NewEdges = sort([NewEdges;NE]);
+        end
+    end
+    
     Connectivity.NumberOfEdges = size(Connectivity.EdgeList, 2);
  
     if ~isfield(Connectivity,'speed')
@@ -381,26 +438,15 @@ clc
             Connectivity.NodeStr{ns} = num2str(ns);
         end
     end
-
+    
+    
     if ~isfield(Connectivity,'VertexPosition')
         % Generate position
         Connectivity.VertexPosition = [(1:Connectivity.NumberOfNodes).' zeros(Connectivity.NumberOfNodes,2)];
     end
-    %{
     
-    % We don't need wire distances for now
-    if ~isfield(Connectivity,'wireDistances')
-        % Generate distance and delay matrix
-        wireDistances = [0:Connectivity.NumberOfNodes/2  (Connectivity.NumberOfNodes/2-1):-1:1];
-        for n=2:Connectivity.NumberOfNodes 
-            wireDistances = [wireDistances ; circshift(wireDistances(n-1,:),[0 1])]; 
-        end
-        Connectivity.wireDistances = wireDistances.*Connectivity.dx;
-    end
-
-    if ~isfield(Connectivity,'delay')
-        Connectivity.delay =  Connectivity.wireDistances .* Connectivity.speed;
-    end
-    %}
+    
+    Connectivity.NewNodes = NewNodes;    
+    Connectivity.NewEdges = NewEdges;
 
 end
