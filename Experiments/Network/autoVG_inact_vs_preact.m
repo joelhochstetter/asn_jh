@@ -40,14 +40,14 @@ function autoVG_inact_vs_preact(params, saveFolder, splength)
     Vlist = Vlist1;
     idx = [];
     idx(1) = find(Vlist >= 0.0,1);
-    idx(2) = find(Vlist >= 0.06,1);
-    idx(3) = find(Vlist >= 0.08,1);
-    idx(4) = find(Vlist >= 0.0899,1);
-    idx(5) = find(Vlist >= 0.10,1);
-    idx(6) = find(Vlist >= 0.12,1);
-    idx(7) = find(Vlist >= 0.15,1);
-    idx(8) = find(Vlist >= 0.20,1);
-    idx(9) = find(Vlist >= 0.25,1);
+    idx(2) = find(Vlist >= 0.06/9*splength,1);
+    idx(3) = find(Vlist >= 0.08/9*splength,1);
+    idx(4) = find(Vlist >= 0.0899/9*splength,1);
+    idx(5) = find(Vlist >= 0.10/9*splength,1);
+    idx(6) = find(Vlist >= 0.12/9*splength,1);
+    idx(7) = find(Vlist >= 0.15/9*splength,1);
+    idx(8) = find(Vlist >= 0.20/9*splength,1);
+    idx(9) = find(Vlist >= 0.25/9*splength,1);
 
     leg = {};
     cmap = parula(10);
@@ -85,13 +85,13 @@ function autoVG_inact_vs_preact(params, saveFolder, splength)
     
     
     idx = zeros(7,1);
-    idx(1) = find(Vlist >= 0.08,1);
-    idx(2) = find(Vlist >= 0.0899,1);
-    idx(3) = find(Vlist >= 0.10,1);
-    idx(4) = find(Vlist >= 0.12,1);
-    idx(5) = find(Vlist >= 0.15,1);
-    idx(6) = find(Vlist >= 0.20,1);
-    idx(7) = find(Vlist >= 0.25,1);
+    idx(1) = find(Vlist >= 0.08/9*splength,1);
+    idx(2) = find(Vlist >= 0.0899/9*splength,1);
+    idx(3) = find(Vlist >= 0.10/9*splength,1);
+    idx(4) = find(Vlist >= 0.12/9*splength,1);
+    idx(5) = find(Vlist >= 0.15/9*splength,1);
+    idx(6) = find(Vlist >= 0.20/9*splength,1);
+    idx(7) = find(Vlist >= 0.25/9*splength,1);
     % idx(10) = find(Vlist >= 1.0,1)
     leg = {};
     cmap = parula(10);
