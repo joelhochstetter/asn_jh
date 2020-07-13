@@ -1,7 +1,0 @@
-function DC_Vsweep_change_PathLength(idx, saveFolder) 
-    
-    
-    DC_Vsweep_for_cluster(idx, saveFolder, 1e-2*0.5, 1e-2*3.0, 1e-2*0.05, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon)
-
-
-end

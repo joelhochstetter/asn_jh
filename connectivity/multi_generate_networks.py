@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--numSims',
     type    = int,
     default = 10,
-    help    = 'The number of nanowires in the network.')
+    help    = 'The number of sims in the network.')
 
 
 parser.add_argument('--nwires',
@@ -75,6 +75,13 @@ parser.add_argument('--shape',
     default = 5.0,
     help    = 'Shape parameter beta. Passed to the generalised normal distribution. Value of 2 is normal. ->inf is uniform.')
 
+
+parser.add_argument('--density', 
+    type    = float, 
+    default = -1, #e.g. 0.1
+    help    = 'number of wires per um^2.')
+
+
 parser.add_argument('--folder', 
     type    = str, 
     default = 'connectivity_data',
@@ -86,10 +93,13 @@ if args.nwiresMax == -1:
     args.nwiresMax = args.nwires
     
 if args.seedMax == -1:
-    args.seedMax = args.seed
+    args.seedMax = args.seed + 1
 
 if args.Ly == -1:
     args.Ly = args.Lx
+    square = True
+else:
+    square = False
 
 if args.LxMax == -1:
     args.LxMax = args.Lx
@@ -101,19 +111,39 @@ cent_dispersion = args.cent_dispersion
 Lx              = args.Lx
 Ly              = args.Ly
 folder          = args.folder
+density         = args.density
 
 wireList = list(np.unique(np.linspace(args.nwires, args.nwiresMax, args.numSims, dtype = int)))
 seedList = range(args.seed, args.seedMax)
-LxList   = list(np.unique(np.linspace(args.Lx,     args.LxMax,     args.numSims, dtype = int))) 
-print('Seeds: ', list(seedList))
-print('Wires: ', list(wireList))
-print('Sizes: ', list(LxList))
+LxList   = list(np.unique(np.linspace(args.Lx,     args.LxMax,     args.numSims, dtype = int)))
+
+print('multi_generate_networks:')
+
+if density == -1:
+    print('Seeds: ', list(seedList))
+    print('Wires: ', list(wireList))
+    print('Sizes: ', list(LxList))
+    fixedDensity = False
+else:
+    wireList = [-1]
+    print('Density: ', density)
+    print('Seeds: ', list(seedList))
+    print('Sizes: ', list(LxList))    
+    fixedDensity = True
+
+print('Fixed density = ', fixedDensity)
+print('Square = ', fixedDensity)
+
 
 for nwires in wireList: 
     for seed in seedList:
         for Lx in LxList:
-        
-            Ly = Lx
+            if square:
+                Ly = Lx         
+            if fixedDensity:
+                nwires = int(density*Lx*Ly)
+            
+            print('Now generating: nwires = ', nwires, ', seed = ', seed, ' grid = ', Lx, 'x', Ly, 'um^2')
             # Generate the network
             wires_dict = wires.generate_wires_distribution(number_of_wires = nwires,
                                                      wire_av_length = mean_length,
