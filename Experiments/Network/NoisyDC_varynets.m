@@ -9,6 +9,6 @@ function NoisyDC_varynets(idx, saveFolder, netFolder)
 
     %folders by network. Add a comment
     %add a resscale path length option
-    NoisyDC_Vsweep_for_cluster(1, saveF1, 1.05*1e-2, 1.06*1e-2, 0.05*1e-2, connFile, 0 , '', -1, 1e5, 1e-2, 1, 0, 1)
+    NoisyDC_Vsweep_for_cluster(1, saveF1, 1.05*1e-2, 1.06*1e-2, 0.05*1e-2, connFile, 0 , '', -1, 1e5, 5e-3, 1, 0, 1)
 
 end
