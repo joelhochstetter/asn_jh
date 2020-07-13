@@ -1,4 +1,4 @@
-function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, Vreset, pen, multiElectrode)
+function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, Vreset, pen, multiElectrode, rescalePLength)
 %{
     e.g. usuage
     attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
@@ -52,6 +52,10 @@ function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, co
         multiElectrode = 0;
     end
 
+    if nargin < 14
+        rescalePLength = false;
+    end
+    
 
     %%
     params = struct();
@@ -99,6 +103,17 @@ function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, co
     %Set connect file
     params.Conn.filename = connFile;
 
+    
+    if rescalePLength
+        [Connectivity] = getConnectivity(params.Conn);
+        SimulationOptions = selectContacts(Connectivity, params.SimOpt);
+        Contacts = SimulationOptions.ContactNodes;
+        d = distances(graph(Connectivity.weights), Contacts(1), Contacts(2));
+        params.Stim.Amplitude = d*params.Stim.Amplitude;
+    end
+
+    
+    
     if multiElectrode
         %Connectivity and contacts
         Connectivity          = struct('filename', connFile);
