@@ -1,4 +1,4 @@
-function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon)
+function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon, pen)
 %{
     e.g. usuage
     attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
@@ -61,6 +61,10 @@ if nargin < 12
     rescalePLength = false;
 end
 
+if nargin < 14
+    pen = 1;
+end
+    
 
 
 
@@ -114,7 +118,7 @@ params.Comp.setVoltage     = 1e-2;
 params.Comp.resetVoltage   = 5e-3;
 params.Comp.criticalFlux   =  0.01;
 params.Comp.maxFlux        = 0.015;
-params.Comp.penalty        =    1;
+params.Comp.penalty        =    pen;%1;
 params.Comp.boost          =   2;
 params.Comp.filamentState = initLamda;
 
