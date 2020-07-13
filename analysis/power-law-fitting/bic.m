@@ -6,3 +6,4 @@ function bicval = bic(k, logL, n)
         n:   Number of datapoints
 %}
    bicval = k*log(n)-2*logL;
+end

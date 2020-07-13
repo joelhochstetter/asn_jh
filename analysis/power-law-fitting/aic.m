@@ -5,3 +5,4 @@ function aicval = aic(logL, k)
         logL: log likelihood of model
 %}
    aicval = 2*(k-logL);
+end
