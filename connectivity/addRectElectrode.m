@@ -12,4 +12,6 @@ function [Connectivity, ContactNodes, SDpath] = addRectElectrode(Connectivity, f
         Connectivity          = getConnectivity(Connectivity);
         sp = graphallshortestpaths(sparse(double(Connectivity.weights)));
         SDpath  = sp(ContactNodes(1), ContactNodes(2)) - 2;
+        disp(strcat('Rectangular electrode added with num src = ', num2str(numel(src)), ...
+            ', num drn =', num2str(numel(drn)), ', sd dist = ', num2str(SDpath)));
 end
