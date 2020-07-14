@@ -1,4 +1,4 @@
-function NoisyDC_varynets(idx, saveFolder, netFolder)
+function NoisyDC_varynets(idx, saveFolder, netFolder, Vidx)
 
     numSeeds = 1;
     numL     = 5;
@@ -11,10 +11,10 @@ function NoisyDC_varynets(idx, saveFolder, netFolder)
     saveF1 = strcat(saveFolder, '/seed', num2str(seedIdx - 1,'%03.f'), '/');
     mkdir(saveF1)
 
-    nameComment = strcat('_L', num2str(L), '_s', num2str(seedIdx - 1,'%03.f'));
+    nameComment = strcat('_L', num2str(L(Lidx)), '_s', num2str(seedIdx - 1,'%03.f'));
     
     %folders by network. Add a comment
     %add a resscale path length option
-    NoisyDC_Vsweep_for_cluster(1, saveF1, 1.00*1e-2, 1.01*1e-2, 0.05*1e-2, connFile, 0 , '', -1, 1e4, 5e-3, 1, true, true, nameComment)
+    NoisyDC_Vsweep_for_cluster(Vidx, saveF1, 1.00*1e-2, 1.01*1e-2, 0.01*1e-2, connFile, 0 , '', -1, 1e4, 5e-3, 1, true, true, nameComment)
 
 end

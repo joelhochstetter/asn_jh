@@ -78,13 +78,12 @@ function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, co
     params.SimOpt.megaLiteSave = true;
     params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
     params.SimOpt.saveFolder      = saveFolder;
-    params.SimOpt.nameComment     = nameComment;
     
     mkdir(params.SimOpt.saveFolder);
 
     params.SimOpt.T                = T;
     params.SimOpt.dt               = 1e-3;
-    params.SimOpt.nameComment      = '';
+    params.SimOpt.nameComment     = nameComment;
     params.SimOpt.ContactMode = contactMode;
     params.SimOpt.ContactGraphDist = contactDistance;
 
