@@ -78,12 +78,13 @@ function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, co
     params.SimOpt.megaLiteSave = true;
     params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
     params.SimOpt.saveFolder      = saveFolder;
+    params.SimOpt.nameComment     = nameComment;
     
     mkdir(params.SimOpt.saveFolder);
 
     params.SimOpt.T                = T;
     params.SimOpt.dt               = 1e-3;
-    params.SimOpt.nameComment     = nameComment;
+    params.SimOpt.nameComment      = '';
     params.SimOpt.ContactMode = contactMode;
     params.SimOpt.ContactGraphDist = contactDistance;
 
@@ -109,23 +110,23 @@ function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, co
     params.Conn.filename = connFile;
 
     
+    if rescalePLength
+        [Connectivity] = getConnectivity(params.Conn);
+        SimulationOptions = selectContacts(Connectivity, params.SimOpt);
+        Contacts = SimulationOptions.ContactNodes;
+        d = distances(graph(Connectivity.weights), Contacts(1), Contacts(2));
+        params.Stim.Amplitude = d*params.Stim.Amplitude;
+    end
+
+    
+    
     if multiElectrode
         %Connectivity and contacts
         Connectivity          = getConnectivity(params.Conn);
         params.SimOpt.RectElectrodes = true;
         params.SimOpt.NewEdgeRS      = false;
         params.SimOpt.RectFractions  = 0.035;
-        [~, ~, SDpath] = addRectElectrode(Connectivity, params.SimOpt.RectFractions);
-    end    
-    
-    if rescalePLength
-        if ~multiElectrode
-            [Connectivity] = getConnectivity(params.Conn);
-            SimulationOptions = selectContacts(Connectivity, params.SimOpt);
-            Contacts = SimulationOptions.ContactNodes;
-            SDpath = distances(graph(Connectivity.weights), Contacts(1), Contacts(2));
-        end
-        params.Stim.Amplitude = SDpath*params.Stim.Amplitude;
+        [~, !, SDpath] = addRectElectrode(Connectivity, fraction)
     end
 
     %%%

@@ -111,7 +111,8 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.reserveFilename = false; %this saves an empty mat file 
         DSimulationOptions.megaLiteSave = false; %Does not save current or time-vector to save memory in the save file
         DSimulationOptions.NewEdgeRS  = false; %True: If new edges added are resistive switching elemnents. False: If new edges have fixed resistance
-        
+        DSimulationOptions.RectElectrodes  = false;  %overwrites electrode configuration to use rectangular electrode
+        DSimulationOptions.RectFractions     = 0.05; %fraction of nodes in each electrode          
         
         %% Simulation general options:
         rng(42); %Set the seed for PRNGs for reproducibility
@@ -238,20 +239,27 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         
         Stimulus2 = getStimulus(Stimulus, SOpt2, true);
     end
+    
+    %% Choose Contacts and Connectivity:    
     Connectivity = getConnectivity(Connectivity);
+    if SimulationOptions.RectElectrodes
+        [Connectivity, ContactNodes] = addRectElectrode(Connectivity, SimulationOptions.RectFractions);
+        SimulationOptions.ContactMode  = 'preSet';
+        SimulationOptions.ContactNodes =ContactNodes;
+    end
+   
     %if treating edges to new nodes as passive resistive elements
     if ~SimulationOptions.NewEdgeRS
         Components.passiveRes = Connectivity.NewEdges;
     end
-
-    %% Choose  contacts:
+    
     if strcmp(SimulationOptions.ContactMode, 'specifiedDistance')
         SimulationOptions.BiProbeDistance = 500; % (um)
     end
     SimulationOptions = selectContacts(Connectivity, SimulationOptions);
     
     
-    %% Get Equations:
+    %% Get Equations / Components:
     
     if SimulationOptions.useRK4
 
