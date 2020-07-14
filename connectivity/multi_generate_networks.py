@@ -132,7 +132,7 @@ else:
     fixedDensity = True
 
 print('Fixed density = ', fixedDensity)
-print('Square = ', fixedDensity)
+print('Square = ', square)
 
 
 for nwires in wireList: 
