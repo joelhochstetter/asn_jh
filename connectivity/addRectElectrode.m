@@ -3,7 +3,7 @@ function [Connectivity, ContactNodes, SDpath] = addRectElectrode(Connectivity, f
     Inputs:
         Connectivity, SimulationOptions
         SDpath: is the number of junctions between source and drain not. If
-        treading electrode as RS then add 2 to this number
+        treading electrode as resistive switch then add 2 to this number
 %}
         src = find(Connectivity.VertexPosition(:,2) >= Connectivity.GridSize(2)*(1-fraction));
         drn = find(Connectivity.VertexPosition(:,2) <=  Connectivity.GridSize(2)*fraction);
