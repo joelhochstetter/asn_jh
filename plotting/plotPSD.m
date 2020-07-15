@@ -9,7 +9,8 @@ function [beta, dbeta] = plotPSD(t, G)
     beta = 0;
     dbeta = inf;
     G = reshape(G, size(t));
-
+    G(isnan(G)) = 0;
+    
     dt = (t(end) - t(1))/(numel(t) - 1);
     t  = t(1):dt:t(end);
     
