@@ -15,7 +15,8 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
 
 %}
     %gamma_m_1
-
+    [mSize, mLife] = avalancheAvSize(sizeAv, lifeAv);
+    
     if nargin == 3 
         fitPL = true;
     else
@@ -25,11 +26,11 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
     if fitPL
         %add defaults for cut-offs for PL
         if ~isfield(fitP, 'lc')
-            fitP.lc = 0;
+            fitP.lc = min(mLife);
         end
 
         if ~isfield(fitP, 'uc')
-            fitP.uc = Inf;
+            fitP.uc = max(mLife);
         end
         
         if ~isfield(fitP, 'cLevel')
@@ -38,7 +39,7 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
         
     end
 
-    [mSize, mLife] = avalancheAvSize(sizeAv, lifeAv);
+
 
     loglog(mLife, mSize, 'bx')
     hold on;
@@ -49,23 +50,17 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
         fitSizes = mSize((mLife >= fitP.lc) & (mLife <= fitP.uc));         
 
         %fit power law
-        [fitresult, xData, yData, gof] = fitPowerLaw(fitLives, fitSizes);    
-        if ~isnan(fitresult.b)
-            plot(fitresult, 'b--', xData, yData, 'gx')
-        end
+        [beta, dbeta] = fitPowerLawLinearLogLog(fitLives, fitSizes);    
+        x =  fitP.lc:0.01: fitP.uc;
+        A = fitSizes(find(fitLives <= fitP.lc, 1));
+        y = A*x.^(-beta);
+        loglog(x, y, 'r--');        
         
-        text(fitLives(1), fitSizes(1)/3, strcat('T^{', num2str(fitresult.b,3),'}'), 'Color','b')
+        text(fitLives(1), fitSizes(1)/3, strcat('T^{', num2str(beta,3),'}'), 'Color','b')
         legend('not fit', 'inc fit', 'fit')   
-        
-        if numel(fitSizes) <= 2
-                dgamma_m_1 = inf;
-        else
-            CI  = confint(fitresult, fitP.cLevel);
-            tCI = CI(:,2);
-            dgamma_m_1 = (tCI(2) - tCI(1))/2;
-        end
-        
-        gamma_m_1 = fitresult.b;
+
+        gamma_m_1 = beta;
+        dgamma_m_1 =dbeta;
 
 
     end

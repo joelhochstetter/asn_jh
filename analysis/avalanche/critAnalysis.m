@@ -134,7 +134,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     %% Inter-event interval
     figure('visible','off');
-    results.IEI = plotIEIfromEvents(events, time, struct('useML', fitML), joinperiod);
+    results.IEI = plotIEIfromEvents(events, time, struct('useML', false), joinperiod);%fitML), joinperiod);
     saveas(gcf, strcat(saveFolder, '/IEIdist.png'))
     close all;
 
