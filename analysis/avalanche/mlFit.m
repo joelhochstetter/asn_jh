@@ -53,7 +53,7 @@ function Fit = mlFit(x, fitTrun)
     
     %% Lognormal
     [parmhat, parmci] = lognfit(x);
-    llike   = -lognllike(parmhat, x);
+    llike   = -lognlike(parmhat, x);
     AIC  = aic(llike, 2);
     BIC  = bic(llike, 2, N);     
     Fit.LN  = struct('mu', parmhat(1), 'sigma', parmhat(2), 'dmu', ...

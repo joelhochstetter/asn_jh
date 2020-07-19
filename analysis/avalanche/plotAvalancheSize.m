@@ -57,7 +57,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
     ks = 0.0;
     
     if fitP.logBin
-        nbins = 2*iqr(sizeAv)/(numel(sizeAv)^(1/3)); %calculated by Freeman Diaconis rule
+        nbins = ceil(2*iqr(sizeAv)/(numel(sizeAv)^(1/3))); %calculated by Freeman Diaconis rule
         [bins, N, edges]=lnbin(sizeAv, nbins);
     else 
         [N,edges] = histcounts(sizeAv, 'Normalization', 'probability');
@@ -104,13 +104,13 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
             %fit power law
             [tau, dta] = fitPowerLawLinearLogLog(edgeCen, fitN);         
             
-            x = min(fitEdges):0.01:max(fitEdges);
-            A = N(find(edges <= min(fitEdges), 1));
-            y = A*x.^(-tau);
+            x = min(edgeCen):min(edgeCen)/100:max(edgeCen);
+            A = N(find(edges >= min(fitEdges), 1));
+            y = A*(x/min(x)).^(-tau);
             loglog(x, y, 'r--');
             text(x(2), y(2)/3, strcat('S^{-', num2str(tau,3),'}'), 'Color','r')
-            xmin = min(fitEdges);            
-            xmax = max(fitEdges);
+            xmin = min(edgeCen);            
+            xmax = max(edgeCen);  
             
         end
 

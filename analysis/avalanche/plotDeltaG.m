@@ -165,12 +165,11 @@ function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
                [alpha, dalph] = fitPowerLawLinearLogLog(edgeCen, fitN);    
                 
                 lc = edgeCen(1);     
-                x = lc:lc/1000:max(dG);
-                A = N(find(edges <= lc, 1));
-                x1 = dG(find(edges <= lc, 1)); 
-                y = A*(x/x1).^(-alpha);
+                x = lc:lc/100:max(edgeCen);
+                A = fitN(find(edges >= lc, 1));
+                y = A*(x/x(1)).^(-alpha);
                 loglog(x, y, 'r--');
-                text(x(2), y(2)*2, strcat('\Delta G^{-', num2str(alpha,3),'}'), 'Color','r')
+                text(x(1), y(1)*2, strcat('\Delta G^{-', num2str(alpha,3),'}'), 'Color','r')
 
             end
             

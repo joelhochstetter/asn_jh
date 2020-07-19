@@ -34,7 +34,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     end
 
     
-    useLogBins = true;
+    useLogBins = false;
     fitTrun          = false;
     
     

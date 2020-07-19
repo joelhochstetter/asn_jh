@@ -1,3 +1,4 @@
+
 function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
 %{
     Plots the distribution of inter-event interval
@@ -139,14 +140,16 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
             [tau, sigmaTau] = fitPowerLawLinearLogLog(edgeCen, fitN);      
             IEIres.tau = tau;
             IEIres.sigmaTau = sigmaTau;
-          
+            IEIres.xmin = min(edgeCen);
+            IEIres.xmax = max(edgeCen);
+            
             %fit power law
-            if numel(edgeCen) > 1
-                x = IEIres.xmin:0.01:IEIres.xmax;
+            if numel(edgeCen) > 1               
+                x = IEIres.xmin:IEIres.xmin/100:IEIres.xmax;
                 A = Niei(find(edgesiei >= IEIres.xmin, 1));
-                y = A*x.^(-tau);
+                y = A*(x/ x(1)).^(-tau);
                 loglog(x, y, 'r--');
-                text(x(2), y(2)/3, strcat('t^{-', num2str(tau,3),'}'), 'Color','r')
+                text(x(1), y(1)/3, strcat('t^{-', num2str(tau,3),'}'), 'Color','r')
             end
         end
     end

@@ -263,7 +263,7 @@ t = polymodel.Coefficients./polymodel.ParameterStd;
 % stats toolbox was present. Of course, then regstats is
 % an option. In that case, the comparable result would be
 % found in:    STATS.tstat.pval
-if polymodel.DoF < 0
+if polymodel.DoF <= 0
     polymodel.p = 1;
 else 
     polymodel.p = betainc(polymodel.DoF./(t.^2 + polymodel.DoF),polymodel.DoF/2,1/2);
