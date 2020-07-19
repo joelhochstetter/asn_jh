@@ -78,8 +78,7 @@ if nargin < 17
 end
 
 if nargin < 18 
-    XRectFraction = 1.0;
-end
+    
 
 %%
 params = struct();
@@ -117,12 +116,7 @@ if multiElectrode
     params.SimOpt.RectElectrodes = true;
     params.SimOpt.NewEdgeRS      = false;
     params.SimOpt.RectFractions  = rectFraction;
-    params.SimOpt.XRectFraction  = XRectFraction;    
-    [~, ~, SDpath] = addRectElectrode(Connectivity, params.SimOpt.RectFractions, XRectFraction);
-    if SDpath == Inf
-        disp('No such SD path')
-        return
-    end
+    [~, ~, SDpath] = addRectElectrode(Connectivity, params.SimOpt.RectFractions);
 end    
 
 if rescalePLength
