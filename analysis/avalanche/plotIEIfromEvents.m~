@@ -70,15 +70,15 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
         end
         
         if ~isfield(fitP, 'samples')
-            fitP.useML = false;
+            fitP.samples = 100;
         end
         
-        if ~isfield(fitP, 'useML')
-            fitP.useML = false;
+        if ~isfield(fitP, 'threshold')
+            fitP.threshold = 0.4;
         end
         
-        if ~isfield(fitP, 'useML')
-            fitP.useML = false;
+        if ~isfield(fitP, 'likelihood')
+            fitP.likelihood = 1e-2;
         end        
         
     end
@@ -113,7 +113,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
 
     if fitPL && numel(unique(ieiDat)) > 2
         if fitP.useML
-            [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(ieiDat, );
+            [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(ieiDat, 'samples', fitP.samples, 'threshold', fitP.threshold, 'likelihood', fitP.likelihood);
             IEIres.tau = tau;
             IEIres.xmin = xmin;
             IEIres.xmax = xmax;
@@ -134,6 +134,12 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
             cutEnd   = numel(edgesiei(edgesiei > fitP.uc));
             edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
             fitN     = Niei(1 + cutFront : end - cutEnd);         
+
+            %fit power law
+            [tau, sigmaTau] = fitPowerLawLinearLogLog(edgeCen, fitN);      
+            IEIres.tau = tau;
+             IEIres.sigmaTau = sigmaTau;
+          
             %fit power law
             [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );  
             if numel(edgeCen) > 1
@@ -149,6 +155,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     xlabel('IEI (s)')
     ylabel('P(IEI)') 
 
+    
     IEIres.bins = (edgesiei(1:end-1) + edgesiei(2:end))/2;
     IEIres.prob = Niei;
     

@@ -92,7 +92,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     IEIres.ieiTime = ieiTime;
     IEIres.tau = 1;
     IEIres.xmin = 1;
-    IEIres.xmax = 1;
+    IEIres.xmax = max(ieiDat);
     IEIres.sigmaTau = 1;
     IEIres.p = 1;
     IEIres.pCrit = 1;
@@ -134,12 +134,19 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
             cutEnd   = numel(edgesiei(edgesiei > fitP.uc));
             edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
             fitN     = Niei(1 + cutFront : end - cutEnd);         
+
             %fit power law
-            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );  
+            [tau, sigmaTau] = fitPowerLawLinearLogLog(edgeCen, fitN);      
+            IEIres.tau = tau;
+            IEIres.sigmaTau = sigmaTau;
+          
+            %fit power law
             if numel(edgeCen) > 1
-                plot(fitresult, 'b--', xData, yData, 'gx')
-                text(edgeCen(1), fitN(1)/3, strcat('t^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-                legend('not fit', 'inc fit', 'fit')   
+                x = IEIres.xmin:0.01:IEIres.xmax;
+                A = Niei(find(edgesiei >= IEIres.xmin, 1));
+                y = A*x.^(-tau);
+                loglog(x, y, 'r--');
+                text(x(2), y(2)/3, strcat('t^{-', num2str(tau,3),'}'), 'Color','r')
             end
         end
     end
@@ -149,6 +156,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     xlabel('IEI (s)')
     ylabel('P(IEI)') 
 
+    
     IEIres.bins = (edgesiei(1:end-1) + edgesiei(2:end))/2;
     IEIres.prob = Niei;
     

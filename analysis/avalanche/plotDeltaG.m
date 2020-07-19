@@ -160,10 +160,9 @@ function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
                 cutEnd   = numel(edges(edges > fitP.uc));
                 edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
                 fitN     = N(1 + cutFront : end - cutEnd);
-
-                [alpha,   lc, ~] = plfit(dG);
-                [dalph, dlc, ~]  = plvar(dG,'xmin', lc);
                 
+                %fit power law
+               [alpha, dalph] = fitPowerLawLinearLogLog(edgeCen, fitN);    
                 
                 lc = edgeCen(1);     
                 x = lc:lc/1000:max(dG);
@@ -172,18 +171,7 @@ function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
                 y = A*(x/x1).^(-alpha);
                 loglog(x, y, 'r--');
                 text(x(2), y(2)*2, strcat('\Delta G^{-', num2str(alpha,3),'}'), 'Color','r')
-                
-                
-                %fit power law
-                [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
-                plot(fitresult, 'b--', xData, yData, 'gx')
-                text(edgeCen(1), fitN(1)/3, strcat('\Delta G^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-                legend('not fit', 'inc fit', 'fit') 
 
-                alpha = -fitresult.b;
-                CI  = confint(fitresult, fitP.cLevel);
-                tCI = CI(:,2);
-                dalph = (tCI(2) - tCI(1))/2;
             end
             
         end
