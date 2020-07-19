@@ -1,4 +1,4 @@
-function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifetime(lifeAv, fitP)
+function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvalancheLifetime(lifeAv, fitP)
 %{
     Plots the avalanche size distribution
     Inputs:
@@ -13,6 +13,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
 
 %}
     
+    MLcompare = struct();
     alpha = 0.0;
     dal = 0.0;
 
@@ -68,7 +69,22 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
         
         if fitP.useML
             if numel(unique(lifeAv)) > 2             
-                [alpha, xmin, xmax, dal, p, pcrit, ks] = plparams(lifeAv);
+                MLcompare = mlFit(lifeAv, fitP.fitTrun);
+                alpha   = MLcompare.PL.tau;
+                xmin = MLcompare.PL.xmin;
+                xmax = MLcompare.PL.xmax;
+                if isfield(MLcompare.PL, 'dtau')
+                    dal    = MLcompare.PL.dtau; 
+                end
+                if isfield(MLcompare.PL, 'p')
+                    p    = MLcompare.PL.p; 
+                end
+                if isfield(MLcompare.PL, 'pcrit')
+                    pcrit   = MLcompare.PL.pcrit; 
+                end
+                if isfield(MLcompare.PL, 'ks')
+                    ks     = MLcompare.PL.ks; 
+                end      
                 x = xmin:0.01:xmax;
                 A = N(find(edges <= xmin, 1));
                 y = A*x.^(-alpha);
@@ -86,6 +102,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
                 fitN     = N(1 + cutFront : end - cutEnd);         
             if numel(unique(edgeCen)) > 2 
                 %fit power law
+                
                 [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
                 plot(fitresult, 'b--', xData, yData, 'gx')
 

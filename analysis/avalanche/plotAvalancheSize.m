@@ -1,4 +1,4 @@
-function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(sizeAv, fitP)
+function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvalancheSize(sizeAv, fitP)
 %{
     Plots the avalanche size distribution
     Inputs:
@@ -12,7 +12,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
 
 %}
     
-
+    MLcompare = struct();
 
     if nargin == 1
         fitPL = 0;
@@ -41,8 +41,11 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
  
          if ~isfield(fitP, 'logBin')
             fitP.logBin = false;
-        end             
-         
+         end             
+        
+         if ~isfield(fitP, 'fitTrun')
+            fitP.fitTrun = true;
+         end
     end
 
     tau = 0.0;
@@ -68,7 +71,22 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
         
         if fitP.useML
             if numel(unique(sizeAv)) > 2
-                [tau, xmin, xmax, dta, p, pcrit, ks] = plparams(sizeAv);
+                MLcompare = mlFit(sizeAv, fitP.fitTrun);
+                tau   = MLcompare.PL.tau;
+                xmin = MLcompare.PL.xmin;
+                xmax = MLcompare.PL.xmax;
+                if isfield(MLcompare.PL, 'dtau')
+                    dta    = MLcompare.PL.dtau; 
+                end
+                if isfield(MLcompare.PL, 'p')
+                    p    = MLcompare.PL.p; 
+                end
+                if isfield(MLcompare.PL, 'pcrit')
+                    pcrit   = MLcompare.PL.pcrit; 
+                end
+                if isfield(MLcompare.PL, 'ks')
+                    ks     = MLcompare.PL.ks; 
+                end                
                 x = xmin:0.01:xmax;
                 A = N(find(edges <= xmin, 1));
                 y = A*x.^(-tau);

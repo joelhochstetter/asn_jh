@@ -70,15 +70,15 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
         end
         
         if ~isfield(fitP, 'samples')
-            fitP.samples = 100;
+            fitP.useML = false;
         end
         
-        if ~isfield(fitP, 'threshold')
-            fitP.threshold = 0.4;
+        if ~isfield(fitP, 'useML')
+            fitP.useML = false;
         end
         
-        if ~isfield(fitP, 'likelihood')
-            fitP.likelihood = 1e-2;
+        if ~isfield(fitP, 'useML')
+            fitP.useML = false;
         end        
         
     end
@@ -113,7 +113,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
 
     if fitPL && numel(unique(ieiDat)) > 2
         if fitP.useML
-            [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(ieiDat, 'samples', fitP.samples, 'threshold', fitP.threshold, 'likelihood', fitP.likelihood);
+            [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(ieiDat, );
             IEIres.tau = tau;
             IEIres.xmin = xmin;
             IEIres.xmax = xmax;

@@ -35,9 +35,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
 
     
     useLogBins = true;
-    fitTrun          = false;
-    
-    
+    fitTrun          
     mkdir(saveFolder)
     
     results = struct();

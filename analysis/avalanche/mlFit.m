@@ -22,14 +22,15 @@ function Fit = mlFit(x, fitTrun)
     
     %% Power law
     if fitTrun %truncated
-        [tau, xmin, xmax, dtau, ~, ~, ~] = plparams(ieiDat); 
+        [tau, xmin, xmax, dtau, p, pcrit, ks] = plparams(x); 
         x = x((x >= xmin) & (x <= xmax));
         N = numel(x);
         llike = plllike(x, tau, xmin, xmax);
         AIC  = aic(llike, 1);
         BIC  = bic(llike, 1, N);       
         Fit.PL  = struct('tau', tau, 'xmin', xmin, 'xmax', xmax, ...
-            'llike', llike, 'aic', AIC, 'bic', BIC, 'dtau', dtau);  
+            'llike', llike, 'aic', AIC, 'bic', BIC, 'dtau', dtau, 'p', p, ...
+            'pcrit', pcrit, 'ks', ks);  
     else %not truncated
         tau  = plmle(x);
         xmin = min(x);
