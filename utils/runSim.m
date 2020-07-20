@@ -334,7 +334,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         
         %reserves the filename
         if ~alreadyExists && SimulationOptions.reserveFilename
-            save(strcat(saveName, '.mat'), 'runID')            
+            save(strcat(SimulationOptions.saveFolder, '/', saveName, '.mat'), 'runID')            
         end
     end
         

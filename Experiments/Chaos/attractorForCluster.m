@@ -53,7 +53,7 @@ params.Stim.Amplitude    = Amps; %0.2:0.05:0.4;
 params.Stim.Frequency    = Freqs; %[0.1, 0.25, 0.5, 0.75, 1.0];%1/20; 
 
 %Set Components
-params.Comp.ComponentType  = 'tunnelSwitch2'; %tunnelSwitch2
+params.Comp.ComponentType  = 'tunnelSwitchL'; %tunnelSwitch2
 params.Comp.onResistance   = 7.77e-5;
 params.Comp.offResistance   = 7.77e-8;
 params.Comp.setVoltage      = 1e-2;
