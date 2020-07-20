@@ -55,13 +55,13 @@ params.Stim.Frequency    = Freqs; %[0.1, 0.25, 0.5, 0.75, 1.0];%1/20;
 %Set Components
 params.Comp.ComponentType  = 'tunnelSwitch2'; %tunnelSwitch2
 params.Comp.onResistance   = 7.77e-5;
-params.Comp.offResistance  = 1e-8;
-params.Comp.setVoltage     = 1e-2;
-params.Comp.resetVoltage   = 1e-2;
+params.Comp.offResistance   = 7.77e-8;
+params.Comp.setVoltage      = 1e-2;
+params.Comp.resetVoltage  = 5e-3;
 params.Comp.criticalFlux   =  0.01;
 params.Comp.maxFlux        = 0.015;
 params.Comp.penalty        =    1;
-params.Comp.boost          =  0;
+params.Comp.boost          =  2;
 params.Comp.filamentState = initLamda;
 params.Comp.nonpolar       = false;
 
