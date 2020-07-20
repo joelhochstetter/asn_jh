@@ -16,8 +16,7 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
 %}
     %gamma_m_1
     [mSize, mLife] = avalancheAvSize(sizeAv, lifeAv);
-    fitP.lc = min(mLife);
-    fitP.uc = max(mLife);
+
 
     if nargin == 3 
         fitPL = true;
@@ -41,7 +40,13 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
         
     end
 
-
+    if min(mLife) > fitP.lc
+        fitP.lc = min(mLife);
+    end
+    
+    if max(mLife) < fitP.uc
+        fitP.uc = max(mLife);
+    end
 
     loglog(mLife, mSize, 'bx')
     hold on;
@@ -61,7 +66,7 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
         text(fitLives(1), fitSizes(1)/3, strcat('T^{', num2str(beta,3),'}'), 'Color','b')
   
 
-        gamma_m_1 = beta;
+        gamma_m_1 = -beta;
         dgamma_m_1 =dbeta;
 
 

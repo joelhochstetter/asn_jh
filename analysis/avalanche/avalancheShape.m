@@ -19,7 +19,7 @@ function [dur, size_t, time_t] = avalancheShape(events)
 %}
 
 
-    minNum = 3; %minimum number of avalanches
+    minNum = 0; %minimum number of avalanches
 
     avEdg  = find(events == 0); %edges for avalanches   
     A = numel(avEdg) - 1;
