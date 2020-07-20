@@ -104,6 +104,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 
     %% Run unperturbed simulation
     files = dir(strcat(params.SimOpt.saveFolder, '/*unperturbed.mat'));
+    params.SimOpt.saveFilStateOnly = true;
     if numel(files)
         params.importByName = files(1).name;
          params.importStateOnly = true;
@@ -119,7 +120,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
         NumTSteps                    = numel(u{1}.Stimulus.TimeAxis);
         clear('u');        
     end
-
+    params.SimOpt.saveFilStateOnly = false;
     
     %% Initialise perturbed simulations
     params.SimOpt.lyapunovSim     = true;
