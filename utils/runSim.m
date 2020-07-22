@@ -104,6 +104,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.perturb         = false;
         DSimulationOptions.saveSwitches    = true;    %false => saves no switch data except final filament states
         DSimulationOptions.saveFilStateOnly = false;
+        DSimulationOptions.saveEventsOnly  = false; %saves events if not saving filament state        
         DSimulationOptions.numOfElectrodes = 2;
         DSimulationOptions.oneSrcMultiDrn  = false;
         DSimulationOptions.MultiSrcOneDrn  = false; 

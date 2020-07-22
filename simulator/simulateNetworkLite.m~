@@ -86,10 +86,12 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         updateComponentResistance(compPtr); 
         componentConductance = compPtr.comp.resistance;
         
-        onOrOffNew   = componentConductance > 1.1*offResistance(1);     
-        if SimulationOptions.saveEventsOnly == true
-            events(ii) = sum(abs(onOrOffNew - onOrOffOld));
-        end
+        onOrOffO   = componentConductance > 1.1*offResistance(1);      
+        
+%             changeOnOrOff = onOrOff(2:end,:) - onOrOff(1:end - 1,:);
+%             turnOff       = onOrOff(2:end,:) < onOrOff(1:end - 1,:);
+%             turnOn        = onOrOff(2:end,:) > onOrOff(1:end - 1,:);
+%             ddG = (sum(turnOn,2) > 0) +(sum(turnOff,2) > 0);        
         
         % Get LHS (matrix) and RHS (vector) of equation:
         Gmat = zeros(V,V);
@@ -103,6 +105,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         end
         
         Gmat = diag(sum(Gmat, 1)) - Gmat;
+        
+        
         
         LHS          = LHSinit;
         
