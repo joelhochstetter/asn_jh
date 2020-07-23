@@ -1,4 +1,4 @@
-function DC_sim_vary_nets(idx, netFolder, saveFolder, usePoint) 
+function DC_sim_vary_nets(idx, netFolder, saveFolder, useRect) 
     nets = dir(strcat(netFolder, '/*.mat'))';
     numNets = 500;
     netIdx = mod((idx-1), numNets) + 1; 
@@ -7,8 +7,9 @@ function DC_sim_vary_nets(idx, netFolder, saveFolder, usePoint)
     mkdir(saveF1)
     %DC_Vsweep_for_cluster(Vidx, saveF1, 1.05*0.01, 1.08*0.01, 0.25*0.01, nets(netIdx).name, 0 , '.', -1, 30, true, true, -1, 1, true, 0.015)
 %      DC_Vsweep_for_cluster(Vidx, saveF1, 45*5*0.01, 2.5, 1.0, nets(netIdx).name, 0 , '.', 45, 10, 0)
-    if usePoint
-        DC_Vsweep_for_cluster(Vidx, saveF1,0.50*0.01,2.00*0.01,0.25*0.01, nets(netIdx).name,0, '.', 45,50,false,true,-1,1,false)
+    if useRect
+        DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon, pen, multiElectrode, rectFraction, nameComment, XRectFraction, saveEvents)
+        DC_Vsweep_for_cluster(Vidx, saveF1,0.50*0.01,2.00*0.01,0.25*0.01, nets(netIdx).name,0, '.', 45,50, 45, 45, 1)
     else
         DC_Vsweep_for_cluster(Vidx, saveF1, 0.7*0.01, 1.8*0.01, 0.1*0.01, nets(netIdx).name, 0 , '.', -1, 30, false, true, -1, 1, true, 0.015, '');        
     end
