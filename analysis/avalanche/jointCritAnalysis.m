@@ -38,7 +38,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
         for i = 1:numFiles
             %import file
             [G, V, t, ~] = importByType(importMode, importFolder{j}, i);
-            t = t + tjoin(end);
+            t = t + tjoin(end) - t(1);
             tjoin = [tjoin, t];
             Gjoin = [Gjoin, G];
             Vjoin = [Vjoin, V];         
@@ -51,7 +51,8 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     % detect events
     events =  findEvents(Gjoin, eventDetect);
     if numel(tjoin) == 0
-       disp('a') 
+       disp('None') 
+       return
     end
     dt = (tjoin(end) - tjoin(1))/(numel(tjoin) - 1);
     

@@ -57,13 +57,13 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.net.Grat  = max(G)/min(G);
 
     results.net.meanV = mean(V);
-    results.net.meanI = mean(G.*V);
+%     results.net.meanI = mean(G.*V);
     results.net.mdGdt = (G(end) - G(1))/(time(end) - time(1));
     results.net.mindG = min(abs(diff(G))/dt);
     results.net.maxdG = max(abs(diff(G))/dt);
     results.net.stddG = std(abs(diff(G))/dt);
     
-    if results.net.maxdG <= eps
+    if abs(results.net.maxdG*dt) <= eps
         return
     end
 
@@ -159,6 +159,10 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.avalanche.timeAv = timeAv;    
     results.avalanche.binSize = binSize;   
     
+    
+    if numel(sizeAv) < 3
+        return
+    end
     
     %% Avalanche size:
     figure('visible','off');

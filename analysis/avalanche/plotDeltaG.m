@@ -164,7 +164,13 @@ function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
                 %fit power law
                [alpha, dalph] = fitPowerLawLinearLogLog(edgeCen, fitN);    
                 
-                lc = edgeCen(1);     
+                if numel(edgeCen) == 0
+                    disp('dG not enough points')
+                    return 
+                end
+               
+                lc = edgeCen(1); 
+                
                 x = lc:lc/100:max(edgeCen);
                 A = fitN(find(edges >= lc, 1));
                 y = A*(x/x(1)).^(-alpha);

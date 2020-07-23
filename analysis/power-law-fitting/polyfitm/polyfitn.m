@@ -223,6 +223,13 @@ for i = 1:nt
   end
 end
 
+if numel(M) == 0
+    disp('Broken')
+    polymodel.Coefficients = [nan, nan];
+    polymodel.ParameterStd = [nan, nan];    
+    return
+end
+
 % estimate the model using QR. do it this way to provide a
 % covariance matrix when all done. Use a pivoted QR for
 % maximum stability.

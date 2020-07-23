@@ -17,7 +17,7 @@ function [beta, dbeta] = plotPSD(t, G)
     [t_freq, conductance_freq] = fourier_analysis(t, G);
     conductance_freq = reshape(conductance_freq, size(t_freq));
    
-    if numel(t_freq) < 5 
+    if numel(t) < 10 
         return
     end
     
@@ -29,6 +29,10 @@ function [beta, dbeta] = plotPSD(t, G)
     fitRes = polyfitn(log10(t_freq(t_freq ~= 0 & t_freq<max(t_freq)))', log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)))', 1);
     fitCoef = fitRes.Coefficients;
     errors  = fitRes.ParameterStd;
+    
+    if isnan(fitRes.Coefficients(1))
+        return
+    end
     
     fitCoef(2) = 10^fitCoef(2); 
     PSDfit = fitCoef(2)*t_freq.^fitCoef(1);

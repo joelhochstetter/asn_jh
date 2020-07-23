@@ -16,7 +16,8 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
 %}
     %gamma_m_1
     [mSize, mLife] = avalancheAvSize(sizeAv, lifeAv);
-
+    gamma_m_1  = nan;
+    dgamma_m_1 = nan;
 
     if nargin == 3 
         fitPL = true;
@@ -48,6 +49,8 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
         fitP.uc = max(mLife);
     end
 
+
+    
     loglog(mLife, mSize, 'bx')
     hold on;
     
@@ -56,6 +59,10 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
         fitLives = mLife((mLife >= fitP.lc) & (mLife <= fitP.uc));
         fitSizes = mSize((mLife >= fitP.lc) & (mLife <= fitP.uc));         
 
+        if fitP.lc == fitP.uc || numel(fitLives) == 0 || numel(fitSizes) == 0
+            return 
+        end
+        
         %fit power law
         [beta, dbeta] = fitPowerLawLinearLogLog(fitLives, fitSizes);    
         x =  fitP.lc:fitP.lc/5: fitP.uc;
