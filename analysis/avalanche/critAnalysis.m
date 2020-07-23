@@ -62,6 +62,9 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
         return
     end
 
+    if numel(time) < 10
+        return
+    end
     
     %% Fourier transform
     figure('visible','off');

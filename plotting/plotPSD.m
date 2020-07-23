@@ -17,7 +17,7 @@ function [beta, dbeta] = plotPSD(t, G)
     [t_freq, conductance_freq] = fourier_analysis(t, G);
     conductance_freq = reshape(conductance_freq, size(t_freq));
    
-    if numel(t_freq) < 2 
+    if numel(t_freq) < 5 
         return
     end
     

@@ -6,6 +6,8 @@ function numFiles = howManyFiles(importMode, importFolder)
             files = dir(strcat(importFolder, '/*.tdms'));
         case 2 %text file - rintaro data format
             files = dir(strcat(importFolder, '/*.txt'));
+        case 3 %text file - rintaro data format
+            files = dir(strcat(importFolder, '/*.mat'));            
     end 
     numFiles = numel(files);
             

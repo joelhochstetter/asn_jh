@@ -70,7 +70,13 @@ function [G, V, t, fname] = importByType(importMode, importFolder, idx)
 %             G(G == 0) = min(G(G > 0));                      
 %             G = G(2:end-1);
 %             G(isnan(G)) = min(G(~isnan(G)));   
+            fname = files(idx).name;
+            
+        case 3 %data saved to .mat file
+            files = dir(strcat(importFolder, '/*.mat'));
+            load(strcat(importFolder, '/', files(idx).name), 't', 'G', 'V');
             fname = files(idx).name;   
+           
     end 
             
     
