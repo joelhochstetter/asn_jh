@@ -80,13 +80,13 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         % Show progress:
         %progressBar(ii,niterations);
 
-        onOrOffOld   = componentConductance > 1.1*offResistance(1);      
+        onOrOffOld   = compPtr.comp.resistance > 1.1*Components.offResistance(1);      
         
         % Update resistance values:
         updateComponentResistance(compPtr); 
         componentConductance = compPtr.comp.resistance;
         
-        onOrOffNew   = componentConductance > 1.1*offResistance(1);     
+        onOrOffNew   = componentConductance > 1.1*Components.offResistance(1);     
         if SimulationOptions.saveEventsOnly == true
             events(ii) = sum(abs(onOrOffNew - onOrOffOld));
         end
@@ -144,13 +144,14 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
     
     if SimulationOptions.saveFilStateOnly == true
          OutputDynamics.lambda = filamentStates;
-    elseif SimulationOptions.saveEventsOnly == true
-        events(1) = 0;
-        OutputDynamics.events  = events;
     else
          OutputDynamics.lambda             =  compPtr.comp.filamentState';
     end    
    
+    if SimulationOptions.saveEventsOnly == true
+        events(1) = 0;
+        OutputDynamics.events  = events;
+    end
 
     % Calculate network resistance and save:
     OutputDynamics.networkCurrent    =  electrodeCurrent(:, 2:end);
