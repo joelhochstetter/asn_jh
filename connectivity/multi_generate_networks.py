@@ -87,6 +87,12 @@ parser.add_argument('--folder',
     default = 'connectivity_data',
     help    ='The folder where the output files will be stored.')
 
+
+parser.add_argument('--oldNameConvention', 
+    type    = bool, 
+    default = False,
+    help    = 'Whether or not to use old name convention (include cent dispersion and date), or new (include lx, ly, no date).')
+
 args = parser.parse_args()
 
 if args.nwiresMax == -1:
@@ -112,6 +118,7 @@ Lx              = args.Lx
 Ly              = args.Ly
 folder          = args.folder
 density         = args.density
+oldNameConvention  = args.oldNameConvention
 
 wireList = list(np.unique(np.linspace(args.nwires, args.nwiresMax, args.numSims, dtype = int)))
 seedList = range(args.seed, args.seedMax)
@@ -134,6 +141,9 @@ else:
 print('Fixed density = ', fixedDensity)
 print('Square = ', square)
 
+if oldNameConvention:
+    print('Using old name convention')
+
 
 for nwires in wireList: 
     for seed in seedList:
@@ -152,7 +162,8 @@ for nwires in wireList:
                                                      centroid_dispersion= cent_dispersion,
                                                      this_seed = seed,
                                                      Lx = Lx,
-                                                     Ly = Ly)
+                                                     Ly = Ly, 
+                                                     oldNameConvention = oldNameConvention)
 
 
             # Get junctions list and their positions

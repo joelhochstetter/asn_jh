@@ -104,6 +104,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.perturb         = false;
         DSimulationOptions.saveSwitches    = true;    %false => saves no switch data except final filament states
         DSimulationOptions.saveFilStateOnly = false;
+        DSimulationOptions.saveEventsOnly  = false; %saves events if not saving filament state        
         DSimulationOptions.numOfElectrodes = 2;
         DSimulationOptions.oneSrcMultiDrn  = false;
         DSimulationOptions.MultiSrcOneDrn  = false; 
@@ -113,6 +114,8 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.NewEdgeRS  = false; %True: If new edges added are resistive switching elemnents. False: If new edges have fixed resistance
         DSimulationOptions.RectElectrodes  = false;  %overwrites electrode configuration to use rectangular electrode
         DSimulationOptions.RectFractions     = 0.05; %fraction of nodes in each electrode          
+        DSimulationOptions.XRectFraction     = 1.00; %fraction of nodes in each electrode  in x direction       
+        
         
         %% Simulation general options:
         rng(42); %Set the seed for PRNGs for reproducibility
@@ -243,7 +246,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
     %% Choose Contacts and Connectivity:    
     Connectivity = getConnectivity(Connectivity);
     if SimulationOptions.RectElectrodes
-        [Connectivity, ContactNodes] = addRectElectrode(Connectivity, SimulationOptions.RectFractions);
+        [Connectivity, ContactNodes] = addRectElectrode(Connectivity, SimulationOptions.RectFractions, SimulationOptions.XRectFraction);
         SimulationOptions.ContactMode  = 'preSet';
         SimulationOptions.ContactNodes =ContactNodes;
     end
@@ -332,7 +335,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         
         %reserves the filename
         if ~alreadyExists && SimulationOptions.reserveFilename
-            save(strcat(saveName, '.mat'), 'runID')            
+            save(strcat(SimulationOptions.saveFolder, '/', saveName, '.mat'), 'runID')            
         end
     end
         

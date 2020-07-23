@@ -139,6 +139,10 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
             
         end
     end    
+    
+    if isfield(Output, 'events')
+        sim.events = Output.events;
+    end
 
     sim.filename = filename;
     

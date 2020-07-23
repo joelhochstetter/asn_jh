@@ -1,4 +1,4 @@
-function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(sizeAv, fitP)
+function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvalancheSize(sizeAv, fitP)
 %{
     Plots the avalanche size distribution
     Inputs:
@@ -12,7 +12,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
 
 %}
     
-
+    MLcompare = struct();
 
     if nargin == 1
         fitPL = 0;
@@ -41,8 +41,11 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
  
          if ~isfield(fitP, 'logBin')
             fitP.logBin = false;
-        end             
-         
+         end             
+        
+         if ~isfield(fitP, 'fitTrun')
+            fitP.fitTrun = true;
+         end
     end
 
     tau = 0.0;
@@ -54,7 +57,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
     ks = 0.0;
     
     if fitP.logBin
-        nbins = 2*iqr(sizeAv)/(numel(sizeAv)^(1/3)); %calculated by Freeman Diaconis rule
+        nbins = ceil(2*iqr(sizeAv)/(numel(sizeAv)^(1/3))); %calculated by Freeman Diaconis rule
         [bins, N, edges]=lnbin(sizeAv, nbins);
     else 
         [N,edges] = histcounts(sizeAv, 'Normalization', 'probability');
@@ -68,7 +71,22 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
         
         if fitP.useML
             if numel(unique(sizeAv)) > 2
-                [tau, xmin, xmax, dta, p, pcrit, ks] = plparams(sizeAv);
+                MLcompare = mlFit(sizeAv, fitP.fitTrun);
+                tau   = MLcompare.PL.tau;
+                xmin = MLcompare.PL.xmin;
+                xmax = MLcompare.PL.xmax;
+                if isfield(MLcompare.PL, 'dtau')
+                    dta    = MLcompare.PL.dtau; 
+                end
+                if isfield(MLcompare.PL, 'p')
+                    p    = MLcompare.PL.p; 
+                end
+                if isfield(MLcompare.PL, 'pcrit')
+                    pcrit   = MLcompare.PL.pcrit; 
+                end
+                if isfield(MLcompare.PL, 'ks')
+                    ks     = MLcompare.PL.ks; 
+                end                
                 x = xmin:0.01:xmax;
                 A = N(find(edges <= xmin, 1));
                 y = A*x.^(-tau);
@@ -82,27 +100,17 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheSize(si
             cutEnd   = numel(edges(edges > fitP.uc));
             edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
             fitN     = N(1 + cutFront : end - cutEnd);         
-
+            
             %fit power law
-            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
+            [tau, dta] = fitPowerLawLinearLogLog(edgeCen, fitN);         
             
-            if ~isnan(fitresult.b)
-                plot(fitresult, 'b--', xData, yData, 'gx')
-            end
-
-            text(edgeCen(1), fitN(1)/3, strcat('S^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-%             legend('not fit', 'inc fit', 'fit')   
-            tau = -fitresult.b;
-            xmin = fitP.lc;
-            
-            xmax = fitP.uc;
-            if numel(fitN) <= 2
-                dta = inf;
-            else
-                CI  = confint(fitresult, fitP.cLevel);
-                tCI = CI(:,2);
-                dta = (tCI(2) - tCI(1))/2;
-            end
+            x = min(edgeCen):min(edgeCen)/100:max(edgeCen);
+            A = N(find(edges >= min(fitEdges), 1));
+            y = A*(x/min(x)).^(-tau);
+            loglog(x, y, 'r--');
+            text(x(2), y(2)/3, strcat('S^{-', num2str(tau,3),'}'), 'Color','r')
+            xmin = min(edgeCen);            
+            xmax = max(edgeCen);  
             
         end
 

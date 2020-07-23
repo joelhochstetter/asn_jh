@@ -84,8 +84,8 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     
 
 
-    params.Comp.ComponentType = 'tunnelSwitch2';
-	params.SimOpt.T                = 100;%10/params.Stim.Frequency;
+    params.Comp.ComponentType = 'tunnelSwitchL';
+	params.SimOpt.T                = 150;%10/params.Stim.Frequency;
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
     
@@ -104,6 +104,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 
     %% Run unperturbed simulation
     files = dir(strcat(params.SimOpt.saveFolder, '/*unperturbed.mat'));
+    params.SimOpt.saveFilStateOnly = true;
     if numel(files)
         params.importByName = files(1).name;
          params.importStateOnly = true;
@@ -119,7 +120,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
         NumTSteps                    = numel(u{1}.Stimulus.TimeAxis);
         clear('u');        
     end
-
+    params.SimOpt.saveFilStateOnly = false;
     
     %% Initialise perturbed simulations
     params.SimOpt.lyapunovSim     = true;
@@ -178,46 +179,46 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     end
     
     
-   %% Calculate lyapunov and save
-    if useParFor > 0 || numel(idx) > 1
-        skipFraction = 0.3; %Skip for calculating mean
-        numTStep = round(params.SimOpt.T/ params.SimOpt.dt*(1-skipFraction));
-        numT = round(params.SimOpt.T * params.Stim.Frequency*(1-skipFraction));
-        lambda = zeros(E,1);
-        lij    = zeros(numT, E);
-        netC   = zeros(numTStep, E);
-        gij1   = gij(round(skipFraction*numT)+1:end,:);
-
-
-        if useParFor == true		
-            parfor j = 1:numT
-                lij(j,:) = mean(gij1(1:floor(numTStep/numT)*j,:));
-            end
-        else
-            for j = 1:numT
-                lij(j,:) = mean(gij1(1:floor(numTStep/numT)*j,:));
-            end
-        end
-
-
-        li = lij(end,:);
-        ml = mean(li);
-
-        hdfFile = strcat(params.SimOpt.saveFolder, '/LyCalc.h5');
-        %delete(hdfFile)
-        if ~exist(hdfFile, 'file')
-            h5create(hdfFile,'/lij', size(lij)) 
-            h5create(hdfFile,'/gij', size(gij))
-        end
-
-        h5write(hdfFile, '/lij', lij)
-        h5write(hdfFile, '/gij',  gij)                 
-
-        save(strcat(params.SimOpt.saveFolder, '/LyCalc.mat'), 'hdfFile', 'ml', 'params', 'li');
-        if useParFor > 0
-            delete(pool);
-        end
-    end
+%    %% Calculate lyapunov and save
+%     if useParFor > 0 || numel(idx) > 1
+%         skipFraction = 0.3; %Skip for calculating mean
+%         numTStep = round(params.SimOpt.T/ params.SimOpt.dt*(1-skipFraction));
+%         numT = round(params.SimOpt.T * params.Stim.Frequency*(1-skipFraction));
+%         lambda = zeros(E,1);
+%         lij    = zeros(numT, E);
+%         netC   = zeros(numTStep, E);
+%         gij1   = gij(round(skipFraction*numT)+1:end,:);
+% 
+% 
+%         if useParFor == true		
+%             parfor j = 1:numT
+%                 lij(j,:) = mean(gij1(1:floor(numTStep/numT)*j,:));
+%             end
+%         else
+%             for j = 1:numT
+%                 lij(j,:) = mean(gij1(1:floor(numTStep/numT)*j,:));
+%             end
+%         end
+% 
+% 
+%         li = lij(end,:);
+%         ml = mean(li);
+% 
+%         hdfFile = strcat(params.SimOpt.saveFolder, '/LyCalc.h5');
+%         %delete(hdfFile)
+%         if ~exist(hdfFile, 'file')
+%             h5create(hdfFile,'/lij', size(lij)) 
+%             h5create(hdfFile,'/gij', size(gij))
+%         end
+% 
+%         h5write(hdfFile, '/lij', lij)
+%         h5write(hdfFile, '/gij',  gij)                 
+% 
+%         save(strcat(params.SimOpt.saveFolder, '/LyCalc.mat'), 'hdfFile', 'ml', 'params', 'li');
+%         if useParFor > 0
+%             delete(pool);
+%         end
+%     end
 
 
 end

@@ -1,4 +1,4 @@
-function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifetime(lifeAv, fitP)
+function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvalancheLifetime(lifeAv, fitP)
 %{
     Plots the avalanche size distribution
     Inputs:
@@ -13,6 +13,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
 
 %}
     
+    MLcompare = struct();
     alpha = 0.0;
     dal = 0.0;
 
@@ -26,7 +27,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
     if fitPL
         %add defaults for cut-offs for PL
         if ~isfield(fitP, 'lc')
-            fitP.lc = 0;
+            fitP.lc = 1;
         end
 
         if ~isfield(fitP, 'uc')
@@ -47,7 +48,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
         
     end
 
-    xmin = 0.0;
+    xmin = 1.0;
     xmax = Inf;
     p    = 0.0;
     pcrit = 0.0;
@@ -68,7 +69,22 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
         
         if fitP.useML
             if numel(unique(lifeAv)) > 2             
-                [alpha, xmin, xmax, dal, p, pcrit, ks] = plparams(lifeAv);
+                MLcompare = mlFit(lifeAv, fitP.fitTrun);
+                alpha   = MLcompare.PL.tau;
+                xmin = MLcompare.PL.xmin;
+                xmax = MLcompare.PL.xmax;
+                if isfield(MLcompare.PL, 'dtau')
+                    dal    = MLcompare.PL.dtau; 
+                end
+                if isfield(MLcompare.PL, 'p')
+                    p    = MLcompare.PL.p; 
+                end
+                if isfield(MLcompare.PL, 'pcrit')
+                    pcrit   = MLcompare.PL.pcrit; 
+                end
+                if isfield(MLcompare.PL, 'ks')
+                    ks     = MLcompare.PL.ks; 
+                end      
                 x = xmin:0.01:xmax;
                 A = N(find(edges <= xmin, 1));
                 y = A*x.^(-alpha);
@@ -77,30 +93,25 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob] = plotAvalancheLifet
             end
             
         else
+            %only include bins within include range to fit
+            fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
+            cutFront = numel(edges(edges < fitP.lc));
+            cutEnd   = numel(edges(edges > fitP.uc));
+            edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
+            fitN     = N(1 + cutFront : end - cutEnd);         
             
-                %only include bins within include range to fit
-                fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
-                cutFront = numel(edges(edges < fitP.lc));
-                cutEnd   = numel(edges(edges > fitP.uc));
-                edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
-                fitN     = N(1 + cutFront : end - cutEnd);         
-            if numel(unique(edgeCen)) > 2 
-                %fit power law
-                [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );    
-                plot(fitresult, 'b--', xData, yData, 'gx')
+            %fit power law
+            [alpha, dal] = fitPowerLawLinearLogLog(edgeCen, fitN);         
+            
+            x = min(edgeCen):min(edgeCen)/100:max(edgeCen);
+            A = N(find(edges >= min(fitEdges), 1));
+            y = A*(x/min(x)).^(-alpha);
+            loglog(x, y, 'r--');
+            text(x(2), y(2)/3, strcat('T^{-', num2str(alpha,3),'}'), 'Color','r')
+            xmin = min(edgeCen);            
+            xmax = max(edgeCen);            
 
-                text(edgeCen(1), fitN(1)/3, strcat('T^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-    %             legend('not fit', 'inc fit', 'fit')   
-                alpha = -fitresult.b;
-             
-                CI  = confint(fitresult, fitP.cLevel);
-                tCI = CI(:,2);
-                dal = (tCI(2) - tCI(1))/2;
-            else
-                dal = inf;
-            end
         end
-
     end
 
     set(gca, 'YScale', 'log')

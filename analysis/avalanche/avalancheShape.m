@@ -18,6 +18,9 @@ function [dur, size_t, time_t] = avalancheShape(events)
        
 %}
 
+
+    minNum = 0; %minimum number of avalanches
+
     avEdg  = find(events == 0); %edges for avalanches   
     A = numel(avEdg) - 1;
     lifeAv = zeros(A,1);
@@ -43,13 +46,14 @@ function [dur, size_t, time_t] = avalancheShape(events)
         size_t{i} = zeros(dur(i) + 2,1);
         avIDs = find(lifeAv == dur(i)); %get the avalanche IDs
         nRelv = numel(avIDs); %Number of relevant avalanches
-        
-        for j = 1:(dur(i) + 2) %loop over size of avalanche            
-            for k = 1:nRelv %loop over the relevant avalanches
-                if avEdg(avIDs(k)) + j - 1 > numel(events)
-                    break;
+        if nRelv >= minNum
+            for j = 1:(dur(i) + 2) %loop over size of avalanche            
+                for k = 1:nRelv %loop over the relevant avalanches
+                    if avEdg(avIDs(k)) + j - 1 > numel(events)
+                        break;
+                    end
+                    size_t{i}(j) = size_t{i}(j) + events(avEdg(avIDs(k)) + j - 1);
                 end
-                size_t{i}(j) = size_t{i}(j) + events(avEdg(avIDs(k)) + j - 1);
             end
         end
         size_t{i} = size_t{i}/nRelv; %convert sum to average

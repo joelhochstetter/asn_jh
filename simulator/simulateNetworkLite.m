@@ -70,15 +70,26 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         filamentStates = zeros(niterations, E);
     end
 
+    if SimulationOptions.saveEventsOnly == true
+        events  = zeros(niterations, 1);
+        componentConductance = compPtr.comp.resistance;
+    end
     
     %% Solve equation systems for every time step and update:
     for ii = 1 : niterations
         % Show progress:
         %progressBar(ii,niterations);
+
+        onOrOffOld   = compPtr.comp.resistance > 1.1*Components.offResistance(1);      
         
         % Update resistance values:
         updateComponentResistance(compPtr); 
         componentConductance = compPtr.comp.resistance;
+        
+        onOrOffNew   = componentConductance > 1.1*Components.offResistance(1);     
+        if SimulationOptions.saveEventsOnly == true
+            events(ii) = sum(abs(onOrOffNew - onOrOffOld));
+        end
         
         % Get LHS (matrix) and RHS (vector) of equation:
         Gmat = zeros(V,V);
@@ -92,8 +103,6 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         end
         
         Gmat = diag(sum(Gmat, 1)) - Gmat;
-        
-        
         
         LHS          = LHSinit;
         
@@ -139,6 +148,10 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
          OutputDynamics.lambda             =  compPtr.comp.filamentState';
     end    
    
+    if SimulationOptions.saveEventsOnly == true
+        events(1) = 0;
+        OutputDynamics.events  = events;
+    end
 
     % Calculate network resistance and save:
     OutputDynamics.networkCurrent    =  electrodeCurrent(:, 2:end);

@@ -35,7 +35,8 @@ def generate_wires_distribution(number_of_wires=1500,
                                 centroid_dispersion=1200.0,  
                                 gennorm_shape = 5,
                                 Lx=3e3, Ly=3e3, 
-                                this_seed=42):
+                                this_seed=42,
+                                oldNameConvention = False):
     '''
     Drops nanowires on the device of sides Lx, Ly. 
     
@@ -106,7 +107,8 @@ def generate_wires_distribution(number_of_wires=1500,
                 length_x = Lx,
                 length_y = Ly,
                 number_of_wires = number_of_wires,
-                wire_distances = wire_distances)
+                wire_distances = wire_distances,
+                oldNameConvention = oldNameConvention)
 
 
 def generate_dist_centroids(number_of_wires, loc = 10, scale = 50, beta=5):
@@ -656,15 +658,13 @@ def export_to_matlab(wires_dict, filename=None, save_pkl=False, folder = 'connec
         seed = wires_dict['this_seed'] 
         Lx = wires_dict['length_x']
         Ly = wires_dict['length_y']
-        '''
-        gns = wires_dict['gennorm_shape']
-        cdisp = wires_dict['centroid_dispersion']
-        
-        pars_values = '_asn_nw_%05d_nj_%05d_seed_%03d_avl_%05.2f_disp_%05.2f_gns_%05.2f_cdisp_%05.2f' % (nw, nj, seed, avl, disp, gns, cdisp)
-        filename = timestamp + pars_values
-        '''
-        
-        filename = 'asn_nw_%05d_nj_%05d_seed_%03d_avl_%05.2f_disp_%05.2f_lx_%05.2f_ly_%05.2f' % (nw, nj, seed, avl, disp, Lx, Ly)
+        if wires_dict['oldNameConvention'] is True:
+            gns = wires_dict['gennorm_shape']
+            cdisp = wires_dict['centroid_dispersion']
+            pars_values = '_asn_nw_%05d_nj_%05d_seed_%03d_avl_%05.2f_disp_%05.2f_gns_%05.2f_cdisp_%05.2f' % (nw, nj, seed, avl, disp, gns, cdisp)
+            filename = timestamp + pars_values
+        else: 
+            filename = 'asn_nw_%05d_nj_%05d_seed_%03d_avl_%05.2f_disp_%05.2f_lx_%05.2f_ly_%05.2f' % (nw, nj, seed, avl, disp, Lx, Ly)
         
         
 
@@ -683,6 +683,7 @@ def export_to_matlab(wires_dict, filename=None, save_pkl=False, folder = 'connec
         os.makedirs(folder)
 
     pathfile = os.path.join(folder, filename)
+    print('Saved to: ', pathfile)
     savemat(pathfile, temp_dict)
     
     return

@@ -1,3 +1,4 @@
+
 function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
 %{
     Plots the distribution of inter-event interval
@@ -69,6 +70,18 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
             fitP.useML = false;
         end
         
+        if ~isfield(fitP, 'samples')
+            fitP.samples = 100;
+        end
+        
+        if ~isfield(fitP, 'threshold')
+            fitP.threshold = 0.4;
+        end
+        
+        if ~isfield(fitP, 'likelihood')
+            fitP.likelihood = 1e-2;
+        end        
+        
     end
 
     
@@ -80,7 +93,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     IEIres.ieiTime = ieiTime;
     IEIres.tau = 1;
     IEIres.xmin = 1;
-    IEIres.xmax = 1;
+    IEIres.xmax = max(ieiDat);
     IEIres.sigmaTau = 1;
     IEIres.p = 1;
     IEIres.pCrit = 1;
@@ -101,7 +114,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
 
     if fitPL && numel(unique(ieiDat)) > 2
         if fitP.useML
-            [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(ieiDat);
+            [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(ieiDat, 'samples', fitP.samples, 'threshold', fitP.threshold, 'likelihood', fitP.likelihood);
             IEIres.tau = tau;
             IEIres.xmin = xmin;
             IEIres.xmax = xmax;
@@ -122,12 +135,21 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
             cutEnd   = numel(edgesiei(edgesiei > fitP.uc));
             edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
             fitN     = Niei(1 + cutFront : end - cutEnd);         
+
             %fit power law
-            [fitresult, xData, yData, gof] = fitPowerLaw(edgeCen , fitN );  
-            if numel(edgeCen) > 1
-                plot(fitresult, 'b--', xData, yData, 'gx')
-                text(edgeCen(1), fitN(1)/3, strcat('t^{-', num2str(-fitresult.b,3),'}'), 'Color','b')
-                legend('not fit', 'inc fit', 'fit')   
+            [tau, sigmaTau] = fitPowerLawLinearLogLog(edgeCen, fitN);      
+            IEIres.tau = tau;
+            IEIres.sigmaTau = sigmaTau;
+            IEIres.xmin = min(edgeCen);
+            IEIres.xmax = max(edgeCen);
+            
+            %fit power law
+            if numel(edgeCen) > 1               
+                x = IEIres.xmin:IEIres.xmin/100:IEIres.xmax;
+                A = Niei(find(edgesiei >= IEIres.xmin, 1));
+                y = A*(x/ x(1)).^(-tau);
+                loglog(x, y, 'r--');
+                text(x(1), y(1)/3, strcat('t^{-', num2str(tau,3),'}'), 'Color','r')
             end
         end
     end
@@ -137,6 +159,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     xlabel('IEI (s)')
     ylabel('P(IEI)') 
 
+    
     IEIres.bins = (edgesiei(1:end-1) + edgesiei(2:end))/2;
     IEIres.prob = Niei;
     
