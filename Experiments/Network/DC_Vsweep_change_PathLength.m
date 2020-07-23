@@ -12,7 +12,7 @@ function DC_Vsweep_change_PathLength(idx,netFolder, saveFolder, Vidx)
     for i = cdidx %1:numel(cds)
         contactDistance = cds(i);
         nameComment = strcat('_sd', num2str(contactDistance));
-        DC_Vsweep_for_cluster(Vidx, saveF1, 1e-2*1.05,  1e-2*1.05, 1e-2*0.05, connFile, 0 , '', contactDistance, 30, true, 1, -1, 1, 0, 0, nameComment)
+        DC_Vsweep_for_cluster(Vidx, saveF1, 1e-2*1.05,  1e-2*1.05, 1e-2*0.05, connFile, 0 , '', contactDistance, 30, false, 1, -1, 1, 0, 0, nameComment)
     end
     
 end
