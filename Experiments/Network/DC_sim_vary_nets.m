@@ -1,6 +1,6 @@
 function DC_sim_vary_nets(idx, netFolder, saveFolder) 
     nets = dir(strcat(netFolder, '/*.mat'))';
-    numNets = 100;
+    numNets = 500;
     netIdx = mod((idx-1), numNets) + 1; 
     Vidx    = floor((idx-1)/numNets) + 1;
     saveF1 = strcat(saveFolder, '/seed', num2str(netIdx - 1,'%03.f'), '/');

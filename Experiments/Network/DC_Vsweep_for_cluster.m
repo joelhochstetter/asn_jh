@@ -1,4 +1,4 @@
-function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon, pen, multiElectrode, rectFraction, nameComment, XRectFraction)
+function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon, pen, multiElectrode, rectFraction, nameComment, XRectFraction, saveEvents)
 %{
     e.g. usuage
     attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
@@ -81,6 +81,12 @@ if nargin < 18
     XRectFraction = 1.0;
 end
 
+if nargin <19
+    saveEvents = true;
+else 
+    saveEvents = boolean(saveEvents);
+end
+
 %%
 params = struct();
 
@@ -94,7 +100,10 @@ params.SimOpt.useParallel     = false;
 params.SimOpt.runIndex = idx;
 params.SimOpt.hdfSave         = true;
 params.SimOpt.saveSwitches = false;
+
 params.SimOpt.saveFilStateOnly = saveFilState;
+params.SimOpt.saveEventsOnly  = saveEvents;
+
 params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
 params.SimOpt.saveFolder      = saveFolder;
 mkdir(params.SimOpt.saveFolder);

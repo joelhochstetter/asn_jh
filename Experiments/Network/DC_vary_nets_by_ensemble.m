@@ -8,7 +8,7 @@ ensembleID: 0 (fixed density, change size),
 
 %}
 
-     numSeeds = 100;
+     numSeeds = 500;
      seedIdx  = mod((idx-1), numSeeds) + 1;
   
     % Gets connect file

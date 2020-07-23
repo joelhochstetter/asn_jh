@@ -1,6 +1,6 @@
 function DC_Vsweep_change_ElectrodeSize(idx,netFolder, saveFolder, Vidx) 
     xElect = 0.2:0.2:1.0;
-    numSeeds = 100;
+    numSeeds = 500;
     seedIdx  = mod((idx-1), numSeeds) + 1;
     XEidx    = floor((idx-1)/numSeeds) + 1;
     disp(strcat('Seed idx: ', num2str(seedIdx), ', xe idx: ', num2str(XEidx)));

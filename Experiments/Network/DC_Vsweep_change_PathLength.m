@@ -1,6 +1,6 @@
 function DC_Vsweep_change_PathLength(idx,netFolder, saveFolder, Vidx) 
     cds = 5:10:45;
-    numSeeds = 100;
+    numSeeds = 500;
     seedIdx  = mod((idx-1), numSeeds) + 1;
     cdidx    = floor((idx-1)/numSeeds) + 1;
     disp(strcat('Seed idx: ', num2str(seedIdx), ', cd idx: ', num2str(cdidx)));
