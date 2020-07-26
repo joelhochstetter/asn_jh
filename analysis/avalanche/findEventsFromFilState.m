@@ -27,10 +27,12 @@ function events = findEventsFromFilState(sim, eventDetect)
             onOrOff   = switchC > eventDetect.conductanceRatio*sim.Comp.offR;
             changeOnOrOff = abs(onOrOff(2:end,:) - onOrOff(1:end - 1,:));            
             events = sum(changeOnOrOff,2);
+            events = [events ; 0];                
         case 'conductanceCrossing'
             onOrOff   = floor(log(switchC/sim.Comp.offR)/log(eventDetect.conductancePower));
             changeOnOrOff = abs(onOrOff(2:end,:) - onOrOff(1:end - 1,:)) > 0;            
-            events = sum(changeOnOrOff,2);            
+            events = sum(changeOnOrOff,2);
+            events = [events ; 0];    
         case 'voltageSpike'
             dlamdt = abs(sim.swLam(2:end,:) - sim.swLam(1:end - 1,:))/sim.dt;
             spike    = dlamdt > eventDetect.dLamdtThreshold;
@@ -50,5 +52,4 @@ function events = findEventsFromFilState(sim, eventDetect)
             end
     end
     
-    events = [events ; 0];
 end

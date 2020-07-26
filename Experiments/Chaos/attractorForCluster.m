@@ -41,7 +41,7 @@ params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the 
 params.SimOpt.saveFolder      = saveFolder;
 mkdir(params.SimOpt.saveFolder);
 
-params.SimOpt.T                = 50;
+params.SimOpt.T                = 1000;
 params.SimOpt.dt               = 1e-4;
 params.SimOpt.nameComment      = '';
 
@@ -57,7 +57,7 @@ params.Comp.ComponentType  = 'tunnelSwitchL'; %tunnelSwitch2
 params.Comp.onResistance   = 7.77e-5;
 params.Comp.offResistance   = 7.77e-8;
 params.Comp.setVoltage      = 1e-2;
-params.Comp.resetVoltage  = 5e-3;
+params.Comp.resetVoltage  = 1e-2;
 params.Comp.criticalFlux   =  0.01;
 params.Comp.maxFlux        = 0.015;
 params.Comp.penalty        =    1;
@@ -68,16 +68,16 @@ params.Comp.nonpolar       = false;
 
 %%%
 s = multiRun(params);
-%  [~,saveName,ext] = fileparts(s{1}.saveName);
-%  saveName = strcat(saveName, ext);
-%  if ~contains(saveName, '.mat')
-%      saveName = strcat(saveName, '.mat');
-%  end
-%  
-% if isstring(lyFolder) || ischar(lyFolder)
-%     disp(strcat('Ly for ', num2str(saveName)));
-%     calcLyapunovV5(0, 1, saveFolder, saveName, lyFolder, 0);
-% end
+ [~,saveName,ext] = fileparts(s{1}.saveName);
+ saveName = strcat(saveName, ext);
+ if ~contains(saveName, '.mat')
+     saveName = strcat(saveName, '.mat');
+ end
+ 
+if isstring(lyFolder) || ischar(lyFolder)
+    disp(strcat('Ly for ', num2str(saveName)));
+    calcLyapunovV5(0, 1, saveFolder, saveName, lyFolder, 0);
+end
 
 end
 
