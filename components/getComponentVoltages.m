@@ -20,7 +20,7 @@ function voltages = getComponentVoltages(componentConductance, edgeList, electro
         this_elec           = electrodes(i);
         LHS(V+i,this_elec)  = 1;
         LHS(this_elec,V+i)  = 1;
-        RHS(V+i)            = Signals{i,1}(ii);
+        RHS(V+i)            = Signals{i}(ii);
     end
 
     % Solve equation:
