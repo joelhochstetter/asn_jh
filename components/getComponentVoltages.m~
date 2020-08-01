@@ -8,8 +8,8 @@ function voltages = getComponentVoltages(componentConductance, edgeList, electro
     Gmat = zeros(V,V);
 
     for i = 1:E
-        Gmat(edgeList(1,i),edgeList(2,i)) = componentConductance(i);
-        Gmat(edgeList(2,i),edgeList(1,i)) = componentConductance(i);
+        Gmat(edgeList(1,i),edgeList(2,)) = componentConductance(i);
+        Gmat(edgeList(2,i),edgeList(i,1)) = componentConductance(i);
     end
 
     Gmat = diag(sum(Gmat, 1)) - Gmat;
@@ -27,6 +27,6 @@ function voltages = getComponentVoltages(componentConductance, edgeList, electro
     sol = LHS\RHS;
 
     tempWireV = sol(1:V);
-    voltages = tempWireV(edgeList(1,:)) - tempWireV(edgeList(2,:)); %junction voltage
+    voltages = tempWireV(edgeList(:,1)) - tempWireV(edgeList(:,2)); %junction voltage
 
 end
