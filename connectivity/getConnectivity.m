@@ -409,11 +409,11 @@ clc
     
     
     % Generate fields that are common to all matrices
-    if ~isfield(Connectivity,'EdgeList')
-        [ii, jj] = find(tril(Connectivity.weights)); 
-        Connectivity.EdgeList = [jj ii]'; 
+%     if ~isfield(Connectivity,'EdgeList')
+    [ii, jj] = find(tril(Connectivity.weights)); 
+    Connectivity.EdgeList = [jj ii]'; 
         % (2XE matrix, must follow the conventions specified above)
-    end
+%     end
     
     %get new edges
     if numNew > 0

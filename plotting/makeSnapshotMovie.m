@@ -36,8 +36,13 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
     v.FrameRate = 20;%floor(1/(timeVec(2)-timeVec(1))/10);
     v.Quality = 100;
     open(v);
-    critLam = Components.critFlux(1);
     
+    if isfield(Components, 'critFlux')
+        critLam = Components.critFlux(1);
+    elseif isfield(Components, 'criticalFlux')
+        critLam = Components.criticalFlux(1);
+    end
+        
     for i = 1 : samplingTime: length(timeVec)
         if timeVec(i) > tend
             break
@@ -47,7 +52,9 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
         swLambda              = swLam(i,:)';
         swCon = swC(i,:)';
         snapshot = generateSnapshotFromData(swVolt, swLambda, swCon, critLam,  Signal(i), netC(i), timeVec(i));
-        frameFig = snapshotToFigureThesis(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);
+%         frameFig = snapshotToFigureThesis(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], [])
+        frameFig = snapshotToFigurePaper(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);
+        axis square;
         writeVideo(v,getframe(frameFig));
         close(frameFig);
     end

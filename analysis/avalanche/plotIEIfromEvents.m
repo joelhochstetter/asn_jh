@@ -75,11 +75,11 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
         end
         
         if ~isfield(fitP, 'threshold')
-            fitP.threshold = 0.4;
+            fitP.threshold = 1.0;
         end
         
         if ~isfield(fitP, 'likelihood')
-            fitP.likelihood = 1e-2;
+            fitP.likelihood = 1e-1;
         end        
         
     end
