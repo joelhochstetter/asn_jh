@@ -28,7 +28,7 @@ Given a base folder and subfolders:
             importFolder = strcat(baseFolder, '/', subfolders{i});
             saveFolder = strcat('Avalanche_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));
             multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, -1, ncpu)
-            cd(baseFolder)
+            cd(importFolder)
             saveFolder = strcat('Avalanche_Joint_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));        
             jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, -1);
         end

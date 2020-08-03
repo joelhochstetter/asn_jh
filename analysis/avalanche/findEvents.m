@@ -31,9 +31,19 @@ function events =  findEvents(G, eventDetect)
             events = (dGG >= eventDetect.relThresh) | (dG >= eventDetect.thresh);
         case 'stationaryPt'
             %find peaks, check bigger than threshold ratio
+            %threshold ratio
+            dGG = abs(dG./G);
+            [pks, locs] = findpeaks(dGG);
+            events(locs(pks > eventDetect.relThresh)) = true;             
+            %threshold
             dG = abs(dG);
             [pks, locs] = findpeaks(dG);
-            events(locs(pks > eventDetect.thresh)) = true; 
+            events(locs(pks > eventDetect.thresh)) = true;
+        case 'thresholdPeak'
+            % find crossing of threshold. Take peak from that sequence as event time.
+            dG = abs(dG);
+            aboveThresh = (dG > eventDetect.thresh);
+            [pks, locs] = findpeaks(dG);
 
         case 'kirchoff' %use kirchoff laws to estimate an event given network conductance.
             %to do
