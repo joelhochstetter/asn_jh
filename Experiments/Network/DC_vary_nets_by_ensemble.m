@@ -67,7 +67,7 @@ ensembleID: 0 (fixed density, change size),
     saveF1 = strcat(saveFolder, '/seed', num2str(seedIdx - 1,'%03.f'), '/');
     mkdir(saveF1)
     
-    DC_Vsweep_for_cluster(Vidx, saveF1, 1.05*0.01, 1.08*0.01, 0.25*0.01, connFile, 0 , '.', -1, 30, false, true, -1, 1, true, 0.02, nameComment)
+    DC_Vsweep_for_cluster(Vidx, saveF1, 2.0*0.01, 2.08*0.01, 0.25*0.01, connFile, 0 , '.', -1, 30, false, true, -1, 1, true, 0.02, nameComment)
     
     
 end
