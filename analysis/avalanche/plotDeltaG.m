@@ -42,8 +42,12 @@ function dGfit = plotDeltaG(G, pn, fitP, joinperiod)
     dG = [diff(G), 0];
     dG(isnan(dG)) = 0;        
     
-    if joinperiod > 0
-        dG(joinperiod:joinperiod:numel(dG)) = 0;
+    if numel(joinperiod) == 1
+        if joinperiod > 0
+            dG(joinperiod:joinperiod:numel(dG)) = 0;
+        end
+    else
+        dG(joinperiod) = 0;
     end
     
     if fitPL

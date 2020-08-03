@@ -29,7 +29,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     tjoin = [0];
     Vjoin = [];
     fname = 'joint folders:';
-    
+    joinSpots = [0];
     
     numFolders = numel(importFolder);
     for j = 1:numFolders
@@ -41,12 +41,14 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
             t = t + tjoin(end) - t(1);
             tjoin = [tjoin, t];
             Gjoin = [Gjoin, G];
-            Vjoin = [Vjoin, V];         
+            Vjoin = [Vjoin, V]; 
+            joinSpots = [joinSpots, numel(t) + joinSpots(end)]; %stores index of joins for fixing IEI
         end
     end
     
     %cut off initial zero
     tjoin = tjoin(2:end);
+    joinSpots = joinSpots(2:end);
     
     % detect events
     events =  findEvents(Gjoin, eventDetect);
@@ -57,7 +59,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     dt = (tjoin(end) - tjoin(1))/(numel(tjoin) - 1);
     
     %perform criticality analysis
-    critAnalysis(events, dt, Gjoin, tjoin, Vjoin, fname, strcat(saveFolder, '/'), fitML, binSize);
+    critAnalysis(events, dt, Gjoin, tjoin, Vjoin, fname, strcat(saveFolder, '/'), fitML, binSize, joinSpots);
 
     
 end

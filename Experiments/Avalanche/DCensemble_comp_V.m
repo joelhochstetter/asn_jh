@@ -1,17 +1,17 @@
 %%
 close all;
-% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangeV/';
-baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV/';
+baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangeV/';
+% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
 binSize = [-1,10, 50, 100]';
 Nbs = numel(binSize);
-% Vvals = [0.225, 0.338, 0.45, 0.562, 0.675, 0.787, 0.9]';
-Vvals = [0.7:0.1:1.8]';
+Vvals = [0.225, 0.338, 0.45, 0.562, 0.675, 0.787, 0.9]';
+% Vvals = [0.7:0.1:1.8]';
 Vstar = Vvals;
 N = numel(Vvals);
-% Vstar = Vvals/1e-2/45;
+Vstar = Vvals/1e-2/45;
 
 %%
 meanG = zeros(N,Nbs);
@@ -38,6 +38,7 @@ x2  = zeros(N,Nbs);
 dx2 = zeros(N,Nbs);
 x3  = zeros(N,Nbs);
 dx3 = zeros(N,Nbs);
+kingAv = zeros(N,Nbs);
 IEIbins = cell(N,Nbs);
 IEIprob = cell(N,Nbs);
 dGbins  = cell(N,Nbs);
@@ -48,6 +49,7 @@ Tmbins  = cell(N,Nbs);
 Tmprob  = cell(N,Nbs);
 ASlife  = cell(N,Nbs);
 ASsize  = cell(N,Nbs);
+
 critResults = cell(N,Nbs);
 
 
@@ -62,8 +64,8 @@ for j = 1:Nbs
 
 
     for i = 1:numel(Vvals)
-%         critResults{i,j} = load(strcat2({baseFolder, 'V', Vvals(i), '/bs', bs, '/critResults.mat'}));
-        critResults{i,j} = load(strcat2({baseFolder, 'Vstar', Vvals(i), '/bs', bs, '/critResults.mat'}));        
+        critResults{i,j} = load(strcat2({baseFolder, 'V', Vvals(i), '/bs', bs, '/critResults.mat'}));
+%         critResults{i,j} = load(strcat2({baseFolder, 'Vstar', Vvals(i), '/bs', bs, '/critResults.mat'}));        
         critResults{i,j} = critResults{i,j}.critResults;
     end
 
@@ -103,6 +105,14 @@ for j = 1:Nbs
         dx2(i,j) = critResults{i,j}.avalanche.gamma.dx2;
         x3 (i,j) = critResults{i,j}.avalanche.gamma.x3;
         dx3(i,j) = critResults{i,j}.avalanche.gamma.dx3;
+        bins = critResults{i,j}.avalanche.sizeFit.bins;
+        prob = critResults{i,j}.avalanche.sizeFit.prob;
+        [pks, locs] = findpeaks(prob);
+        possMax = find(bins(locs) > critResults{i,j}.avalanche.sizeFit.uc);
+        [~, I] = max(pks(possMax));
+        if numel(I) > 0
+            kingAv(i,j) = bins(locs(possMax(I)));
+        end
     end
 
     %% Comparison by parameter
@@ -152,11 +162,11 @@ for j = 1:Nbs
     plot(Vstar, Slct(:,j), ':');
     hold on;
     plot(Vstar, Suct(:,j), 'k--');
+    plot(Vstar, kingAv(:,j), 'r^', 'MarkerSize', 10)
     ylabel('cut-off')
-    legend('\alpha', 'lc', 'uc', 'location', 'best')
+    legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
     print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
-
-
+    
 
     %% Lifetime
     figure('visible', 'off');
@@ -170,7 +180,7 @@ for j = 1:Nbs
     plot(Vstar, Tuct(:,j), 'k--');
     ylabel('cut-off')
     legend('\alpha', 'lc', 'uc', 'location', 'best')
-    print(gcf,strcat(saveFolder, '/LifeComp.png'), '-dpng', '-r300', '-painters')
+    print(gcf,strcat(saveFolder, '/KingAv.png'), '-dpng', '-r300', '-painters')
 
 
     %% Gamma
@@ -288,11 +298,10 @@ for j = 1:N
     plot(binSize, Slct(j,:), '^');
     hold on;
     plot(binSize, Suct(j,:), 'kh');
+    plot(binSize, kingAv(j,:), 'r*', 'MarkerSize', 10)    
     ylabel('cut-off')
-    legend('\alpha', 'lc', 'uc', 'location', 'best')
+    legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
     print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
-
-
 
     %% Lifetime
     figure('visible', 'off');

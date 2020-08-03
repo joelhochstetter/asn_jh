@@ -5,7 +5,7 @@ function [ieiData, ieiTime] = IEI(events, dt, joinperiod, t)
    ieiTime associated with  first event from IEI pair
    joinperiod: for time series which join an ensemble of
     different simulations stores periodicity so ignores events calculated 
-    between adjacent simulations
+    between adjacent simulations. Send in as an array if not periodic
 
     runMode = 1: use time-step
     runMode = 2: use time-vector to calculate IEI
@@ -31,13 +31,24 @@ function [ieiData, ieiTime] = IEI(events, dt, joinperiod, t)
     ieiIdx    = 1;
     prevEvent = find(events, 1);
     
+    %joinperiod
+    if numel(joinperiod) == 1
+        joinperiod = joinperiod:joinperiod:(numel(events) + 1);
+    end
+    
+    j = 1; %index for joinperiod
+    
     if runMode == 1
         for i = (prevEvent + 1):numel(events)
             if events(i)
-                if floor((i-1)/joinperiod) == floor((prevEvent-1)/joinperiod)
+                if floor((i-1)/joinperiod(j)) == floor((prevEvent-1)/joinperiod(j))
                     ieiData(ieiIdx) = i - prevEvent;
                     ieiIdx = ieiIdx + 1;
-                    ieiTime(ieiIdx) = prevEvent;                     
+                    ieiTime(ieiIdx) = prevEvent;
+                    %increment j if above the join period
+                    if ((i-1) > joinperiod(j)) && ((prevEvent-1) > joinperiod(j)) 
+                        j = j + 1;
+                    end
                 end
                 prevEvent = i;
             end
@@ -47,10 +58,14 @@ function [ieiData, ieiTime] = IEI(events, dt, joinperiod, t)
     elseif runMode == 2
         for i = (prevEvent + 1):numel(events)
             if events(i)
-                if floor((i-1)/joinperiod) == floor((prevEvent-1)/joinperiod)
+                if floor((i-1)/joinperiod(j)) == floor((prevEvent-1)/joinperiod(j))
                     ieiData(ieiIdx)  = i - prevEvent;
                     ieiTime(ieiIdx) = prevEvent; 
                     ieiIdx = ieiIdx + 1;
+                    %increment j if above the join period
+                    if ((i-1) > joinperiod(j)) && ((prevEvent-1) > joinperiod(j)) 
+                        j = j + 1;
+                    end                    
                 end
                 prevEvent = i;                
             end
