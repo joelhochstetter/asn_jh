@@ -93,24 +93,25 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
             end
             
         else
-            %only include bins within include range to fit
-            fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
-            cutFront = numel(edges(edges < fitP.lc));
-            cutEnd   = numel(edges(edges > fitP.uc));
-            edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
-            fitN     = N(1 + cutFront : end - cutEnd);         
-            
-            %fit power law
-            [alpha, dal] = fitPowerLawLinearLogLog(edgeCen, fitN);         
-            
-            x = min(edgeCen):min(edgeCen)/100:max(edgeCen);
-            A = N(find(edges >= min(fitEdges), 1));
-            y = A*(x/min(x)).^(-alpha);
-            loglog(x, y, 'r--');
-            text(x(2), y(2)/3, strcat('T^{-', num2str(alpha,3),'}'), 'Color','r')
-            xmin = min(edgeCen);            
-            xmax = max(edgeCen);            
+            if numel(unique(lifeAv)) > 2
+                %only include bins within include range to fit
+                fitEdges = edges((edges >= fitP.lc) & (edges <= fitP.uc));
+                cutFront = numel(edges(edges < fitP.lc));
+                cutEnd   = numel(edges(edges > fitP.uc));
+                edgeCen  = (fitEdges(1:end-1)  + fitEdges(2:end))/2;
+                fitN     = N(1 + cutFront : end - cutEnd);         
 
+                %fit power law
+                [alpha, dal] = fitPowerLawLinearLogLog(edgeCen, fitN);         
+
+                x = min(edgeCen):min(edgeCen)/100:max(edgeCen);
+                A = N(find(edges >= min(fitEdges), 1));
+                y = A*(x/min(x)).^(-alpha);
+                loglog(x, y, 'r--');
+                text(x(2), y(2)/3, strcat('T^{-', num2str(alpha,3),'}'), 'Color','r')
+                xmin = min(edgeCen);            
+                xmax = max(edgeCen);            
+            end
         end
     end
 
