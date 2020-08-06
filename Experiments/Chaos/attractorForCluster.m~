@@ -4,13 +4,12 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
         attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
         attractorForCluster(1, 'simulations/DCTriLyapunov/Attractors/', 'simulations/DCTriLyapunov/Lyapunov/', 'DCsaw', 0.2:0.05:0.4,  [0.05, 0.1, 0.25, 0.5, 0.75], 0)
 
-        attractorForCluster(1, 'simulations/ACavalanches/BigNetworkForAv', 0, 'ACsaw', [1.0:0.5:5.0], [0.5:0.5:3.0], -1, -1, 1e-3, 100,  '2020-06-09-153523_asn_nw_01962_nj_05309_seed_000_avl_10.00_disp_02.00_gns_100.00_cdisp_350.00.mat')
+        attractorForCluster(1, '.', 0, 'ACsw, Amps, Freqs, initStateFile , initStateFolder, dt, T, connFile)
 
     %}
 
     if nargin < 7
         initLamda = 0;
-        disp('No initial state file provided. Using lambda (t = 0) = 0')        
     else
         if nargin == 7
             initStateFolder = saveFolder;
@@ -27,7 +26,6 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
             end
         else
             initLamda = 0;
-            disp('No initial state file provided. Using lambda (t = 0) = 0')
         end
     end
 
