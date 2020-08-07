@@ -1,4 +1,4 @@
-function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, initStateFile , initStateFolder, dt, T, connFile)
+function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, initStateFile , initStateFolder, dt, T, connFile, saveFilStateOnly, contactDistance)
     %{
         e.g. usage
         attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
@@ -39,6 +39,16 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
         T = 1000;
     end
 
+    if nargin < 11
+        saveFilStateOnly = false;
+    end
+
+    if nargin < 12 || contactDistance < 0
+        contactMode =  'farthest';
+        contactDistance = -1;
+    else
+        contactMode = 'fixedTopoDistance';
+    end
 
 
     %%
@@ -54,6 +64,7 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
     params.SimOpt.runIndex = idx;
     params.SimOpt.hdfSave         = false;
     params.SimOpt.saveSwitches = false;
+    params.SimOpt.saveFilStateOnly = saveFilStateOnly;
     params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
     params.SimOpt.saveFolder      = saveFolder;
     mkdir(params.SimOpt.saveFolder);
@@ -82,6 +93,9 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
     params.Comp.filamentState = initLamda;
     params.Comp.nonpolar       = false;
 
+    params.SimOpt.ContactMode = contactMode;
+    params.SimOpt.ContactGraphDist = contactDistance;
+    
     params.Conn.filename = connFile;
 
     %%
