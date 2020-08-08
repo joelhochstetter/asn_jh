@@ -213,66 +213,67 @@ clc
 
     %---------------------------------------------------------------------%  
 
-        case 'Lattice'
-            
-            if ~isfield(Connectivity, 'sizex')
-                Connectivity.sizex = 10;
+    case 'Lattice'
+
+        if ~isfield(Connectivity, 'sizex')
+            Connectivity.sizex = 10;
+        end
+
+        if ~isfield(Connectivity, 'sizey')
+            Connectivity.sizey = Connectivity.sizex;
+        end            
+
+        Connectivity.NumberOfNodes = Connectivity.sizex*Connectivity.sizey;
+        Connectivity.weights  = zeros(Connectivity.NumberOfNodes);
+
+        if ~isfield(Connectivity, 'BondProb') %bond probability
+            Connectivity.BondProb = 1;
+        end
+
+        if Connectivity.BondProb == 1
+            %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
+            %nodeIdx = Connectivity.sizex * (j - 1) + i
+            %Connect adjacent nodes in x direction
+            for i = 1:(Connectivity.sizex - 1)
+                for j = 1:Connectivity.sizey
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = 1;
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = 1;                
+                end
             end
 
-            if ~isfield(Connectivity, 'sizey')
-                Connectivity.sizey = Connectivity.sizex;
+            %Connect adjacent nodes in y direction
+            for i = 1:Connectivity.sizex
+                for j = 1:(Connectivity.sizey - 1)
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = 1;
+                    Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = 1;                
+                end
             end            
-            
-            Connectivity.NumberOfNodes = Connectivity.sizex*Connectivity.sizey;
-            Connectivity.weights  = zeros(Connectivity.NumberOfNodes);
-            
-            if ~isfield(Connectivity, 'BondProb') %bond probability
-                Connectivity.BondProb = 1;
+        else %percolation model with bond proabibility p
+            if ~isfield(Connectivity, 'seed')
+                Connectivity.seed = 1;
             end
-            
-            if Connectivity.BondProb == 1
-                %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
-                %nodeIdx = Connectivity.sizex * (j - 1) + i
-                %Connect adjacent nodes in x direction
-                for i = 1:(Connectivity.sizex - 1)
-                    for j = 1:Connectivity.sizey
-                        Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = 1;
-                        Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = 1;                
-                    end
-                end
+            rng(Connectivity.seed);
 
-                %Connect adjacent nodes in y direction
-                for i = 1:Connectivity.sizex
-                    for j = 1:(Connectivity.sizey - 1)
-                        Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = 1;
-                        Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = 1;                
-                    end
-                end            
-            else %percolation model with bond proabibility p
-                if ~isfield(Connectivity, 'seed')
-                    Connectivity.seed = 1;
+            %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
+            %nodeIdx = Connectivity.sizex * (j - 1) + i
+            %Connect adjacent nodes in x direction
+            for i = 1:(Connectivity.sizex - 1)
+                for j = 1:Connectivity.sizey
+                    p = rand(1) < Connectivity.BondProb;                         
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = p;
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = p;                
                 end
-                rng(Connectivity.seed);
-                
-                %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
-                %nodeIdx = Connectivity.sizex * (j - 1) + i
-                %Connect adjacent nodes in x direction
-                for i = 1:(Connectivity.sizex - 1)
-                    for j = 1:Connectivity.sizey
-                        Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = p;
-                        Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = p;                
-                    end
-                end
-
-                %Connect adjacent nodes in y direction
-                for i = 1:Connectivity.sizex
-                    for j = 1:(Connectivity.sizey - 1)
-                        p = rand(1) < Connectivity.BondProb;                        
-                        Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = p;
-                        Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = p;                
-                    end
-                end                  
             end
+
+            %Connect adjacent nodes in y direction
+            for i = 1:Connectivity.sizex
+                for j = 1:(Connectivity.sizey - 1)
+                    p = rand(1) < Connectivity.BondProb;                        
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = p;
+                    Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = p;                
+                end
+            end                  
+        end
     %---------------------------------------------------------------------%  
 
         case 'Random'
