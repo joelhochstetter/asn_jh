@@ -214,20 +214,15 @@ clc
     %---------------------------------------------------------------------%  
 
         case 'Lattice'
-            
-            if ~isfield(Connectivity, 'sizex')
-                Connectivity.sizex = 10;
-            end
-
-            if ~isfield(Connectivity, 'sizey')
-                Connectivity.sizey = Connectivity.sizex;
-            end            
-            
             Connectivity.NumberOfNodes = Connectivity.sizex*Connectivity.sizey;
             Connectivity.weights  = zeros(Connectivity.NumberOfNodes);
             
             if ~isfield(Connectivity, 'BondProb') %bond probability
                 Connectivity.BondProb = 1;
+            end
+            
+            if ~isfield(Connectivity, 'seed')
+                Connectivity
             end
             
             if Connectivity.BondProb == 1
@@ -248,12 +243,7 @@ clc
                         Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = 1;                
                     end
                 end            
-            else %percolation model with bond proabibility p
-                if ~isfield(Connectivity, 'seed')
-                    Connectivity.seed = 1;
-                end
-                rng(Connectivity.seed);
-                
+            else
                 %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
                 %nodeIdx = Connectivity.sizex * (j - 1) + i
                 %Connect adjacent nodes in x direction

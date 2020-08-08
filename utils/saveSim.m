@@ -51,6 +51,7 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         sim.NewNodes = Connectivity.NewNodes;
         sim.NewEdges = Connectivity.NewEdges;        
     end
+    
     sim.ContactNodes = SimulationOptions.ContactNodes;
     sim.Comp.setV = Components.setVoltage(1);
     sim.Comp.resetV = Components.resetVoltage(1);

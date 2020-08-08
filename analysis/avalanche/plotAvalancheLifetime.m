@@ -108,7 +108,7 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
                 A = N(find(edges >= min(fitEdges), 1));
                 y = A*(x/min(x)).^(-alpha);
                 loglog(x, y, 'r--');
-                text(x(2), y(2)/3, strcat('T^{-', num2str(alpha,3),'}'), 'Color','r')
+                text(x(1), y(1)/3, strcat('T^{-', num2str(alpha,3),'}'), 'Color','r')
                 xmin = min(edgeCen);            
                 xmax = max(edgeCen);            
             end
