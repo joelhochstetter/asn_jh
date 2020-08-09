@@ -1,4 +1,4 @@
-function DC_by_random_connectivity(idx, saveFolder, amp, seed, useRect, rescalePLength, Connectivity, T)
+function DC_by_random_connectivity(seed, saveFolder, amp, useRect, rescalePLength, Connectivity, T)
 %{
     Connectivity = struct('WhichMatrix', 'WattsStrogatz', 'beta', 0.0,...
     'EdgesPerNode', 2, 'NumberOfNodes', 500)
@@ -6,6 +6,8 @@ function DC_by_random_connectivity(idx, saveFolder, amp, seed, useRect, rescaleP
     'm', 2, 'NumberOfNodes', 500)
     Connectivity = struct('WhichMatrix', 'BarabasiAlbert', 'm0', 2.0,...
     'm', 2, 'NumberOfNodes', 500)
+    Connectivity = struct('WhichMatrix', 'Lattice', 'sizex', 23,...
+    'BondProb', 1.0)
 %}
 
 
@@ -19,7 +21,6 @@ params.SimOpt.takingSnapshots = false;
 params.SimOpt.onlyGraphics    = true; %does not plot anything
 params.SimOpt.compilingMovie  = false;
 params.SimOpt.useParallel     = false;
-params.SimOpt.runIndex = idx;
 params.SimOpt.hdfSave         = false;
 params.SimOpt.saveSwitches = false;
 
@@ -28,7 +29,7 @@ params.SimOpt.saveEventsOnly  = true;
 
 params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
 params.SimOpt.saveFolder      = saveFolder;
-mkdir(params.SimOpt.saveFolder);
+mkdir(saveFolder);
 
 params.SimOpt.T                = T;
 params.SimOpt.dt               = 1e-3;
@@ -36,25 +37,25 @@ params.SimOpt.ContactMode = 'topoFarthest';
 
 %Set Stimulus
 params.Stim.BiasType     = 'DC'; % 'ACsaw'; % 'DC' \ 'AC' \ 'DCandWait' \ 'Ramp' \ 'ACsaw'
-params.Stim.Amplitude    = amp:stepAmp:maxAmp; %0.2:0.05:0.4; 
+params.Stim.Amplitude    = amp; %0.2:0.05:0.4; 
 
 %Set connect file
 params.Conn = Connectivity;
 params.Conn.seed = seed;
 
-if useRect
-    %Connectivity and contacts
-    Connectivity          = getConnectivity(params.Conn);
-    params.SimOpt.RectElectrodes = true;
-    params.SimOpt.NewEdgeRS      = false;
-    params.SimOpt.RectFractions  = rectFraction;
-    params.SimOpt.XRectFraction  = XRectFraction;    
-    [~, ~, SDpath] = addRectElectrode(Connectivity, params.SimOpt.RectFractions, XRectFraction);
-    if SDpath == Inf
-        disp('No such SD path')
-        return
-    end
-end    
+if strcat(Connectivity.WhichMatrix, 'Lattice')
+    L = params.Conn.sizex;
+    if useRect
+        src = 1:L;
+        drn = (1:L) + L^2 - L;
+        params.Conn.addNodes = {src, drn};
+        params.SimOpt.ContactMode  = 'preSet';
+        params.SimOpt.ContactNodes = L^2 + [1, 2];
+    else
+        params.SimOpt.ContactMode =  'preSet';
+        params.SimOpt.ContactNodes = [1,L^2];
+    end    
+end
 
 if rescalePLength
     if ~multiElectrode
