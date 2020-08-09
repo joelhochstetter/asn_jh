@@ -76,7 +76,7 @@ if strcat(Connectivity.WhichMatrix, 'BarabasiAlbert')
 end
 
 if strcat(Connectivity.WhichMatrix, 'Lattice')
-    params.SimOpt.nameComment = nameComment;
+    params.SimOpt.nameComment = strcat2({'_Lattice_L', L, '_p', Connectivity.BondProb, '_s', num2str(Connectivity.seed, '%03.f')});
 end
 
 %Set Components
