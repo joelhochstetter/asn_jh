@@ -90,6 +90,12 @@ clc
 % Paula Sanz-Leon
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+    if ~isfield(Connectivity, 'seed')
+        Connectivity.seed = 1;
+    end
+    rng(Connectivity.seed);
+
     NewNodes = [];
     NewEdges = [];
 
@@ -249,10 +255,6 @@ clc
                 end
             end            
         else %percolation model with bond proabibility p
-            if ~isfield(Connectivity, 'seed')
-                Connectivity.seed = 1;
-            end
-            rng(Connectivity.seed);
 
             %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
             %nodeIdx = Connectivity.sizex * (j - 1) + i
@@ -276,6 +278,32 @@ clc
         end
     %---------------------------------------------------------------------%  
 
+        case 'WattsStrogatz'
+            
+            if ~isfield(Connectivity, 'beta') 
+                Connectivity.beta = 0.0;
+            end
+            
+            if ~isfield(Connectivity, 'EdgesPerNode') 
+                Connectivity.EdgesPerNode = 2;
+            end
+            
+              Connectivity.weights = WattsStrogatz(Connectivity.NumberOfNodes, Connectivity.EdgesPerNode, Connectivity.beta, Connectivity.seed);
+    
+    %---------------------------------------------------------------------%  
+
+        case 'BarabasiAlbert'
+            if ~isfield(Connectivity, 'm0') 
+                Connectivity.m0 = 2;
+            end
+            
+            if ~isfield(Connectivity, 'm') 
+                Connectivity.mm = 2;
+            end            
+    
+            Connectivity.weights = genScaleFree(Connectivity.NumberOfNodes, Connectivity.m0, Connectivity.m, Connectivity.seed);
+    %---------------------------------------------------------------------%  
+    
         case 'Random'
             if strcmp(Connectivity.WeightType, 'binary')
                 Connectivity.weights  = (randi([0, 1], Connectivity.NumberOfNodes, Connectivity.NumberOfNodes)).*(~ eye(Connectivity.NumberOfNodes));
