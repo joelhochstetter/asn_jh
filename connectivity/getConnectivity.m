@@ -90,6 +90,12 @@ clc
 % Paula Sanz-Leon
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+    if ~isfield(Connectivity, 'seed')
+        Connectivity.seed = 1;
+    end
+    rng(Connectivity.seed);
+
     NewNodes = [];
     NewEdges = [];
 
@@ -213,9 +219,24 @@ clc
 
     %---------------------------------------------------------------------%  
 
-        case 'Lattice'
-            Connectivity.NumberOfNodes = Connectivity.sizex*Connectivity.sizey;
-            Connectivity.weights  = zeros(Connectivity.NumberOfNodes);
+    case 'Lattice'
+
+        if ~isfield(Connectivity, 'sizex')
+            Connectivity.sizex = 10;
+        end
+
+        if ~isfield(Connectivity, 'sizey')
+            Connectivity.sizey = Connectivity.sizex;
+        end            
+
+        Connectivity.NumberOfNodes = Connectivity.sizex*Connectivity.sizey;
+        Connectivity.weights  = zeros(Connectivity.NumberOfNodes);
+
+        if ~isfield(Connectivity, 'BondProb') %bond probability
+            Connectivity.BondProb = 1;
+        end
+
+        if Connectivity.BondProb == 1
             %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
             %nodeIdx = Connectivity.sizex * (j - 1) + i
             %Connect adjacent nodes in x direction
@@ -233,9 +254,58 @@ clc
                     Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = 1;                
                 end
             end            
-            
+        else %percolation model with bond proabibility p
+
+            %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
+            %nodeIdx = Connectivity.sizex * (j - 1) + i
+            %Connect adjacent nodes in x direction
+            for i = 1:(Connectivity.sizex - 1)
+                for j = 1:Connectivity.sizey
+                    p = rand(1) < Connectivity.BondProb;                         
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = p;
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = p;                
+                end
+            end
+
+            %Connect adjacent nodes in y direction
+            for i = 1:Connectivity.sizex
+                for j = 1:(Connectivity.sizey - 1)
+                    p = rand(1) < Connectivity.BondProb;                        
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = p;
+                    Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = p;                
+                end
+            end                  
+        end
+        
+        
     %---------------------------------------------------------------------%  
 
+        case 'WattsStrogatz'
+            
+            if ~isfield(Connectivity, 'beta') 
+                Connectivity.beta = 0.0;
+            end
+            
+            if ~isfield(Connectivity, 'EdgesPerNode') 
+                Connectivity.EdgesPerNode = 2;
+            end
+            
+              Connectivity.weights = WattsStrogatz(Connectivity.NumberOfNodes, Connectivity.EdgesPerNode, Connectivity.beta, Connectivity.seed);
+    
+    %---------------------------------------------------------------------%  
+
+        case 'BarabasiAlbert'
+            if ~isfield(Connectivity, 'm0') 
+                Connectivity.m0 = 2;
+            end
+            
+            if ~isfield(Connectivity, 'm') 
+                Connectivity.mm = 2;
+            end            
+    
+            Connectivity.weights = genScaleFree(Connectivity.NumberOfNodes, Connectivity.m0, Connectivity.m, Connectivity.seed);
+    %---------------------------------------------------------------------%  
+    
         case 'Random'
             if strcmp(Connectivity.WeightType, 'binary')
                 Connectivity.weights  = (randi([0, 1], Connectivity.NumberOfNodes, Connectivity.NumberOfNodes)).*(~ eye(Connectivity.NumberOfNodes));
@@ -450,4 +520,12 @@ clc
     Connectivity.NewNodes = NewNodes;    
     Connectivity.NewEdges = NewEdges;
 
+    
+    %% Check connectivity of graph and save 
+    Connectivity.SingleComponent = true;
+    if numel(unique(conncomp(graph(Connectivity.weights)))) > 1
+        Connectivity.SingleComponent = false;
+    end
+    
+    
 end

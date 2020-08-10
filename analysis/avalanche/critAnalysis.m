@@ -150,7 +150,10 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     %% Avalanche stats: 
     if binSize < 1
-       binSize =  round(results.IEI.meanIEI);
+        binSize =  round(results.IEI.meanIEI);
+        if isnan(binSize)
+            binSize = 1;
+        end
     end
     binned = binData(events, binSize);
     [sizeAv, lifeAv, timeAv] = avalancheStats(binned, 1:numel(binned));
