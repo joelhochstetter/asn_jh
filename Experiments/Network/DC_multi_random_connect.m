@@ -12,7 +12,7 @@ function DC_multi_random_connect(idx, saveFolder, netType)
 %}
     
     T = 50;
-    numSeeds = 100;
+    numSeeds = 150;
     sidx = mod((idx-1), numSeeds); 
     netidx = floor((idx-1)/numSeeds) + 1;
     amp = 1.05;
