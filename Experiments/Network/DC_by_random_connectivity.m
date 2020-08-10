@@ -66,7 +66,7 @@ function DC_by_random_connectivity(seed, saveFolder, amp, useRect, rescalePLengt
             Contacts = SimulationOptions.ContactNodes;
             SDpath = distances(graph(Connectivity.weights), Contacts(1), Contacts(2));
         elseif strcmp(Connectivity.WhichMatrix, 'Lattice')
-            SDpath = distances(graph(Connectivity.weights), L^2+1, L^2+2) - 2;     
+            SDpath = distances(graph(Connectivity.weights), L^2+1, L^2+2) - 2;   
             if SDpath == Inf
                 disp('Graph not connected')
                 return

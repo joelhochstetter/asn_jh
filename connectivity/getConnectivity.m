@@ -276,6 +276,8 @@ clc
                 end
             end                  
         end
+        
+        
     %---------------------------------------------------------------------%  
 
         case 'WattsStrogatz'
@@ -518,4 +520,12 @@ clc
     Connectivity.NewNodes = NewNodes;    
     Connectivity.NewEdges = NewEdges;
 
+    
+    %% Check connectivity of graph and save 
+    Connectivity.SingleComponent = true;
+    if numel(unique(conncomp(graph(Connectivity.weights)))) > 1
+        Connectivity.SingleComponent = false;
+    end
+    
+    
 end

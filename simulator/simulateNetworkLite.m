@@ -117,10 +117,13 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         
         %condition(ii) = cond(LHS);
         
-        
         % Solve equation:
-        sol = LHS\RHS;
-
+        if Connectivity.SingleComponent
+            sol = LHS\RHS;
+        else
+            sol = pinv(LHS)*RHS;
+        end
+            
         tempWireV = sol(1:V);
         compPtr.comp.voltage = tempWireV(edgeList(:,1)) - tempWireV(edgeList(:,2));
         
