@@ -1,22 +1,16 @@
 %%
 close all;
-% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/FixedWires/';
-% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/kingSims/FixedWires/';
-% 
-% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedDensity/';
-% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/kingSims/FixedDensity/';
+baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/';
 
-baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangePLength/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
 binSize = [-1, 10, 50, 100];
 
-% Lvals = [40:10:80]';
-Lvals = [5:10:45]';
-N = numel(Lvals);
-Nbs = numel(binSize);
+fvals = [0.25:0.25:1.0]';
 
+N = numel(fvals);
+Nbs = numel(binSize);
 
 
 %%
@@ -67,10 +61,9 @@ for j = 1:Nbs
     saveFolder = strcat(baseFolder, '/AvCompare/bs', num2str(bs),'/');
     mkdir(saveFolder);
 
-    for i = 1:numel(Lvals)
-%         critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i), '%04.f'), '/bs', bs, '/critResults.mat'}));
-%         critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
-        critResults{i,j} = load(strcat2({baseFolder, 'ChangePLength', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
+
+    for i = 1:numel(fvals)
+        critResults{i,j} = load(strcat2({baseFolder, 'f', fvals(i), '/bs', bs, '/critResults.mat'}));
         critResults{i,j} = critResults{i,j}.critResults;
     end
 
@@ -112,7 +105,7 @@ for j = 1:Nbs
         x3 (i,j) = critResults{i,j}.avalanche.gamma.x3;
         dx3(i,j) = critResults{i,j}.avalanche.gamma.dx3;
         bins = critResults{i,j}.avalanche.sizeFit.bins;
-        prob = critResults{i,j}.avalanche.sizeFit.prob;
+        prob = critResults{i,j}.avalanche.sizeFit.prob; 
         if numel(prob) > 3
             [pks, locs] = findpeaks(prob);
             possMax = find(bins(locs) > critResults{i,j}.avalanche.sizeFit.uc);
@@ -127,11 +120,11 @@ for j = 1:Nbs
     %% Comparison by parameter
     %% dG
     figure('visible', 'off');
-    errorbar(Lvals, dGalpha(:,j), dGdalph(:,j), '--o');
-    xlabel('L')
+    errorbar(fvals, dGalpha(:,j), dGdalph(:,j), '--o');
+    xlabel('f (Hz)')
     ylabel('\alpha')
     yyaxis right;
-    semilogy(Lvals, meanG(:,j), '-o');
+    semilogy(fvals, meanG(:,j), '-o');
     ylabel('<G>')
     title('\Delta G exponent')
     print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
@@ -140,8 +133,8 @@ for j = 1:Nbs
 
     %% PSD
     figure('visible', 'off');
-    errorbar(Lvals, PSDbeta(:,j), PSDdbet(:,j), '--o');
-    xlabel('L')
+    errorbar(fvals, PSDbeta(:,j), PSDdbet(:,j), '--o');
+    xlabel('f (Hz)')
     ylabel('\beta')
     title('PSD exponent')
     print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
@@ -150,11 +143,11 @@ for j = 1:Nbs
 
     %% IEI
     figure('visible', 'off');
-    errorbar(Lvals, IEItau(:,j), IEIdta(:,j), '--o');
-    xlabel('L')
+    errorbar(fvals, IEItau(:,j), IEIdta(:,j), '--o');
+    xlabel('f (Hz)')
     ylabel('\alpha')
     yyaxis right;
-    semilogy(Lvals, meanIEI(:,j), 'o-');
+    semilogy(fvals, meanIEI(:,j), 'o-');
     ylabel('<IEI>')
     title('Inter-event interval')
     print(gcf,strcat(saveFolder, '/IEIComp.png'), '-dpng', '-r300', '-painters')
@@ -162,15 +155,15 @@ for j = 1:Nbs
 
     %% Size
     figure('visible', 'off');
-    errorbar(Lvals, Stau(:,j), Sdta(:,j));
-    xlabel('L')
+    errorbar(fvals, Stau(:,j), Sdta(:,j));
+    xlabel('f (Hz)')
     ylabel('\tau')
     title('Avalanche size')
     yyaxis right;
-    plot(Lvals, Slct(:,j), ':');
+    plot(fvals, Slct(:,j), ':');
     hold on;
-    plot(Lvals, Suct(:,j), 'k--');
-    plot(Lvals, kingAv(:,j), 'r^', 'MarkerSize', 10)
+    plot(fvals, Suct(:,j), 'k--');
+    plot(fvals, kingAv(:,j), 'r^', 'MarkerSize', 10)
     ylabel('cut-off')
     legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
     print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
@@ -178,14 +171,14 @@ for j = 1:Nbs
 
     %% Lifetime
     figure('visible', 'off');
-    errorbar(Lvals, Talp(:,j), Tdal(:,j));
-    xlabel('L')
+    errorbar(fvals, Talp(:,j), Tdal(:,j));
+    xlabel('f (Hz)')
     ylabel('\alpha')
     title('Avalanche life-time')
     yyaxis right;
-    plot(Lvals, Tlct(:,j), ':');
+    plot(fvals, Tlct(:,j), ':');
     hold on;
-    plot(Lvals, Tuct(:,j), 'k--');
+    plot(fvals, Tuct(:,j), 'k--');
     ylabel('cut-off')
     legend('\alpha', 'lc', 'uc', 'location', 'best')
     print(gcf,strcat(saveFolder, '/LifeAv.png'), '-dpng', '-r300', '-painters')
@@ -193,11 +186,11 @@ for j = 1:Nbs
 
     %% Gamma
     figure('visible', 'off');
-    errorbar(Lvals,x1(:,j), dx1(:,j));
+    errorbar(fvals,x1(:,j), dx1(:,j));
     hold on;
-    errorbar(Lvals,x2(:,j), dx2(:,j));
-    errorbar(Lvals,x3(:,j), dx3(:,j));
-    xlabel('L')
+    errorbar(fvals,x2(:,j), dx2(:,j));
+    errorbar(fvals,x3(:,j), dx3(:,j));
+    xlabel('f (Hz)')
     ylabel('1/\sigma\tau\nu')
     legend('S,T', '<S>(T)', 'Shape', 'location', 'best')
     title('Crackling relationship')
@@ -214,8 +207,8 @@ for j = 1:Nbs
     xlabel('T')
     ylabel('P(T)')
     title('IEI')
-    leg = legend(num2str(Lvals), 'location', 'best');
-    title(leg,'L')
+    leg = legend(num2str(fvals), 'location', 'best');
+    title(leg,'f (Hz)')
     print(gcf,strcat(saveFolder, '/IEIPlot.png'), '-dpng', '-r300', '-painters')
 
 
@@ -228,8 +221,8 @@ for j = 1:Nbs
     xlabel('\Delta G')
     ylabel('P(\Delta G)')
     title('\Delta G')
-    leg = legend(num2str(Lvals), 'location', 'best');
-    title(leg,'L')
+    leg = legend(num2str(fvals), 'location', 'best');
+    title(leg,'f (Hz)')
     print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
 
 
@@ -243,8 +236,8 @@ for j = 1:Nbs
     xlabel('S')
     ylabel('P(S)')
     title('Avalanche size')
-    leg = legend(num2str(Lvals), 'location', 'best');
-    title(leg,'L')
+    leg = legend(num2str(fvals), 'location', 'best');
+    title(leg,'f (Hz)')
     print(gcf,strcat(saveFolder, '/SizePlot.png'), '-dpng', '-r300', '-painters')
 
 
@@ -257,8 +250,8 @@ for j = 1:Nbs
     xlabel('T')
     ylabel('P(T)')
     title('Avalanche life-time')
-    leg = legend(num2str(Lvals), 'location', 'best');
-    title(leg,'L')
+    leg = legend(num2str(fvals), 'location', 'best');
+    title(leg,'f (Hz)')
     print(gcf,strcat(saveFolder, '/LifePlot.png'), '-dpng', '-r300', '-painters')
 
 
@@ -272,8 +265,8 @@ for j = 1:Nbs
     xlabel('T')
     ylabel('<S>')
     title('Avalanche average size')
-    leg = legend(num2str(Lvals), 'location', 'best');
-    title(leg,'L')
+    leg = legend(num2str(fvals), 'location', 'best');
+    title(leg,'f (Hz)')
     print(gcf,strcat(saveFolder, '/AvSzPlot.png'), '-dpng', '-r300', '-painters')
     
     %%
@@ -288,7 +281,7 @@ end
 %%
 %% Compare by bin-sizes
 for j = 1:N
-    saveFolder = strcat(baseFolder, '/AvCompare/L', num2str(Lvals(j)),'/');
+    saveFolder = strcat(baseFolder, '/AvCompare/freq', num2str(fvals(j)),'/');
     mkdir(saveFolder);
     
     %% Comparison by parameter
@@ -384,4 +377,3 @@ for j = 1:N
     close all;
    
 end
-
