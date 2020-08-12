@@ -457,7 +457,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
 
 
         %Set title
-       title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV)), 'fontsize', 10);
+%        title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV)), 'fontsize', 10);
 %         ax = gca;
 %         outerpos = ax.OuterPosition;
 %         ti = ax.TightInset; 
