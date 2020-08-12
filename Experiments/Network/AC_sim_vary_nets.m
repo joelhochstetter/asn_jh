@@ -7,7 +7,7 @@ function AC_sim_vary_nets(idx, netFolder, saveFolder, Amps, Freqs)
     %}
 
     numNets = 50;
-    netIdx = mod((idx-1), numNets) + 1; 
+    netIdx = mod((idx-1), numNets) + 1 + 50; 
     connFile = dir(strcat(netFolder, '/*seed_', num2str(netIdx - 1,'%03.f'), '*.mat'))';
     connFile = connFile.name;
     StimIdx    = floor((idx-1)/numNets) + 1;
