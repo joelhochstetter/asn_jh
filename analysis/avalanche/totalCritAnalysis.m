@@ -13,7 +13,7 @@ Given a base folder and subfolders:
         subfolders = {subfolders};
     end
 
-    methods = {'hybrid', 'threshold', 'ratioThreshold', 'thresholdPeak', 'stationaryPt'};
+    methods = {'threshold', 'ratioThreshold','hybrid', 'thresholdPeak', 'stationaryPt'};
     methods = methods(whatMethods);
     
     eventDetect = struct();
