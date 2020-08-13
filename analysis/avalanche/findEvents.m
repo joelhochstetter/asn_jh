@@ -41,34 +41,12 @@ function events =  findEvents(G, eventDetect)
             events(locs(pks > eventDetect.thresh)) = true;
         case 'thresholdPeak'
             % find crossing of threshold. Take peak from that sequence as event time.
-            dG = abs(dG);
-            [~, above, below] = thresholdCrossing(dG, eventDetect.thresh);
-            %assumes time-series does not start above threshold else cuts
-            %to this segement
-            if above(1) > below(1)
-                above = above(2:end);
-                below = below(1:end-1);
-            end
-            assert(numel(above) == numel(below))
-            for i = 1:numel(above)
-                [~, I] = max(dG(above(i):below(i)));
-                events(I) = true;
-            end
+            events = events + thresholdCrossingPeaks(dG, eventDetect.thresh);
+            events = events + thresholdCrossingPeaks(-dG, eventDetect.thresh);
+            events = events + thresholdCrossingPeaks(dG./G, eventDetect.relThresh);
+            events = events + thresholdCrossingPeaks(-dG./G, eventDetect.relThresh);
+            events = events > 0;
             
-            dGG = abs(dG./G);
-            [~, above, below] = thresholdCrossing(dGG, eventDetect.relThresh);
-            %assumes time-series does not start above threshold else cuts
-            %to this segement
-            if above(1) > below(1)
-                above = above(2:end);
-                below = below(1:end-1);
-            end
-            assert(numel(above) == numel(below))
-            for i = 1:numel(above)
-                [~, I] = max(dGG(above(i):below(i)));
-                events(I) = true;
-            end
-        
         case 'kirchoff' %use kirchoff laws to estimate an event given network conductance.
             %to do
             events = zeros(size(dG));

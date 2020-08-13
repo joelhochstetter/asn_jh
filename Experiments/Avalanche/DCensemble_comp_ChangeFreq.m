@@ -1,6 +1,8 @@
 %%
 close all;
-baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/';
+% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/';
+% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/AvChangeFreqPosOnly/';
+baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/AvChangeFreqNegOnly/';
 
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
@@ -63,7 +65,7 @@ for j = 1:Nbs
 
 
     for i = 1:numel(fvals)
-        critResults{i,j} = load(strcat2({baseFolder, 'f', fvals(i), '/bs', bs, '/critResults.mat'}));
+        critResults{i,j} = load(strcat2({baseFolder, '/f', fvals(i), '/bs', bs, '/critResults.mat'}));
         critResults{i,j} = critResults{i,j}.critResults;
     end
 
