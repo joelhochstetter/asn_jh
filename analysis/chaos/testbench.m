@@ -1,6 +1,6 @@
-fileID = fopen('exp.txt','w');
-fprintf(fileID,'%d\n',Output.networkResistance);
-fclose(fileID);
+% fileID = fopen('exp.txt','w');
+% fprintf(fileID,'%d\n',Output.networkResistance);
+% fclose(fileID);
 
 
 % clc; clear all; close all; format compact;
@@ -26,18 +26,18 @@ fclose(fileID);
 
 
 
-%fname = 'Data2.lor';
-fname = 'exp.txt';
+fname = 'Data2.lor';
+% fname = 'exp.txt';
 
-datcnt = numel(Output.networkResistance);
-tau = 3;
-ndim = 1;
+datcnt = 16384;%numel(Output.networkResistance);
+tau = 8;
+ndim = 3;
 ires = 10;
 maxbox = 6000;
 
 db = basgen(fname, tau, ndim, ires, datcnt, maxbox);
 
-dt = .001;
+dt = .01;
 evolve = 20;
 dismin = 0.001;
 dismax = 0.3;

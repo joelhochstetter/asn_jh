@@ -686,6 +686,62 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             colormap('parula');
         end   
         
+        if ~whatToPlot.Dissipation && ~whatToPlot.Lambda && ~whatToPlot.VDrop && whatToPlot.Conductance
+            
+            junctionSize = 80;
+
+            % calculate power consumption:
+            %power = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2./(snapshot.Resistance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
+            power = log10(snapshot.Resistance(1:connectivity.NumberOfEdges)/7.77e-5);
+            % if possible, give different marker to open switches, otherwise
+            % just plot all the switches in the same manner:
+            if isfield(snapshot, 'OnOrOff')
+                on = snapshot.OnOrOff(1:connectivity.NumberOfEdges);
+
+                onDots = scatter(connectivity.EdgePosition(on,1),    ...
+                                 connectivity.EdgePosition(on,2),    ...
+                                 1.2*junctionSize,                       ...
+                                 (power(on)),                     ... %log10(power(on))
+                                 'filled',                           ...
+                                 'o');
+
+                offDots = scatter(connectivity.EdgePosition(~on,1),   ...
+                                  connectivity.EdgePosition(~on,2),   ...
+                                  junctionSize,                       ...
+                                  (power(~on)),                    ...%log10(power(~on))
+                                  'filled',                           ...
+                                  's');
+
+                % legend:
+                if any(on) && any(~on)
+                    leg = legend([onDots,offDots],{'ON switch','OFF switch'});
+                elseif any(on)
+                    leg = legend(onDots,{'ON switch'});
+                else
+                    leg = legend(offDots,{'OFF switch'});
+                end
+                leg.Color = 'white';
+
+            else
+                scatter(connectivity.EdgePosition(:,1),     ...
+                        connectivity.EdgePosition(:,2),     ...
+                        junctionSize,                       ...
+                        (power),                         ...
+                        'filled');
+            end
+
+            % colorbar:               
+            cbar  = colorbar;
+            caxis([log10(axesLimits.ConCbar(1)/7.77e-5),round(log10(axesLimits.ConCbar(2)/7.77e-5))]);            
+            cbar.Label.String = 'G_{jn} (G_0)';
+            cbar.FontSize = 10;
+            for i = 1:numel(cbar.Ticks)
+                cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
+            end
+            
+            colormap('parula');
+        end           
+        
     %% Currents
         if whatToPlot.Currents
             % Allocate space (assuming no intersections at ends of wires):
@@ -697,7 +753,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             numSectionsDone = 0;
 
             % Calculate currents:
-            currents = 1e6*(snapshot.Voltage(1:end-1)).*(snapshot.Resistance(1:end-1)); % (nA)
+            currents = 1e6*(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
 
             % Calculate wire angles ([-pi/2,pi/2]):
                     % first [0,pi]
@@ -797,6 +853,27 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             %quiver(sectionCenterX,sectionCenterY,sectionCurrentX,sectionCurrentY,'Color','w','LineWidth',1);
         end
 
+        
+%                 if whatToPlot.Contacts
+%             %Highlight Contacts
+%             colours = ['r';'g'];
+%             if whatToPlot.Nanowires
+%                 for i = 1:numel(contacts)
+%                     highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
+%                 end
+%                 if numel(contacts) > 2
+%                     text(p.XData(contacts(1)) + 0.25, p.YData(contacts(1)), 'A', 'FontSize', 36);
+%                     text(p.XData(contacts(2)) + 0.25, p.YData(contacts(2)), 'B', 'FontSize', 36);
+%                     text(p.XData(contacts(3)) - 0.5, p.YData(contacts(3)), 'drn', 'FontSize', 36);  
+%                 end
+%             else
+%                 source = contacts(logical(isSource));
+%                 drain  = contacts(~logical(isSource));
+%                 
+%                 scatter(p.XData(source),p.YData(source),15,[[0 1 0];[1 0 0]],'Marker', '*','g');
+%                 scatter(p.XData(drain),p.YData(drain),15,[[0 1 0];[1 0 0]],'Marker', '*','r');
+%             end
+%         end
 
         %% contacts:   
         if whatToPlot.Contacts
@@ -832,7 +909,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
 
         end
         %% title, axes labels and limits:
-        title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 50);
+%         title(strcat(sprintf('t=%.2f (s), ', snapshot.Timestamp),' G=', sprintf('%.2e (S)',snapshot.netC),' V=', sprintf('%.2e (V)',snapshot.netV),' I=', sprintf('%.2e (A)',snapshot.netI)), 'fontsize', 50);
 
         xlabel('x (\mum)');
         ylabel('y (\mum)');
