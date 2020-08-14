@@ -73,9 +73,9 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     %% Fourier transform
     figure('visible','off');
-    [beta, dbeta] = plotPSD(time, G);
-    results.PSD.beta  = beta;
-    results.PSD.dbeta = dbeta;
+%     [beta, dbeta] = plotPSD(time, G);
+    results.PSD.beta  = nan;%beta;
+    results.PSD.dbeta = nan;%dbeta;
     %need to give uncertainity as well
     saveas(gcf, strcat(saveFolder, '/PSD.png'))
     close all;
@@ -163,7 +163,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.avalanche.binSize = binSize;   
     
     
-    if numel(sizeAv) < 3
+    if numel(unique(sizeAv)) <= 2
         return
     end
     

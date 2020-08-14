@@ -1,8 +1,8 @@
 %%
 close all;
-% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/';
+baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/';
 % baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/AvChangeFreqPosOnly/';
-baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/AvChangeFreqNegOnly/';
+% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeFreq/AvChangeFreqNegOnly/';
 
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');

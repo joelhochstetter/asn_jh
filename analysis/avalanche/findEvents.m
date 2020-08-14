@@ -18,6 +18,10 @@ function events =  findEvents(G, eventDetect)
     events = zeros(size(dG));
     dG(dG < eventDetect.noiseFloor) = 0.0;
     
+    if numel(dG) <= 5
+        return
+    end
+    
     switch eventDetect.method 
         case 'threshold'
             dG = abs(dG);
