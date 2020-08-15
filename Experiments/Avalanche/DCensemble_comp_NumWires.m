@@ -1,7 +1,7 @@
 %%
 close all;
-% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedSize/';
-baseFolder = '~/Documents/NeuroNanoAI/Avalanche/kingSims/FixedSize/';
+baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedSize/';
+% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/kingSims/FixedSize/';
 
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');

@@ -7,9 +7,10 @@ function events = findEventsFromFilState(sim, eventDetect)
 %}
 
     defEvDet.method = 'conductanceRatio';  % 'conductanceRatio'  /  'conductanceCrossing' / 'voltageSpike'
-    defEvDet.conductanceRatio  = 1.1; %ratio for conductance ratio
+    defEvDet.conductanceRatio = 1.1; %ratio for conductance ratio
     defEvDet.conductancePower = 2.0; %ratio for conductance ratio
-    defEvDet.dLamdtThreshold   = 1e-2; %|dlambda/dt| >= 1e-2 threshold
+    defEvDet.dLamdtThreshold  = 1e-2; %|dlambda/dt| >= 1e-2 threshold
+    defEvDet.dGGratio         = 1e-3;
     
     fields = fieldnames(defEvDet);
     for i = 1:numel(fields)
@@ -50,6 +51,11 @@ function events = findEventsFromFilState(sim, eventDetect)
                     end
                 end
             end
+        case 'dGGSpike'
+            dG  = diff(switchC);
+            dG  = [dG; zeros(size(switchC, 2))];
+            dGG = abs(dG./switchC);
+            events = thresholdCrossingPeaks(dGG, thresh);
     end
     
 end

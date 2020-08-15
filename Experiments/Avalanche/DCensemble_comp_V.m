@@ -1,17 +1,17 @@
 %%
 close all;
 % baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangeV/';
-% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV/';
-baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeAmp/';
+baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV/';
+% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeAmp/';
 
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
-binSize = [-1,10, 50, 100]';
+binSize = 100;%[-1,10, 50, 100]';
 Nbs = numel(binSize);
 % Vvals = [0.33, 0.45, 0.562, 0.675, 0.787, 0.9]';
-% Vvals = [0.7:0.1:1.8]';
-Vvals = [2:5]';
+Vvals = [0.7:0.1:1.8]';
+% Vvals = [2:5]';
 Vstar = Vvals;
 N = numel(Vvals);
 % Vstar = Vvals/1e-2/45;
@@ -67,8 +67,8 @@ for j = 1:Nbs
 
 
     for i = 1:numel(Vvals)
-        critResults{i,j} = load(strcat2({baseFolder, 'V', Vvals(i), '/bs', bs, '/critResults.mat'}));
-%         critResults{i,j} = load(strcat2({baseFolder, 'Vstar', Vvals(i), '/bs', bs, '/critResults.mat'}));        
+%         critResults{i,j} = load(strcat2({baseFolder, 'V', Vvals(i), '/bs', bs, '/critResults.mat'}));
+        critResults{i,j} = load(strcat2({baseFolder, 'Vstar', Vvals(i), '/bs', bs, '/critResults.mat'}));        
         critResults{i,j} = critResults{i,j}.critResults;
     end
 
