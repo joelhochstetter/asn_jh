@@ -12,7 +12,7 @@ function events = thresholdCrossingPeaks(x, thresh)
            above = above(1:end-1); 
         elseif numel(above) < numel(below)
            below = below(1:end-1); 
-        end            
+        end
         assert(above(1) < below(1));
         assert(numel(above) == numel(below))
         for i = 1:numel(above)
