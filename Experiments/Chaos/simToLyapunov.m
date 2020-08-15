@@ -83,10 +83,10 @@ junction Lyapunvs calculated:
     params.Comp.filamentState = initLamda;
 	eps                        = 5e-4;%1e-5; %1e-5 / 1e-6 / 1e-7 / 1
     
-    if (sim{1}.dt*params.Comp.boost*params.Comp.resetVoltage > eps) || (sim{1}.dt*(params.Stim.Amplitude - params.Comp.setVoltage) > eps)
-        eps = max([sim{1}.dt*params.Comp.boost*params.Comp.resetVoltage, sim{1}.dt*(params.Stim.Amplitude - params.Comp.setVoltage)])*1.05;
-        disp(strcat('Using eps = ', num2str(eps)));
-    end
+%     if (sim{1}.dt*params.Comp.boost*params.Comp.resetVoltage > eps) || (sim{1}.dt*(params.Stim.Amplitude - params.Comp.setVoltage) > eps)
+%         eps = max([sim{1}.dt*params.Comp.boost*params.Comp.resetVoltage, sim{1}.dt*(params.Stim.Amplitude - params.Comp.setVoltage)])*1.05;
+%         disp(strcat('Using eps = ', num2str(eps)));
+%     end
     
     params.SimOpt.saveFilStateOnly = false;
     swLam = sim{1}.swLam(:,1:E);

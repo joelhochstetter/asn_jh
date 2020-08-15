@@ -52,9 +52,10 @@ function events = findEventsFromFilState(sim, eventDetect)
                 end
             end
         case 'dGGSpike'
-            dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
+            dG  = diff(switchC);
+            dG  = [dG; zeros(size(switchC, 2))];
             dGG = abs(dG./switchC)/sim.dt;
-            events = sum(thresholdCrossingPeaks(dGG, eventDetect.dGGratio),2);
+            events = thresholdCrossingPeaks(dGG, thresh);
     end
     
 end
