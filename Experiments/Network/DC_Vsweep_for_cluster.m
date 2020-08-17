@@ -98,7 +98,7 @@ params.SimOpt.onlyGraphics    = true; %does not plot anything
 params.SimOpt.compilingMovie  = false;
 params.SimOpt.useParallel     = false;
 params.SimOpt.runIndex = idx;
-params.SimOpt.hdfSave         = ~saveEvents;
+params.SimOpt.hdfSave         = ~saveEvents & saveFilState;
 params.SimOpt.saveSwitches = false;
 
 params.SimOpt.saveFilStateOnly = saveFilState;

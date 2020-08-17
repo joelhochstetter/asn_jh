@@ -147,9 +147,9 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
     
     if SimulationOptions.saveFilStateOnly == true
         if SimulationOptions.saveEventsOnly == true
-            d = (Components.criticalFlux - abs(filamentStates))*5/Components.criticalFlux;
+            d = (Components.criticalFlux(1) - abs(filamentStates))*5/Components.criticalFlux(1);
             d(d < 0.0) = 0.0;
-            switchC = tunnelSwitchL(d, 0.81, 0.17, Components.offResistance, Components.onResistance);
+            switchC = tunnelSwitchL(d, 0.81, 0.17, Components.offResistance(1), Components.onResistance(1));
             dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
             dGG = abs(dG./switchC)/SimulationOptions.dt;
             events = sum(thresholdCrossingPeaks(dGG, 1e-3),2);
