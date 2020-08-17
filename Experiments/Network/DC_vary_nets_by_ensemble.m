@@ -39,7 +39,7 @@ ensembleID: 0 (fixed density, change size),
             Nidx    = floor((idx-1)/numSeeds) + 1;
             
             files = dir(strcat(netFolder, '/*.mat'))';
-            assert(N == numel(files));
+%             assert(N == numel(files));
             nodes = zeros(N,1);
             genWires = zeros(N,1);
             seeds      = zeros(N,1);
