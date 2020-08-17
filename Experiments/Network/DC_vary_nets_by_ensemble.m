@@ -33,9 +33,10 @@ ensembleID: 0 (fixed density, change size),
             nameComment = strcat2({'_Lx', netSizes(Szeidx), '_seed', seedIdx - 1}, '%03.f');     
             
         case 2 %fixed size, change density
-            disp('Simulating networks of fixed size, changing density')            
+            disp('Simulating networks of fixed size, changing density')   
+            numSeedsInFile = 500;
             numWires = 600:100:1000;
-            N = numel(numWires) *numSeeds;
+            N = numel(numWires) *numSeedsInFile;
             Nidx    = floor((idx-1)/numSeeds) + 1;
             
             files = dir(strcat(netFolder, '/*.mat'))';
