@@ -87,7 +87,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
         componentConductance = compPtr.comp.resistance;
         
         onOrOffNew   = componentConductance > 1.1*Components.offResistance(1);     
-        if SimulationOptions.saveEventsOnly == true
+        if SimulationOptions.saveEventsOnly == true && SimulationOptions.saveFilStateOnly == false
             events(ii) = sum(abs(onOrOffNew - onOrOffOld));
         end
         
@@ -146,9 +146,19 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
     OutputDynamics.storeCon           = compPtr.comp.resistance';
     
     if SimulationOptions.saveFilStateOnly == true
-         OutputDynamics.lambda = filamentStates;
+        if SimulationOptions.saveEventsOnly == true
+            d = (Components.criticalFlux - abs(filamentStates))*5/Components.criticalFlux;
+            d(d < 0.0) = 0.0;
+            switchC = tunnelSwitchL(d, 0.81, 0.17, Components.offResistance, Components.onResistance);
+            dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
+            dGG = abs(dG./switchC)/SimulationOptions.dt;
+            events = sum(thresholdCrossingPeaks(dGG, 1e-3),2);
+            OutputDynamics.lambda =  compPtr.comp.filamentState';
+        else
+           OutputDynamics.lambda = filamentStates;
+        end
     else
-         OutputDynamics.lambda             =  compPtr.comp.filamentState';
+        OutputDynamics.lambda             =  compPtr.comp.filamentState';
     end    
    
     if SimulationOptions.saveEventsOnly == true
