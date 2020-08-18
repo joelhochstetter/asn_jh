@@ -4,14 +4,12 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
     
     %%
     close all;
-%     baseFolder = '~/Documents/NeuroNanoAI/Avalanche/WSBA/';
 
     cd(baseFolder)
     saveFolder = strcat(baseFolder, '/AvCompare/');
     mkdir(saveFolder)
     binSize = [-1, 10, 50, 100];
     eventDetectMeths = 1:18;
-%     vals = [0.2:0.2:1.0]';
 
     N = numel(vals);
     Nbs = numel(binSize);
@@ -65,59 +63,57 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
         saveFolder = strcat(baseFolder, '/AvCompare/bs', num2str(bs),'/');
         mkdir(saveFolder);
 
-
-        for i = 1:numel(vals)
-            critResults{i,j} = load(strcat2({baseFolder, '/', subtype, vals(i), '/event', eventDetectMeths(i), '/bs', bs, '/critResults.mat'}));
-            critResults{i,j} = critResults{i,j}.critResults;
-        end
-
-
-
-        for i = 1:N
-            meanG(i,j) = critResults{i,j}.net.meanG;
-            V(i,j) = mean(critResults{i,j}.net.V);
-            PSDbeta(i,j) = critResults{i,j}.PSD.beta;
-            PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
-            numEvents(i,j) = critResults{i,j}.events.numEvents;
-            meanIEI(i,j) = critResults{i,j}.IEI.meanIEI;
-            IEItau(i,j) = critResults{i,j}.IEI.tau;
-            IEIdta(i,j) = critResults{i,j}.IEI.sigmaTau;
-            IEIbins{i,j} = critResults{i,j}.IEI.bins;
-            IEIprob{i,j} = critResults{i,j}.IEI.prob;
-            dGalpha(i,j) = critResults{i,j}.dG.alpha;
-            dGdalph(i,j) = critResults{i,j}.dG.dalph;
-            dGbins{i,j} = critResults{i,j}.dG.bins;
-            dGprob{i,j} = critResults{i,j}.dG.prob;
-            Stau(i,j) = critResults{i,j}.avalanche.sizeFit.tau;
-            Sdta(i,j) = critResults{i,j}.avalanche.sizeFit.dTau;
-            Slct(i,j) = critResults{i,j}.avalanche.sizeFit.lc;
-            Suct(i,j) = critResults{i,j}.avalanche.sizeFit.uc;
-            Szbins{i,j} = critResults{i,j}.avalanche.sizeFit.bins;
-            Szprob{i,j} = critResults{i,j}.avalanche.sizeFit.prob;    
-            Talp(i,j) = critResults{i,j}.avalanche.timeFit.alpha;
-            Tdal(i,j) = critResults{i,j}.avalanche.timeFit.dAlpha;
-            Tlct(i,j) = critResults{i,j}.avalanche.timeFit.lc;
-            Tuct(i,j) = critResults{i,j}.avalanche.timeFit.uc;
-            Tmbins{i,j} = critResults{i,j}.avalanche.timeFit.bins;
-            Tmprob{i,j} = critResults{i,j}.avalanche.timeFit.prob;        
-            ASlife{i,j} = critResults{i,j}.avalanche.avSizeFit.mLife;
-            ASsize{i,j} = critResults{i,j}.avalanche.avSizeFit.mSize;         
-            x1 (i,j) = critResults{i,j}.avalanche.gamma.x1;
-            dx1(i,j) = critResults{i,j}.avalanche.gamma.dx1;
-            x2 (i,j) = critResults{i,j}.avalanche.gamma.x2;
-            dx2(i,j) = critResults{i,j}.avalanche.gamma.dx2;
-            x3 (i,j) = critResults{i,j}.avalanche.gamma.x3;
-            dx3(i,j) = critResults{i,j}.avalanche.gamma.dx3;
-            bins = critResults{i,j}.avalanche.sizeFit.bins;
-            prob = critResults{i,j}.avalanche.sizeFit.prob;
-            [pks, locs] = findpeaks(prob);
-            possMax = find(bins(locs) > critResults{i,j}.avalanche.sizeFit.uc);
-            [~, I] = max(pks(possMax));
-            if numel(I) > 0
-                kingAv(i,j) = bins(locs(possMax(I)));
+        for k = 1:Nev
+            for i = 1:numel(vals)
+                critResults{i,j,k} = load(strcat2({baseFolder, '/', subtype, vals(i), '/event', eventDetectMeths(k), '/bs', bs, '/critResults.mat'}));
+                critResults{i,j,k} = critResults{i,j,k}.critResults;
+            end
+        
+            for i = 1:N
+                meanG(i,j,k) = critResults{i,j,k}.net.meanG;
+                V(i,j,k) = mean(critResults{i,j,k}.net.V);
+                PSDbeta(i,j,k) = critResults{i,j,k}.PSD.beta;
+                PSDdbet(i,j,k) = critResults{i,j,k}.PSD.dbeta;    
+                numEvents(i,j,k) = critResults{i,j,k}.events.numEvents;
+                meanIEI(i,j,k) = critResults{i,j,k}.IEI.meanIEI;
+                IEItau(i,j,k) = critResults{i,j,k}.IEI.tau;
+                IEIdta(i,j,k) = critResults{i,j,k}.IEI.sigmaTau;
+                IEIbins{i,j,k} = critResults{i,j,k}.IEI.bins;
+                IEIprob{i,j,k} = critResults{i,j,k}.IEI.prob;
+                dGalpha(i,j,k) = critResults{i,j,k}.dG.alpha;
+                dGdalph(i,j,k) = critResults{i,j,k}.dG.dalph;
+                dGbins{i,j,k} = critResults{i,j,k}.dG.bins;
+                dGprob{i,j,k} = critResults{i,j,k}.dG.prob;
+                Stau(i,j,k) = critResults{i,j,k}.avalanche.sizeFit.tau;
+                Sdta(i,j,k) = critResults{i,j,k}.avalanche.sizeFit.dTau;
+                Slct(i,j,k) = critResults{i,j,k}.avalanche.sizeFit.lc;
+                Suct(i,j,k) = critResults{i,j,k}.avalanche.sizeFit.uc;
+                Szbins{i,j,k} = critResults{i,j,k}.avalanche.sizeFit.bins;
+                Szprob{i,j,k} = critResults{i,j,k}.avalanche.sizeFit.prob;    
+                Talp(i,j,k) = critResults{i,j,k}.avalanche.timeFit.alpha;
+                Tdal(i,j,k) = critResults{i,j,k}.avalanche.timeFit.dAlpha;
+                Tlct(i,j,k) = critResults{i,j,k}.avalanche.timeFit.lc;
+                Tuct(i,j,k) = critResults{i,j,k}.avalanche.timeFit.uc;
+                Tmbins{i,j,k} = critResults{i,j,k}.avalanche.timeFit.bins;
+                Tmprob{i,j,k} = critResults{i,j,k}.avalanche.timeFit.prob;        
+                ASlife{i,j,k} = critResults{i,j,k}.avalanche.avSizeFit.mLife;
+                ASsize{i,j,k} = critResults{i,j,k}.avalanche.avSizeFit.mSize;         
+                x1 (i,j,k) = critResults{i,j,k}.avalanche.gamma.x1;
+                dx1(i,j,k) = critResults{i,j,k}.avalanche.gamma.dx1;
+                x2 (i,j,k) = critResults{i,j,k}.avalanche.gamma.x2;
+                dx2(i,j,k) = critResults{i,j,k}.avalanche.gamma.dx2;
+                x3 (i,j,k) = critResults{i,j,k}.avalanche.gamma.x3;
+                dx3(i,j,k) = critResults{i,j,k}.avalanche.gamma.dx3;
+                bins = critResults{i,j,k}.avalanche.sizeFit.bins;
+                prob = critResults{i,j,k}.avalanche.sizeFit.prob;
+                [pks, locs] = findpeaks(prob);
+                possMax = find(bins(locs) > critResults{i,j,k}.avalanche.sizeFit.uc);
+                [~, I] = max(pks(possMax));
+                if numel(I) > 0
+                    kingAv(i,j,k) = bins(locs(possMax(I)));
+                end
             end
         end
-
 
         %% Comparison by parameter
         %% dG
