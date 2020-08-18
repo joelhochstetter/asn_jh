@@ -46,8 +46,15 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
          if ~isfield(fitP, 'fitTrun')
             fitP.fitTrun = true;
          end
+         
+         if ~isfield(fitP, 'minBinEvents')
+            fitP.minBinEvents = 3;
+         end         
     end
 
+    
+
+    
     tau = 0.0;
     dta = 0.0;
     xmin = 0.0;
@@ -63,6 +70,11 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
         [N,edges] = histcounts(sizeAv, 'Normalization', 'probability');
         bins = (edges(1:end-1) + edges(2:end))/2;
     end
+
+    %Exclude bins which have too few events
+%     sizeAv = sort(sizeAv);
+%     upperCut = min(edges(N < fitP.minBinEvents));
+%     sizeAv(sizeAv >= upperCut) = [];
     
     loglog(bins, N, 'bx')
     hold on;

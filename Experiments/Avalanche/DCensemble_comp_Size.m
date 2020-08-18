@@ -1,16 +1,16 @@
 %%
 close all;
-baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/FixedWires/';
+% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/FixedWires/';
 % baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/kingSims/FixedWires/';
 % 
-% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedDensity/';
+baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedDensity/';
 % baseFolder = '~/Documents/NeuroNanoAI/Avalanche/kingSims/FixedDensity/';
 
 % baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangePLength/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
-binSize = [-1, 10, 50, 100];
+binSize = [-1, 10, 50, 100]';
 
 Lvals = [40:10:80]';
 % Lvals = [5:10:45]';
@@ -68,8 +68,8 @@ for j = 1:Nbs
     mkdir(saveFolder);
 
     for i = 1:numel(Lvals)
-        critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i), '%04.f'), '/bs', bs, '/critResults.mat'}));
-%         critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
+%         critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i), '%04.f'), '/bs', bs, '/critResults.mat'}));
+        critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
 %         critResults{i,j} = load(strcat2({baseFolder, 'ChangePLength', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
         critResults{i,j} = critResults{i,j}.critResults;
     end

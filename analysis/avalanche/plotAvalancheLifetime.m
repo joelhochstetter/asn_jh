@@ -44,8 +44,11 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
  
          if ~isfield(fitP, 'logBin')
             fitP.logBin = false;
-        end                
+         end                
         
+         if ~isfield(fitP, 'minBinEvents')
+            fitP.minBinEvents = 3;
+         end           
     end
 
     xmin = 1.0;
@@ -61,6 +64,11 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
         [N,edges] = histcounts(lifeAv, 'Normalization', 'probability');
         bins = (edges(1:end-1) + edges(2:end))/2;
     end
+    
+    %Exclude bins which have too few events
+%     lifeAv = sort(lifeAv);
+%     upperCut = min(edges(N < fitP.minBinEvents));
+%     lifeAv(lifeAv >= upperCut) = [];    
     
     loglog(bins, N, 'bx')
     hold on;

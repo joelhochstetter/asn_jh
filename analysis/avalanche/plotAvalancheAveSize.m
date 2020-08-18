@@ -59,7 +59,7 @@ function [gamma_m_1, dgamma_m_1, mSize, mLife] = plotAvalancheAveSize(sizeAv, li
         fitLives = mLife((mLife >= fitP.lc) & (mLife <= fitP.uc));
         fitSizes = mSize((mLife >= fitP.lc) & (mLife <= fitP.uc));         
 
-        if fitP.lc == fitP.uc || numel(fitLives) == 0 || numel(fitSizes) == 0
+        if fitP.lc >= fitP.uc || numel(fitLives) <= 1 || numel(fitSizes) <= 1
             return 
         end
         

@@ -12,12 +12,12 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
             smoothing, peaks with a 'refractory period'
             'method' = 'threshold', 'ratioThreshold', 'stationaryPt'
             'window' = running a running window mean
+
         conditions (struct): allows to split time-series pre-activation vs
             post activation, etc.
-                e.g. to select post-activation times
-                conditions.type   = 'crossing'
-                conditions.after  = true
-                conditions.thresh = 5e-6
+                e.g.
+                conditions.type = 'crossing'
+                conditions.after = 
 
 %}         
 
@@ -27,7 +27,7 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     end
     
     if nargin < 8
-        conditions = struct('type', 'none');
+        conditions = struct();
     end
     
     saveNetC = true;
@@ -48,9 +48,8 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     parfor i = 1:numFiles
         %import file
         [G, V, t, fname] = importByType(importMode, importFolder, i);
-        dt = (t(end) - t(1))/(numel(t) - 1);
-        [G, V, t] = applyConditions(G, V, t, conditions);
-        
+         dt = (t(end) - t(1))/(numel(t) - 1);
+   
         % detect events
         events =  findEvents(G, eventDetect);
         
