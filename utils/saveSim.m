@@ -129,7 +129,7 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
         end
     else
         sim.finalStates = Output.lambda(end,:);
-        if SimulationOptions.saveFilStateOnly
+        if SimulationOptions.saveFilStateOnly && ~SimulationOptions.saveEventsOnly
             sim.hdfFile = strcat(filename, '.h5');
             h5path = strcat(SimulationOptions.saveFolder, '/', sim.hdfFile);
             
