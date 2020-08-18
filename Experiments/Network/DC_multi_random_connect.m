@@ -12,7 +12,7 @@ function DC_multi_random_connect(idx, saveFolder, netType)
 %}
     
     T = 50;
-    numSeeds = 150;
+    numSeeds = 100;
     sidx = mod((idx-1), numSeeds); 
     netidx = floor((idx-1)/numSeeds) + 1;
     amp = 1.05;
@@ -20,12 +20,12 @@ function DC_multi_random_connect(idx, saveFolder, netType)
     switch netType
         case 0
             beta = 0.2:0.2:1.0;
-            DC_by_random_connectivity(sidx, saveFolder, amp, false, true, struct('WhichMatrix', 'WattsStrogatz', 'beta', beta(netidx), 'EdgesPerNode', 2, 'NumberOfNodes', 500), T);
+            DC_by_random_connectivity(sidx, saveFolder, amp, false, true, struct('WhichMatrix', 'WattsStrogatz', 'beta', beta(netidx), 'EdgesPerNode', 2, 'NumberOfNodes', 1000), T);
         case 1
-            DC_by_random_connectivity(sidx, saveFolder, amp, false, true, struct('WhichMatrix', 'BarabasiAlbert', 'm0', 2.0, 'm', 2, 'NumberOfNodes', 500), T);
+            DC_by_random_connectivity(sidx, saveFolder, amp, false, true, struct('WhichMatrix', 'BarabasiAlbert', 'm0', 2.0, 'm', 2, 'NumberOfNodes', 1000), T);
         case 2
             p = 0.55:0.10:0.95;
-            DC_by_random_connectivity(sidx, saveFolder, amp, true, true, struct('WhichMatrix', 'Lattice', 'sizex', 23, 'BondProb', p(netidx)), T);
+            DC_by_random_connectivity(sidx, saveFolder, amp, true, true, struct('WhichMatrix', 'Lattice', 'sizex', 32, 'BondProb', p(netidx)), T);
     end
 
 end

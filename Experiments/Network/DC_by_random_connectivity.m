@@ -26,7 +26,7 @@ function DC_by_random_connectivity(seed, saveFolder, amp, useRect, rescalePLengt
     params.SimOpt.hdfSave         = false;
     params.SimOpt.saveSwitches = false;
 
-    params.SimOpt.saveFilStateOnly = false;
+    params.SimOpt.saveFilStateOnly = true;
     params.SimOpt.saveEventsOnly  = true;
 
     params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
