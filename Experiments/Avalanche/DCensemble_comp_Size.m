@@ -1,7 +1,7 @@
 %%
 close all;
-baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/FixedWires/';
-% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/kingSims/FixedWires/';
+% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/FixedWires/';
+baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/kingSims/FixedWires/';
 % 
 % baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedDensity/';
 % baseFolder = '~/Documents/NeuroNanoAI/Avalanche/kingSims/FixedDensity/';
@@ -10,7 +10,7 @@ baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/FixedWires/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
-binSize = [-1, 10, 50, 100];
+binSize = -1;%[-1, 10, 50, 100]';
 
 Lvals = [40:10:80]';
 % Lvals = [5:10:45]';

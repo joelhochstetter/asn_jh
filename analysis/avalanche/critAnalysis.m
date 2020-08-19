@@ -1,4 +1,4 @@
-function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fitML, binSize, joinperiod)
+function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fitML, binSize, joinperiod, saveNetC)
 %{
     Given a conductance cut-off (G1) performs the criticality analysis
     on a given conductance dataset
@@ -32,7 +32,15 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
             end
         end
     end
+    
+    if nargin < 11
+        saveNetC = false;
+    end
 
+    if numel(time) == 0
+        return
+    end
+    
     
     useLogBins = false;
     fitTrun          = true;
@@ -48,7 +56,10 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     G = reshape(G, 1, numel(G));
     
     %% conductance
-%     results.net.G = G;    %network conductance
+    if saveNetC
+        results.net.G = G;    %network conductance
+    end
+    
 %     results.net.t = time; %time vector
     results.net.dt = dt; %time vector
     results.net.T = time(end) - time(1) + dt; %time vector
@@ -72,13 +83,13 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     end
     
     %% Fourier transform
-    figure('visible','off');
+%     figure('visible','off');
 %     [beta, dbeta] = plotPSD(time, G);
-    results.PSD.beta  = nan;%beta;
-    results.PSD.dbeta = nan;%dbeta;
-    %need to give uncertainity as well
-    saveas(gcf, strcat(saveFolder, '/PSD.png'))
-    close all;
+%     results.PSD.beta  = nan;%beta;
+%     results.PSD.dbeta = nan;%dbeta;
+%     %need to give uncertainity as well
+%     saveas(gcf, strcat(saveFolder, '/PSD.png'))
+%     close all;
     
     %% Auto correlation function
 %     figure('visible','off');
@@ -90,10 +101,10 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     
     %% dG distribution
-    figure('visible','off');
-    results.dG = plotDeltaG(G, 0, struct('useML', false), joinperiod);%fitML));
-    saveas(gcf, strcat(saveFolder, '/dG.png'))
-    close all;
+%     figure('visible','off');
+%     results.dG = plotDeltaG(G, 0, struct('useML', false), joinperiod);%fitML));
+%     saveas(gcf, strcat(saveFolder, '/dG.png'))
+%     close all;
     
     %% Event trains
     results.events.eventTrain     = events;
@@ -149,8 +160,9 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     
     %% Avalanche stats: 
-    if binSize < 1
-        binSize =  round(results.IEI.meanIEI);
+    % If binSize = -x (where x > 0) then we use some multiple of the mean(IEI). E.g. -2 is 2*mean(IEI)
+    if binSize < 0
+        binSize = round(abs(binSize)*results.IEI.meanIEI);
         if isnan(binSize)
             binSize = 1;
         end

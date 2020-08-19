@@ -4,7 +4,7 @@ baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangeElectrodeSize/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
-binSize = [-1, 10, 50, 100];
+binSize = [-1, 10, 50, 100]';
 
 Evals = [0.2:0.2:1.0]';
 

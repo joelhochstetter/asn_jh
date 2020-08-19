@@ -262,6 +262,8 @@ polymodel.DoF = n - nt;
 
 % coefficient/sd ratio for a p-value
 t = polymodel.Coefficients./polymodel.ParameterStd;
+t(isnan(t)) = inf;
+
 
 % twice the upper tail probability from the t distribution,
 % as a transformation from an incomplete beta. This provides

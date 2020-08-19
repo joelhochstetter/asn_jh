@@ -1,4 +1,4 @@
-function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, binSize, ncpu)
+function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, binSize, ncpu, conditions)
 %{
     Looks through data and performs a criticality analysis on all files in
     the folder. This works for experimental data and simulated data
@@ -12,7 +12,12 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
             smoothing, peaks with a 'refractory period'
             'method' = 'threshold', 'ratioThreshold', 'stationaryPt'
             'window' = running a running window mean
-
+        conditions (struct): allows to split time-series pre-activation vs
+            post activation, etc.
+                e.g. to select post-activation times
+                conditions.type   = 'crossing'
+                conditions.after  = true
+                conditions.thresh = 5e-6
 
 %}         
 
@@ -21,6 +26,12 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
        ncpu = 1; 
     end
     
+    if nargin < 8
+        conditions = struct('type', 'none');
+    end
+    
+    saveNetC = true;
+    
     %start parallel pool if not already running
     if isempty(gcp('nocreate'))
         parpool(ncpu)
@@ -28,21 +39,27 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
 
     %% Set-up
     cd(importFolder)
-    mkdir(saveFolder)
+    mkdir(fullfile(saveFolder))
     
     
     %% Process files and extract G, V, t
     numFiles = howManyFiles(importMode, importFolder);
+%     for i = 1:numFiles    
     parfor i = 1:numFiles
         %import file
         [G, V, t, fname] = importByType(importMode, importFolder, i);
-         dt = (t(end) - t(1))/(numel(t) - 1);
-   
+        dt = (t(end) - t(1))/(numel(t) - 1);
+        [G, V, t] = applyConditions(G, V, t, conditions);
+        
+        if numel(t) == 0
+            continue
+        end
+
         % detect events
         events =  findEvents(G, eventDetect);
         
         %perform criticality analysis
-        critAnalysis(events, dt, G, t, V, fname, strcat(saveFolder, '/', fname, '/'), fitML, binSize);
+        critAnalysis(events, dt, G, t, V, fname, strcat(saveFolder, '/', fname, '/'), fitML, binSize, saveNetC);
     end
        
    

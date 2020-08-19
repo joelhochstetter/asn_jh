@@ -1,4 +1,4 @@
-function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, binSize)
+function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, binSize, conditions)
 %{
     Looks through data and performs a criticality analysis on all files in
     the folder. This works for experimental data and simulated data
@@ -13,15 +13,25 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
             smoothing, peaks with a 'refractory period'
             'method' = 'threshold', 'ratioThreshold', 'stationaryPt'
             'window' = running a running window mean
-
+        conditions (struct): allows to split time-series pre-activation vs
+            post activation, etc.
+                e.g. to select post-activation times
+                conditions.type   = 'crossing'
+                conditions.after  = true
+                conditions.thresh = 5e-6
 
 %}         
+
 
     %% Set-up
     mkdir(saveFolder)
     
     if ~iscell(importFolder)
         importFolder = {importFolder};
+    end
+    
+    if nargin < 7
+        conditions = struct('type', 'none');
     end
     
     %% Process files and extract G, V, t
@@ -38,6 +48,12 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
         for i = 1:numFiles
             %import file
             [G, V, t, ~] = importByType(importMode, importFolder{j}, i);
+            [G, V, t] = applyConditions(G, V, t, conditions);
+            
+            if numel(t) == 0
+                continue
+            end
+            
             t = t + tjoin(end) - t(1);
             tjoin = [tjoin, t];
             Gjoin = [Gjoin, G];
