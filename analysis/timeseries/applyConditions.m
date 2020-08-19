@@ -2,7 +2,9 @@ function [G, V, t] = applyConditions(G, V, t, conditions)
 %{
     Applies conditions as specified by the conditions struct to the
     conductance (G), voltage (V) and time (t) time-series
-
+    
+    e.g. conditions = struct('type','crossing','after',true,'thresh'1e-6)
+    
 %}
 
     if ~isfield(conditions, 'type')

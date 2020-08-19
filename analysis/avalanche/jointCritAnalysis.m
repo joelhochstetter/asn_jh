@@ -49,7 +49,11 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
             %import file
             [G, V, t, ~] = importByType(importMode, importFolder{j}, i);
             [G, V, t] = applyConditions(G, V, t, conditions);
-
+            
+            if numel(t) == 0
+                continue
+            end
+            
             t = t + tjoin(end) - t(1);
             tjoin = [tjoin, t];
             Gjoin = [Gjoin, G];

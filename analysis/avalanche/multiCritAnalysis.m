@@ -51,6 +51,10 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
         dt = (t(end) - t(1))/(numel(t) - 1);
         [G, V, t] = applyConditions(G, V, t, conditions);
         
+        if numel(t) == 0
+            continue
+        end
+
         % detect events
         events =  findEvents(G, eventDetect);
         

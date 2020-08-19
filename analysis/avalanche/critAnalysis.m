@@ -37,6 +37,10 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
         saveNetC = false;
     end
 
+    if numel(time) == 0
+        return
+    end
+    
     
     useLogBins = false;
     fitTrun          = true;
