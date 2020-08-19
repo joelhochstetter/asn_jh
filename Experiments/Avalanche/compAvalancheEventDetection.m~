@@ -1,8 +1,4 @@
 function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
-%{
-    e.g.
-        compAvalancheEventDetection('/home/joelh/Documents/NeuroNanoAI/Avalanche/TestEventMethod/', [0.225,0.33,0.45,0.562,0.675,0.787,0.9], 'V', 'V')
-%}
 
     vals = reshape(vals, [numel(vals),1]);
     
@@ -12,8 +8,8 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
     cd(baseFolder)
     saveFolder = strcat(baseFolder, '/AvCompare/');
     mkdir(saveFolder)
-    binSize = [-1, 10, 50, 100]';
-    eventDetectMeths = [1:18]';
+    binSize = [-1, 10, 50, 100];
+    eventDetectMeths = 1:18;
 
     N = numel(vals);
     Nbs = numel(binSize);
@@ -68,11 +64,8 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
                 critResults{i,j,k} = load(strcat2({baseFolder, '/', subtype, vals(i), '/event', eventDetectMeths(k), '/bs', bs, '/critResults.mat'}));
                 critResults{i,j,k} = critResults{i,j,k}.critResults;
             end
-        end
         
-        for k = 1:Nev
             for i = 1:N
-                disp(strcat2({i,',',j,',',k}));
                 meanG(i,j,k) = critResults{i,j,k}.net.meanG;
                 V(i,j,k) = mean(critResults{i,j,k}.net.V);
                 PSDbeta(i,j,k) = critResults{i,j,k}.PSD.beta;
@@ -124,7 +117,7 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
         for j = 1:Nbs
             
             bs = binSize(j);        
-            saveFolder = strcat(baseFolder, '/AvCompare/ev', num2str(k),'/bs', num2str(bs),'/');
+            saveFolder = strcat(baseFolder, '/AvCompare/'bs', num2str(bs),'/');
             mkdir(saveFolder); 
 
             %% Comparison by parameter
@@ -289,102 +282,104 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
 
 
 
-    %% parameter -> bs -> method
+    %%
+    %% Compare by bin-sizes
     for j = 1:N
+        saveFolder = strcat(baseFolder, '/AvCompare/', subtype, num2str(vals(j)),'/');
+        mkdir(saveFolder);
+
+        %% Comparison by parameter
+        binSize(1) = meanIEI(j,1);
+
+        %% Size
+        figure('visible', 'off');
+        errorbar(binSize, Stau(j,:), Sdta(j,:), 'o');
+        set(gca, 'xscale', 'log')
+        set(gca, 'yscale', 'log')    
+        xlabel('\Delta t')
+        ylabel('\tau')
+        title('Avalanche size')
+        yyaxis right;
+        plot(binSize, Slct(j,:), '^');
+        hold on;
+        plot(binSize, Suct(j,:), 'kh');
+        plot(binSize, kingAv(j,:), 'r*', 'MarkerSize', 10)    
+        ylabel('cut-off')
+        legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
+        print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
+
+        %% Lifetime
+        figure('visible', 'off');
+        errorbar(binSize, Talp(j,:), Tdal(j,:), 'o');
+        xlabel('\Delta t')
+        ylabel('\alpha')
+        title('Avalanche life-time')
+        yyaxis right;
+        plot(binSize, Tlct(j,:), '^');
+        hold on;
+        plot(binSize, Tuct(j,:), 'kh');
+        ylabel('cut-off')
+        legend('\alpha', 'lc', 'uc', 'location', 'best')
+        print(gcf,strcat(saveFolder, '/LifeComp.png'), '-dpng', '-r300', '-painters')
+
+
+        %% Gamma
+        figure('visible', 'off');
+        errorbar(binSize,x1(j,:), dx1(j,:), 'o');
+        hold on;
+        errorbar(binSize,x2(j,:), dx2(j,:), '^');
+        errorbar(binSize,x3(j,:), dx3(j,:), 'h');
+        xlabel('\Delta t')
+        ylabel('1/\sigma\tau\nu')
+        legend('S,T', '<S>(T)', 'Shape', 'location', 'best')
+        title('Crackling relationship')
+        print(gcf,strcat(saveFolder, '/CrackComp.png'), '-dpng', '-r300', '-painters')
+
+
+        %% Distributions
+        %% Size
+        figure('visible', 'off');
         for i = 1:Nbs
-            bs = binSize(i);
-            saveFolder = strcat(baseFolder, '/AvCompare/', subtype, num2str(vals(j)), '/bs', num2str(bs), '/');
-            mkdir(saveFolder);
-
-            %% Size
-            figure('visible', 'off');
-            errorbar(eventDetectMeths, Stau(j,i,:), Sdta(j,i,:), 'o');
-            set(gca, 'xscale', 'log')
-            set(gca, 'yscale', 'log')    
-            xlabel('event method')
-            ylabel('\tau')
-            title('Avalanche size')
-            yyaxis right;
-            plot(eventDetectMeths, Slct(j,i,:), '^');
+            loglog(Szbins{j,i}, Szprob{j,i});
             hold on;
-            plot(eventDetectMeths, Suct(j,i,:), 'kh');
-            plot(eventDetectMeths, kingAv(j,i,:), 'r*', 'MarkerSize', 10)    
-            ylabel('cut-off')
-            legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
-            print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
-
-            %% Lifetime
-            figure('visible', 'off');
-            errorbar(eventDetectMeths, Talp(j,i,:), Tdal(j,i,:), 'o');
-            xlabel('event method')
-            ylabel('\alpha')
-            title('Avalanche life-time')
-            yyaxis right;
-            plot(eventDetectMeths, Tlct(j,i,:), '^');
-            hold on;
-            plot(eventDetectMeths, Tuct(j,i,:), 'kh');
-            ylabel('cut-off')
-            legend('\alpha', 'lc', 'uc', 'location', 'best')
-            print(gcf,strcat(saveFolder, '/LifeComp.png'), '-dpng', '-r300', '-painters')
-
-
-            %% Gamma
-            figure('visible', 'off');
-            errorbar(eventDetectMeths,x1(j,i,:), dx1(j,i,:), 'o');
-            hold on;
-            errorbar(eventDetectMeths,x2(j,i,:), dx2(j,i,:), '^');
-            errorbar(eventDetectMeths,x3(j,i,:), dx3(j,i,:), 'h');
-            xlabel('event method')
-            ylabel('1/\sigma\tau\nu')
-            legend('S,T', '<S>(T)', 'Shape', 'location', 'best')
-            title('Crackling relationship')
-            print(gcf,strcat(saveFolder, '/CrackComp.png'), '-dpng', '-r300', '-painters')
-
-
-            %% Distributions
-            %% Size
-            figure('visible', 'off');
-            for ii = 1:Nev
-                loglog(Szbins{j,i,ii}, Szprob{j,i,ii});
-                hold on;
-            end
-            xlabel('S')
-            ylabel('P(S)')
-            title('Avalanche size')
-            leg = legend(num2str(eventDetectMeths), 'location', 'best');
-            title(leg,'\Delta t')
-            print(gcf,strcat(saveFolder, '/SizePlot.png'), '-dpng', '-r300', '-painters')
-
-
-            %% Life
-            figure('visible', 'off');
-            for ii = 1:Nev
-                loglog(Tmbins{j,i,ii}, Tmprob{j,i,ii});
-                hold on;
-            end
-            xlabel('T')
-            ylabel('P(T)')
-            title('Avalanche life-time')
-            leg = legend(num2str(eventDetectMeths), 'location', 'best');
-            title(leg,'\Delta t')
-            print(gcf,strcat(saveFolder, '/LifePlot.png'), '-dpng', '-r300', '-painters')
-
-            %% Average Size
-            figure('visible', 'off');
-            for ii = 1:Nev
-                loglog(ASlife{j,i,ii}, ASsize{j,i,ii});
-                hold on;
-            end
-            xlabel('T')
-            ylabel('<S>')
-            title('Avalanche average size')
-            leg = legend(num2str(eventDetectMeths), 'location', 'best');
-            title(leg,'\Delta t')
-            print(gcf,strcat(saveFolder, '/AvSzPlot.png'), '-dpng', '-r300', '-painters')
-
-            %%
-            close all;
         end
+        xlabel('S')
+        ylabel('P(S)')
+        title('Avalanche size')
+        leg = legend(num2str(binSize,'%.2f'), 'location', 'best');
+        title(leg,'\Delta t')
+        print(gcf,strcat(saveFolder, '/SizePlot.png'), '-dpng', '-r300', '-painters')
+
+
+        %% Life
+        figure('visible', 'off');
+        for i = 1:Nbs 
+            loglog(Tmbins{j,i}, Tmprob{j,i});
+            hold on;
+        end
+        xlabel('T')
+        ylabel('P(T)')
+        title('Avalanche life-time')
+        leg = legend(num2str(binSize,'%.2f'), 'location', 'best');
+        title(leg,'\Delta t')
+        print(gcf,strcat(saveFolder, '/LifePlot.png'), '-dpng', '-r300', '-painters')
+
+        %% Average Size
+        figure('visible', 'off');
+        for i = 1:Nbs 
+            loglog(ASlife{j,i}, ASsize{j,i});
+            hold on;
+        end
+        xlabel('T')
+        ylabel('<S>')
+        title('Avalanche average size')
+        leg = legend(num2str(binSize,'%.2f'), 'location', 'best');
+        title(leg,'\Delta t')
+        print(gcf,strcat(saveFolder, '/AvSzPlot.png'), '-dpng', '-r300', '-painters')
+
+        %%
+        close all;
+
     end
     
     
