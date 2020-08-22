@@ -1,4 +1,4 @@
-function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
+function compAvalancheEventDetection(baseFolder, vals, varName, subtype, Nev)
 %{
     e.g.
         compAvalancheEventDetection('/home/joelh/Documents/NeuroNanoAI/Avalanche/TestEventMethod/', [0.225,0.33,0.45,0.562,0.675,0.787,0.9], 'V', 'V')
@@ -13,11 +13,11 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
     saveFolder = strcat(baseFolder, '/AvCompare/');
     mkdir(saveFolder)
     binSize = [-1, 10, 50, 100]';
-    eventDetectMeths = [1:18]';
+    eventDetectMeths = [1:Nev]';
 
     N = numel(vals);
     Nbs = numel(binSize);
-    Nev = numel(eventDetectMeths);
+%     Nev = numel(eventDetectMeths);
 
     %%
     meanG = zeros(N,Nbs,Nev);
@@ -73,6 +73,9 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
         for k = 1:Nev
             for i = 1:N
                 disp(strcat2({i,',',j,',',k}));
+                if critResults{i,j,k}.events.numEvents < 2
+                    continue
+                end
                 meanG(i,j,k) = critResults{i,j,k}.net.meanG;
                 V(i,j,k) = mean(critResults{i,j,k}.net.V);
                 PSDbeta(i,j,k) = critResults{i,j,k}.PSD.beta;
@@ -92,7 +95,10 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
                 Slct(i,j,k) = critResults{i,j,k}.avalanche.sizeFit.lc;
                 Suct(i,j,k) = critResults{i,j,k}.avalanche.sizeFit.uc;
                 Szbins{i,j,k} = critResults{i,j,k}.avalanche.sizeFit.bins;
-                Szprob{i,j,k} = critResults{i,j,k}.avalanche.sizeFit.prob;    
+                Szprob{i,j,k} = critResults{i,j,k}.avalanche.sizeFit.prob; 
+                if ~isfield(critResults{i,j,k}.avalanche, 'timeFit')
+                    continue
+                end
                 Talp(i,j,k) = critResults{i,j,k}.avalanche.timeFit.alpha;
                 Tdal(i,j,k) = critResults{i,j,k}.avalanche.timeFit.dAlpha;
                 Tlct(i,j,k) = critResults{i,j,k}.avalanche.timeFit.lc;
@@ -282,9 +288,10 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
             %%
             close all;
         end
+        
     end
 
-
+    
 
 
 
@@ -298,31 +305,31 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
 
             %% Size
             figure('visible', 'off');
-            errorbar(eventDetectMeths, Stau(j,i,:), Sdta(j,i,:), 'o');
+            errorbar(eventDetectMeths, permute(Stau(j,i,:),[3,1,2]), permute(Sdta(j,i,:),[3,1,2]), 'o');
             set(gca, 'xscale', 'log')
             set(gca, 'yscale', 'log')    
             xlabel('event method')
             ylabel('\tau')
             title('Avalanche size')
             yyaxis right;
-            plot(eventDetectMeths, Slct(j,i,:), '^');
+            plot(eventDetectMeths, permute(Slct(j,i,:),[3,1,2]), '^');
             hold on;
-            plot(eventDetectMeths, Suct(j,i,:), 'kh');
-            plot(eventDetectMeths, kingAv(j,i,:), 'r*', 'MarkerSize', 10)    
+            plot(eventDetectMeths, permute(Suct(j,i,:),[3,1,2]), 'kh');
+            plot(eventDetectMeths, permute(kingAv(j,i,:),[3,1,2]), 'r*', 'MarkerSize', 10)    
             ylabel('cut-off')
             legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
             print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
 
             %% Lifetime
             figure('visible', 'off');
-            errorbar(eventDetectMeths, Talp(j,i,:), Tdal(j,i,:), 'o');
+            errorbar(eventDetectMeths, permute(Talp(j,i,:),[3,1,2]), permute(Tdal(j,i,:),[3,1,2]), 'o');
             xlabel('event method')
             ylabel('\alpha')
             title('Avalanche life-time')
             yyaxis right;
-            plot(eventDetectMeths, Tlct(j,i,:), '^');
+            plot(eventDetectMeths, permute(Tlct(j,i,:),[3,1,2]), '^');
             hold on;
-            plot(eventDetectMeths, Tuct(j,i,:), 'kh');
+            plot(eventDetectMeths, permute(Tuct(j,i,:),[3,1,2]), 'kh');
             ylabel('cut-off')
             legend('\alpha', 'lc', 'uc', 'location', 'best')
             print(gcf,strcat(saveFolder, '/LifeComp.png'), '-dpng', '-r300', '-painters')
@@ -330,10 +337,10 @@ function compAvalancheEventDetection(baseFolder, vals, varName, subtype)
 
             %% Gamma
             figure('visible', 'off');
-            errorbar(eventDetectMeths,x1(j,i,:), dx1(j,i,:), 'o');
+            errorbar(eventDetectMeths,permute(x1(j,i,:),[3,1,2]), permute(dx1(j,i,:),[3,1,2]), 'o');
             hold on;
-            errorbar(eventDetectMeths,x2(j,i,:), dx2(j,i,:), '^');
-            errorbar(eventDetectMeths,x3(j,i,:), dx3(j,i,:), 'h');
+            errorbar(eventDetectMeths,permute(x2(j,i,:),[3,1,2]), permute(dx2(j,i,:),[3,1,2]), '^');
+            errorbar(eventDetectMeths,permute(x3(j,i,:),[3,1,2]), permute(dx3(j,i,:),[3,1,2]), 'h');
             xlabel('event method')
             ylabel('1/\sigma\tau\nu')
             legend('S,T', '<S>(T)', 'Shape', 'location', 'best')
