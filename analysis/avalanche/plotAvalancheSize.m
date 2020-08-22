@@ -120,7 +120,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
             A = N(find(edges >= min(fitEdges), 1));
             y = A*(x/min(x)).^(-tau);
             loglog(x, y, 'r--');
-            text(x(2), y(2)/3, strcat('S^{-', num2str(tau,3),'}'), 'Color','r')
+            text(x(1), y(1)/3, strcat('S^{-', num2str(tau,3),'}'), 'Color','r')
             xmin = min(edgeCen);            
             xmax = max(edgeCen);  
             
