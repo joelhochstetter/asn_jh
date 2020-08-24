@@ -92,6 +92,18 @@ parser.add_argument('--oldNameConvention',
     type    = bool, 
     default = False,
     help    = 'Whether or not to use old name convention (include cent dispersion and date), or new (include lx, ly, no date).')
+    
+parser.add_argument('--plot', 
+    dest    = 'plot_network', 
+    action  = 'store_true',
+    default = False, 
+    help    = 'Flag to plot the figure.')
+
+parser.add_argument('--no-plot', 
+    dest    = 'plot_network', 
+    action  = 'store_false',
+    default = False,
+    help    = 'Flag to not plot the figure (default).')    
 
 args = parser.parse_args()
 
@@ -171,57 +183,41 @@ for nwires in wireList:
 
             # Genreate graph object and adjacency matrix
             wires_dict = wires.generate_graph(wires_dict)
-
+            
+            
             if not wires.check_connectedness(wires_dict):
                 wires_dict = wires.select_largest_component(wires_dict)
-
+            
+            
             #Calculate network statistics
-            wires_dict = wires.analyse_network(wires_dict)
+            #wires_dict = wires.analyse_network(wires_dict)
 
             wires.export_to_matlab(wires_dict, folder = folder)
-    
-    
-'''
+            
+            if args.plot_network:
+             
+                # Plotting tools
+                from matplotlib.lines import Line2D
+                from matplotlib.patches import Rectangle
+                import matplotlib.pyplot as plt
 
+                # Plot pretty pictures of what we just did
+                fig, ax = plt.subplots()
+                fig.set_size_inches(5,5)
 
+                Lx = wires_dict['length_x']
+                Ly = wires_dict['length_y']
 
-nwires          = 2000
-mean_length     = 7.1
-std_length      = 1.6
-shape           = 100.0
-cent_dispersion = 350.0
-seed            = 1
-Lx              = 70
-Ly              = 70
-folder          = '/import/silo2/joelh/papers/li2020/NewNetworks1/'
-seedList = range(10)
-wireList = range(600, 3200, 200) 
-
-
-for nwires in wireList:
-    for seed in seedList:
-        # Generate the network
-        wires_dict = wires.generate_wires_distribution(number_of_wires = nwires,
-                                                 wire_av_length = mean_length,
-                                                 wire_dispersion = std_length,
-                                                 gennorm_shape = shape,
-                                                 centroid_dispersion= cent_dispersion,
-                                                 this_seed = seed,
-                                                 Lx = Lx,
-                                                 Ly = Ly)
-
-
-        # Get junctions list and their positions
-        wires_dict = wires.detect_junctions(wires_dict)
-
-        # Genreate graph object and adjacency matrix
-        wires_dict = wires.generate_graph(wires_dict)
-
-        if not wires.check_connectedness(wires_dict):
-            wires_dict = wires.select_largest_component(wires_dict)
-
-        #Calculate network statistics
-        wires_dict = wires.analyse_network(wires_dict)
-
-        wires.export_to_matlab(wires_dict, folder = folder)        
-'''
+                ax.add_patch(Rectangle((0,0), Lx, Ly, color=(1.0, 0.918, 0.0), alpha=0.77))     
+                ax = wires.draw_wires(ax, wires_dict)
+                ax = wires.draw_junctions(ax, wires_dict)
+                ax.set_aspect(1) # set aspect ratio to 1
+                ax.set_xlabel(r'x [$\mu$m]')
+                ax.set_ylabel(r'y [$\mu$m]')
+                ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+                ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+                ax.axis([-.1*Lx,1.1*Lx,-.1*Lx,1.1*Lx]) # add some space around the unit square
+                ax.set_title('Nanowires distribution')
+                ax.grid()
+                plt.show()       
+ 

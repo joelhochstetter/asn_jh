@@ -1,4 +1,4 @@
-function [Connectivity, ContactNodes, SDpath] = addRectElectrode(Connectivity, fraction, xFraction)
+function [Connectivity, ContactNodes, SDpath, src, drn] = addRectElectrode(Connectivity, fraction, xFraction)
 %{
     Inputs:
         Connectivity, SimulationOptions
