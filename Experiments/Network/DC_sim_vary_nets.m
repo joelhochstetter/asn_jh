@@ -1,6 +1,6 @@
 function DC_sim_vary_nets(idx, netFolder, saveFolder, usePoint, saveEvents) 
     if nargin < 5
-        saveEvents = false;
+        saveEvents = true;
     end
 
     nets = dir(strcat(netFolder, '/*.mat'))';
