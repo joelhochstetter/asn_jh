@@ -89,7 +89,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
 
 
     %% Sets default paramaters
-        %% Plot and analysis output flags:
+    %% Plot and analysis output flags:
         DSimulationOptions.takingSnapshots = false; % true \ false
         DSimulationOptions.compilingMovie  = false; % true \ false 
         DSimulationOptions.onlyGraphics    = true; % true \ false (no analysis is done and shown, only graphics (snapshots, movie) are generated).
@@ -260,6 +260,10 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         SimulationOptions.BiProbeDistance = 500; % (um)
     end
     SimulationOptions = selectContacts(Connectivity, SimulationOptions);
+    
+    if ~Connectivity.SingleComponent 
+        [SimulationOptions, Connectivity] = extractLargestComponent(SimulationOptions, Connectivity);
+    end
     
     
     %% Get Equations / Components:
