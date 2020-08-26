@@ -19,7 +19,7 @@ function DC_multi_random_connect(idx, saveFolder, netType)
     
     switch netType
         case 0
-            beta = [0.01, 0.05, 0.1, 0.5, 1.0];%0.2:0.2:1.0;
+            beta = [1e-3, 5e-3]; %[0.01, 0.05, 0.1, 0.5, 1.0];%0.2:0.2:1.0;
             DC_by_random_connectivity(sidx, saveFolder, amp, false, true, struct('WhichMatrix', 'WattsStrogatz', 'beta', beta(netidx), 'EdgesPerNode', 2, 'NumberOfNodes', 1000), T);
         case 1
             DC_by_random_connectivity(sidx, saveFolder, amp, false, true, struct('WhichMatrix', 'BarabasiAlbert', 'm0', 2.0, 'm', 2, 'NumberOfNodes', 1000), T);

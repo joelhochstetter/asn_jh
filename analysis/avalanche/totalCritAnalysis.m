@@ -50,7 +50,12 @@ Given a base folder and subfolders:
     
     %% run
     for j = 1:numel(methods)
-        for i = 1:numel(subfolders)
+        parfor i = 1:numel(subfolders)
+            eventDetect = struct();
+            eventDetect.thresh     = Gthresh;
+            eventDetect.relThresh  = relthresh;
+            eventDetect.noiseFloor = noisefloor;                 
+            
             eventDetect.method = methods{j};
             importFolder = strcat(baseFolder, '/', subfolders{i});
 %             saveFolder = strcat(prename, 'Avalanche_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));
@@ -59,9 +64,10 @@ Given a base folder and subfolders:
             saveFolder = strcat(prename, 'Avalanche_Joint_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));        
             jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, binSize, conditions);
         end
+        
         cd(baseFolder)
-        saveFolder = strcat(prename, 'Avalanche_Joint_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));
-        jointCritAnalysis(subfolders, saveFolder, importMode, eventDetect, fitML, binSize, conditions);
+%         saveFolder = strcat(prename, 'Avalanche_Joint_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));
+%         jointCritAnalysis(subfolders, saveFolder, importMode, eventDetect, fitML, binSize, conditions);
     end
 
 

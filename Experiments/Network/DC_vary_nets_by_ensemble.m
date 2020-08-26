@@ -10,7 +10,7 @@ ensembleID: 0 (fixed density, change size),
 
 
      numSeeds = 100;
-     seedIdx  = mod((idx-1), numSeeds) + 1;
+     seedIdx  = mod((idx-1), numSeeds) + 1 + 100;
 
 
 %      numSeeds = 400;
