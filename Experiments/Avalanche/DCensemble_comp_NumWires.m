@@ -9,7 +9,7 @@ saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
 % binSize = [-1, 10, 50, 100];
 binSize = [-0.5,-1.0,-2.0];
-Nvals = [1300:100:1500]';
+Nvals = [1300:100:1600]';
 
 % Nvals = [600:100:1000]';
 
