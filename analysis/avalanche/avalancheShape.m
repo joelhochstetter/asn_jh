@@ -1,4 +1,4 @@
-function [dur, size_t, time_t] = avalancheShape(events)
+function [dur, size_t, time_t, numAv] = avalancheShape(events)
 %{
     Input:
         events (Nx1 array) - number of events at given time bin
@@ -15,6 +15,8 @@ function [dur, size_t, time_t] = avalancheShape(events)
                               time-series vector
         time_t (Nx1 cell) - stores the time vectors for the duration of
                               each event in the analysis
+
+        numAv (Nx1 array) - stores number of avalanches of this length.
        
 %}
 
@@ -34,6 +36,7 @@ function [dur, size_t, time_t] = avalancheShape(events)
     
     size_t = cell(N,1);
     time_t = cell(N,1);
+    numAv  = zeros(N,1);
     
     %make time vectors
     for i = 1:N
@@ -57,6 +60,7 @@ function [dur, size_t, time_t] = avalancheShape(events)
             end
         end
         size_t{i} = size_t{i}/nRelv; %convert sum to average
+        numAv(i)  = nRelv;
     end
     
     
