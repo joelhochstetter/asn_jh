@@ -1,6 +1,7 @@
-function compAvalanche(baseFolder, vals, varName, subtype)
+function compAvalanche(baseFolder, vals, varName, subtype, binSize)
 
     vals = reshape(vals, [numel(vals),1]);
+    binSize = reshape(binSize, [numel(binSize),1]);
     
     %%
     close all;
@@ -9,7 +10,7 @@ function compAvalanche(baseFolder, vals, varName, subtype)
     cd(baseFolder)
     saveFolder = strcat(baseFolder, '/AvCompare/');
     mkdir(saveFolder)
-    binSize = [-1, 10, 50, 100];
+%     binSize = [-1, 10, 50, 100];
 
 %     vals = [0.2:0.2:1.0]';
 
@@ -76,18 +77,18 @@ function compAvalanche(baseFolder, vals, varName, subtype)
         for i = 1:N
             meanG(i,j) = critResults{i,j}.net.meanG;
             V(i,j) = mean(critResults{i,j}.net.V);
-            PSDbeta(i,j) = critResults{i,j}.PSD.beta;
-            PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
+%             PSDbeta(i,j) = critResults{i,j}.PSD.beta;
+%             PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
             numEvents(i,j) = critResults{i,j}.events.numEvents;
             meanIEI(i,j) = critResults{i,j}.IEI.meanIEI;
             IEItau(i,j) = critResults{i,j}.IEI.tau;
             IEIdta(i,j) = critResults{i,j}.IEI.sigmaTau;
             IEIbins{i,j} = critResults{i,j}.IEI.bins;
             IEIprob{i,j} = critResults{i,j}.IEI.prob;
-            dGalpha(i,j) = critResults{i,j}.dG.alpha;
-            dGdalph(i,j) = critResults{i,j}.dG.dalph;
-            dGbins{i,j} = critResults{i,j}.dG.bins;
-            dGprob{i,j} = critResults{i,j}.dG.prob;
+%             dGalpha(i,j) = critResults{i,j}.dG.alpha;
+%             dGdalph(i,j) = critResults{i,j}.dG.dalph;
+%             dGbins{i,j} = critResults{i,j}.dG.bins;
+%             dGprob{i,j} = critResults{i,j}.dG.prob;
             Stau(i,j) = critResults{i,j}.avalanche.sizeFit.tau;
             Sdta(i,j) = critResults{i,j}.avalanche.sizeFit.dTau;
             Slct(i,j) = critResults{i,j}.avalanche.sizeFit.lc;
@@ -120,26 +121,26 @@ function compAvalanche(baseFolder, vals, varName, subtype)
 
 
         %% Comparison by parameter
-        %% dG
-        figure('visible', 'off');
-        errorbar(vals, dGalpha(:,j), dGdalph(:,j), '--o');
-        xlabel(varName)
-        ylabel('\alpha')
-        yyaxis right;
-        semilogy(vals, meanG(:,j), '-o');
-        ylabel('<G>')
-        title('\Delta G exponent')
-        print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
-
-
-
-        %% PSD
-        figure('visible', 'off');
-        errorbar(vals, PSDbeta(:,j), PSDdbet(:,j), '--o');
-        xlabel(varName)
-        ylabel('\beta')
-        title('PSD exponent')
-        print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
+%         %% dG
+%         figure('visible', 'off');
+%         errorbar(vals, dGalpha(:,j), dGdalph(:,j), '--o');
+%         xlabel(varName)
+%         ylabel('\alpha')
+%         yyaxis right;
+%         semilogy(vals, meanG(:,j), '-o');
+%         ylabel('<G>')
+%         title('\Delta G exponent')
+%         print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
+% 
+% 
+% 
+%         %% PSD
+%         figure('visible', 'off');
+%         errorbar(vals, PSDbeta(:,j), PSDdbet(:,j), '--o');
+%         xlabel(varName)
+%         ylabel('\beta')
+%         title('PSD exponent')
+%         print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
 
 
 
@@ -214,18 +215,18 @@ function compAvalanche(baseFolder, vals, varName, subtype)
         print(gcf,strcat(saveFolder, '/IEIPlot.png'), '-dpng', '-r300', '-painters')
 
 
-        %% dG
-        figure('visible', 'off');
-        for i = 1:N 
-            loglog(dGbins{i,j}, dGprob{i,j});
-            hold on;
-        end
-        xlabel('\Delta G')
-        ylabel('P(\Delta G)')
-        title('\Delta G')
-        leg = legend(num2str(vals), 'location', 'best');
-        title(leg,varName)
-        print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
+%         %% dG
+%         figure('visible', 'off');
+%         for i = 1:N 
+%             loglog(dGbins{i,j}, dGprob{i,j});
+%             hold on;
+%         end
+%         xlabel('\Delta G')
+%         ylabel('P(\Delta G)')
+%         title('\Delta G')
+%         leg = legend(num2str(vals), 'location', 'best');
+%         title(leg,varName)
+%         print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
 
 
 
