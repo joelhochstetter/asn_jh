@@ -58,13 +58,8 @@ Given a base folder and subfolders:
             
             eventDetect.method = methods{j};
             importFolder = strcat(baseFolder, '/', subfolders{i});
-<<<<<<< HEAD
 %             saveFolder = strcat(prename, 'Avalanche_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));
 %             multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, binSize, ncpu, conditions)
-=======
-            saveFolder = strcat(prename, 'Avalanche_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));
-            multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, 0, binSize, ncpu, conditions);%fitML, binSize, ncpu, conditions)
->>>>>>> 52bbee608b819f78fb084544374c6427c536d106
             cd(importFolder)
             saveFolder = strcat(prename, 'Avalanche_Joint_', num2str(methods{j}), '_Gt', num2str(eventDetect.thresh), '_rt', num2str(eventDetect.relThresh), '_nf', num2str(eventDetect.noiseFloor));        
             jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fitML, binSize, conditions);
