@@ -21,6 +21,8 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
         adjMat: adjacency matrix of hierirachical modular network
 
 
+    To do: update HMN1 so it ensures a fully connected network
+
     Example usage: adjMat = HMN(2, 2, 2, 2, 10, 0, 1);
 
     Written by Joel Hochstetter (27/08/20)
