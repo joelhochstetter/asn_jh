@@ -47,7 +47,7 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
     end
     
     
-    %% generate module with 
+    %% connect modules
     if HMtype == 1
         for l = 1:numLevels
             NdBlockl = M0*b^(l-1); %number of nodes per block
