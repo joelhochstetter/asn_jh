@@ -1,0 +1,10 @@
+function y = invertArray(x)
+%{
+
+
+%}
+
+
+
+
+end
