@@ -248,7 +248,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
     if SimulationOptions.RectElectrodes
         [Connectivity, ContactNodes] = addRectElectrode(Connectivity, SimulationOptions.RectFractions, SimulationOptions.XRectFraction);
         SimulationOptions.ContactMode  = 'preSet';
-        SimulationOptions.ContactNodes =ContactNodes;
+        SimulationOptions.ContactNodes = ContactNodes;
     end
    
     %if treating edges to new nodes as passive resistive elements
