@@ -135,7 +135,7 @@ function DC_sim_random_states(initSeed, connSeed, saveFolder, amp, useRect, resc
     params.Comp.initRandUpper = initRandUpper; % upper value for random initial state. For 'binary' and 'uniform'
     params.Comp.initBinProb       = initBinProb; %binary probability of being in initRandUpper other than initRandUpper
     params.Comp.initSeed           = initSeed; %random seed for initial seed
-    params.Comp.nonpolar = false;
+    params.Comp.nonpolar = true;
 
     %%%
     multiRun(params);
