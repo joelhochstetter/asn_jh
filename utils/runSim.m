@@ -250,11 +250,6 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         SimulationOptions.ContactMode  = 'preSet';
         SimulationOptions.ContactNodes = ContactNodes;
     end
-   
-    %if treating edges to new nodes as passive resistive elements
-    if ~SimulationOptions.NewEdgeRS
-        Components.passiveRes = Connectivity.NewEdges;
-    end
     
     if strcmp(SimulationOptions.ContactMode, 'specifiedDistance')
         SimulationOptions.BiProbeDistance = 500; % (um)
@@ -264,6 +259,11 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
     if ~Connectivity.SingleComponent 
         [SimulationOptions, Connectivity] = extractLargestComponent(SimulationOptions, Connectivity);
     end
+    
+    %if treating edges to new nodes as passive resistive elements
+    if ~SimulationOptions.NewEdgeRS
+        Components.passiveRes = Connectivity.NewEdges;
+    end    
     
     
     %% Get Equations / Components:

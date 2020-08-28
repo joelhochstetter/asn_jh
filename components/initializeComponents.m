@@ -42,6 +42,14 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.onResistance  = 7.77e-5;
     default.offResistance = 1e-8;
     default.filamentState = 0.0;
+    
+    %random initial state
+    default.initRandType   = 'none'; % {'none', 'binary', 'uniform'}
+    default.initRandLower = 0; % lower value for random initial state. For 'binary' and 'uniform'
+    default.initRandUpper = 0; % upper value for random initial state. For 'binary' and 'uniform'
+    default.initBinProb       = 0.5; %binary probability of being in initRandUpper other than initRandUpper
+    default.initSeed           = 0; %random seed for initial seed
+    
     default.resistance    = 1e-7; %conductance of passive elements
     default.lowResistance = 0.1; %for passive elements with fixed resistance
     default.passiveRes     = []; %list of passive resistive elements
@@ -59,6 +67,8 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.hybrid         = false;
     default.fusePower =  2.5e-5; %for uni-polar switch only
     default.fuseFactor = 1.1;
+    
+    
     
     
     
@@ -200,7 +210,21 @@ function Components = initializeComponents(E,Components, NodalAnal)
             Components.filamentWidth = ones(sz,1).*Components.filamentWidth;
             Components.OnOrOff       = true(sz,1); 
             Components.offResistance = Components.tunRes.*exp(Components.gapDistance .* Components.barrHeight);
-
-            
+  
     end
+    
+    %% add random initial state
+    rng(Components.initSeed);
+    switch Components.initRandType
+        case 'none'
+            %do nothing states already initialised 
+        case 'binary'
+            r = binornd(1, Components.initBinProb, [sz,1]);
+            Components.filamentState = (1-r)*Components.initRandLower + r*Components.initRandUpper;
+        case 'uniform'
+            r = rand(sz,1);
+            Components.filamentState = (1-r)*Components.initRandLower + r*Components.initRandUpper;            
+    end
+    
+    
 end

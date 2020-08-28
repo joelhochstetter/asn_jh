@@ -50,6 +50,11 @@ function [SimulationOptions, Connectivity] = extractLargestComponent(SimulationO
         [NewEdgeList, EdgeMapping] = subgraphEdgeList(GCnds, Connectivity.EdgeList, Connectivity.weights);
         Connectivity.EdgeList = NewEdgeList;
         Connectivity.NumberOfEdges = size(Connectivity.EdgeList, 2);
+        EdgInv = invertArray(EdgeMapping);
+        
+        if numel(Connectivity.NewEdges) > 0
+            Connectivity.NewEdges = EdgInv(Connectivity.NewEdges);
+        end
         
         if strcmp(Connectivity.WhichMatrix,'nanoWires')
             Connectivity.EdgePosition   = Connectivity.EdgePosition(EdgeMapping, 1:2);
