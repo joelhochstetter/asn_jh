@@ -16,6 +16,7 @@ function [SimulationOptions, Connectivity] = extractLargestComponent(SimulationO
 
     if ~Connectivity.SingleComponent 
         %% get largest component and new indices
+        g =graph(Connectivity.weights);
         ccs = conncomp(g);
         compsizes = sum(ccs' ==  [1:max(ccs)]);
         [~, GCCidx] = max(compsizes); %component index of giant component
@@ -25,8 +26,8 @@ function [SimulationOptions, Connectivity] = extractLargestComponent(SimulationO
         %% updating contact indices
         assert(all(ccs(SimulationOptions.ContactNodes) == GCCidx)); %checks all contacts lie on giant components
         SimulationOptions.ContactNodes = GCinv(SimulationOptions.ContactNodes);
-        SimulationOptions.Source       = GCinv(SimulationOptions.Source);
-        SimulationOptions.Drain        = GCinv(SimulationOptions.Drain);
+%         SimulationOptions.Source       = GCinv(SimulationOptions.Source); % not fields in current implemenation
+%         SimulationOptions.Drain        = GCinv(SimulationOptions.Drain);
         
         %% updating components
         Connectivity.NumberOfNodes  = compsizes(GCCidx);        
@@ -38,9 +39,12 @@ function [SimulationOptions, Connectivity] = extractLargestComponent(SimulationO
             Connectivity.VertexPosition = Connectivity.VertexPosition(GCnds,1:2);
             Connectivity.WireEnds       = Connectivity.WireEnds(GCnds, 1:4);
         end
-        assert(all(ccs(Connectivity.NewNodes) == GCCidx)); %checks all contacts lie on giant components        
-        Connectivity.NewNodes = GCinv(Connectivity.NewNodes);
-        Connectivity.NodeStr  = Connectivity.NodeStr(GCnds);
+        
+        if numel(Connectivity.NewNodes) > 0
+            assert(all(ccs(Connectivity.NewNodes) == GCCidx)); %checks all new nodes lie on giant components        
+            Connectivity.NewNodes = GCinv(Connectivity.NewNodes);
+        end
+        Connectivity.NodeStr  = string(1:Connectivity.NumberOfNodes);
         
         %% get edge list: 
         [NewEdgeList, EdgeMapping] = subgraphEdgeList(GCnds, Connectivity.EdgeList, Connectivity.weights);
