@@ -77,6 +77,7 @@ function DC_by_random_connectivity(seed, saveFolder, amp, useRect, rescalePLengt
             return;
         end
         params.Stim.Amplitude = SDpath*0.01*amp;
+        disp(strcat2({'Rescaling voltage by path length of: ', SDpath}));
     end
 
     if strcmp(Connectivity.WhichMatrix, 'WattsStrogatz')
