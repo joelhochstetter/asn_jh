@@ -9,8 +9,8 @@ ensembleID: 0 (fixed density, change size),
 %}
 
 
-     numSeeds = 900;
-     seedIdx  = mod((idx-1), numSeeds) + 1 + 100;
+     numSeeds = 500;
+     seedIdx  = mod((idx-1), numSeeds) + 1;
 
   
     % Gets connect file
@@ -38,7 +38,7 @@ ensembleID: 0 (fixed density, change size),
             disp('Simulating networks of fixed size, changing density')   
 %             numSeedsInFile = 500;
 %             numWires = 600:100:1000;
-            numWires = 1300:100:1600;
+            numWires = [2500, 3000];%1300:100:1600;
             Nidx    = floor((idx-1)/numSeeds) + 1;
             
             files = dir(strcat(netFolder, '/*.mat'))';
