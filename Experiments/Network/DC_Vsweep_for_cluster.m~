@@ -91,8 +91,6 @@ if nargin < 20
     useUncorrelated = false;
 end
 
-
-
 %%
 params = struct();
 
@@ -165,10 +163,6 @@ params.Comp.penalty        =    pen;%1;
 params.Comp.boost          =   2;
 params.Comp.filamentState = initLamda;
 
-if useUncorrelated
-    params.SimOpt.useUncorrelated = useUncorrelated;
-    params.SimOpt.nameComment   = '_uncorrelated';
-end
 
 
 %%%
