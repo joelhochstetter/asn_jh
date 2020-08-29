@@ -46,6 +46,7 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkUncorre
 % Authors:
 % Ido Marcus
 % Paula Sanz-Leon
+% Joel Hochstetter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% Initialize:

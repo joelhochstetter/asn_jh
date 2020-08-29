@@ -99,7 +99,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.nameComment     = '';
         DSimulationOptions.useLong         = false;
         DSimulationOptions.lyapunovSim     = false;
-        DSimulationOptions.uncorrelatedSwitch = false;        
+        
         DSimulationOptions.NodalAnal       = true;
         DSimulationOptions.useRK4          = false;
         DSimulationOptions.perturb         = false;
