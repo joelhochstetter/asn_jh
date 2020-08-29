@@ -99,7 +99,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         DSimulationOptions.nameComment     = '';
         DSimulationOptions.useLong         = false;
         DSimulationOptions.lyapunovSim     = false;
-        DSimulationOptions.uncorrelatedSwitch = false;        
+        DSimulationOptions.useUncorrelated = false;        
         DSimulationOptions.NodalAnal       = true;
         DSimulationOptions.useRK4          = false;
         DSimulationOptions.perturb         = false;
@@ -218,8 +218,6 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             Connectivity.(fields{i}) = DConnectivity.(fields{i});
         end
     end
-     
-
     
     
     
@@ -370,11 +368,11 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         elseif SimulationOptions.useRK4
             [Output, SimulationOptions] = simulateNetworkRK4(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
         elseif ~SimulationOptions.saveSwitches
-            [Output, SimulationOptions] = simulateNetworkLite(Connectivity, Components, Signals, SimulationOptions); % (Ohm)            
+            [Output, SimulationOptions] = simulateNetworkLite(Connectivity, Components, Signals, SimulationOptions); % (Ohm)       
+        elseif SimulationOptions.useUncorrelated
+            [Output, SimulationOptions] = simulateNetworkUncorrelated(Connectivity, Components, Signals, SimulationOptions); % (Ohm)                               
         elseif SimulationOptions.NodalAnal
             [Output, SimulationOptions] = simulateNetworkRuomin(Connectivity, Components, Signals, SimulationOptions); % (Ohm)
-        elseif SimulationOptions.useUncorrelated
-            
         else
             [Output, SimulationOptions, snapshots] = simulateNetwork(Equations, Components, Stimulus, SimulationOptions); % (Ohm)
         end       

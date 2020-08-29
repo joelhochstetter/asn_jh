@@ -1,12 +1,16 @@
-function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkUncorrelated(Equations, Components, Stimulus, SimulationOptions, varargin)
+function [OutputDynamics, SimulationOptions] = simulateNetworkUncorrelated(Connectivity, Components, Signals, SimulationOptions, varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Simulates the network and finds the resistance between the two contacts
-% as a function of time.
+% Saves no switch data
+% Simulate network at each time step. Mostly the same as Ido's code.
+% Improved the simulation efficiency by change using nodal analysis.
+% Enabled multi-electrodes at the same time.
 %
+% Left the API of snapshots. For later usage of visualize the network.
 % ARGUMENTS: 
-% Equations - Structure that contains the (abstract) matrix of coefficients
-%             (as documented in getEquations) and the number of nodes in
-%             the circuit.
+% Connectivity - The Connectivity information of the network. Most
+%                importantly the edge list, which shows the connectivity
+%                condition between nanowires, and number of nodes and
+%                junctions.
 % Components - Structure that contains the component properties. Every 
 %              field is a (E+1)x1 vector. The extra component is the
 %              tester resistor connected in series to the voltage and to 
@@ -46,133 +50,120 @@ function [OutputDynamics, SimulationOptions, snapshots] = simulateNetworkUncorre
 % Authors:
 % Ido Marcus
 % Paula Sanz-Leon
+% Ruomin Zhu
 % Joel Hochstetter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+   
     %% Initialize:
-    %sets sources for additional sources or drains
-    %{
-    if ~isfield(SimulationOptions, 'isSource')
-        SimulationOptions.isSource = [];
-    end    
-    %}
+    compPtr         = ComponentsPtr(Components);        % using this matlab-style pointer to pass the Components structure by reference
+    niterations     = SimulationOptions.NumberOfIterations;
+    electrodes      = SimulationOptions.electrodes;
+    numOfElectrodes = SimulationOptions.numOfElectrodes;
+    E               = Connectivity.NumberOfEdges;
+    V               = Connectivity.NumberOfNodes;
+    edgeList        = Connectivity.EdgeList.';
+    RHS             = zeros(V+numOfElectrodes,1); % the first E entries in the RHS vector.
+    LHSinit         = zeros(V+numOfElectrodes, V+numOfElectrodes);
+        
+    electrodeCurrent   = zeros(niterations, numOfElectrodes);
 
-    %numDrain      = 1 + numel(SimulationOptions.isSource) - sum(SimulationOptions.isSource);
-    compPtr       = ComponentsPtr(Components);        % using this matlab-style pointer to pass the Components structure by reference
-    niterations   = SimulationOptions.NumberOfIterations; 
-    %modified to store testerVoltage for each drain
-    testerVoltage = zeros(niterations, 1);                      % memory allocation for the voltage on the tester resistor as function of time
-    
-    RHSZeros      = zeros(Equations.NumberOfEdges, 1); % the first E entries in the RHS vector.
-    avLambda      = zeros(niterations,1);
-    %lambda_vals   = zeros(niterations,Equations.NumberOfEdges - 1 + numel(SimulationOptions.ContactNodes));
-    %voltage_vals  = zeros(niterations,Equations.NumberOfEdges - 1 + numel(SimulationOptions.ContactNodes));
-    lambda_vals   = zeros(niterations,Equations.NumberOfEdges + 1);
-    voltage_vals  = zeros(niterations,Equations.NumberOfEdges + 1);
-    c_vals        = zeros(niterations,Equations.NumberOfEdges + 1);
-    
-    %% Use sparse matrices:
-    Equations.KCLCoeff = sparse(Equations.KCLCoeff);
-    Equations.KVLCoeff = sparse(Equations.KVLCoeff);
-    RHSZeros           = sparse(RHSZeros);
-    
-    %% If snapshots are requested, allocate memory for them:
-    if ~isempty(varargin)
-        snapshots           = cell(size(varargin{1}));
-        snapshots_idx       = sort(varargin{1}); 
-    else
-        nsnapshots          = 10;
-        snapshots           = cell(nsnapshots,1);
-        snapshots_idx       = ceil(logspace(log10(1), log10(niterations), nsnapshots));
+    if SimulationOptions.saveFilStateOnly == true
+        filamentStates = zeros(niterations, E);
     end
-    kk = 1; % Counter
-    
+
+    if SimulationOptions.saveEventsOnly == true
+        events  = zeros(niterations, 1);
+        componentConductance = compPtr.comp.resistance;
+    end
     
     %% Solve equation systems for every time step and update:
     for ii = 1 : niterations
         % Show progress:
-        progressBar(ii,niterations);
+        %progressBar(ii,niterations);
+
+        onOrOffOld   = compPtr.comp.resistance > 1.1*Components.offResistance(1);      
         
-        %OG Solution
-        %{
         % Update resistance values:
         updateComponentResistance(compPtr); 
-        LHS = [Equations.KCLCoeff .* compPtr.comp.resistance(:,ones(Equations.NumberOfNodes-1,1)).' ; ...
-               Equations.KVLCoeff];
-        RHS = [RHSZeros ; Stimulus.Signal(ii,:)'];
-
-        % Solve equation:
-        compPtr.comp.voltage = LHS\RHS; %temporary Voltage
-        %}
+        componentConductance = compPtr.comp.resistance;
         
-        
-        %%{
-        %My solution %Valid for a single source and drain
-        % Update resistance values:
-        switchChange = updateComponentResistance(compPtr); 
-        %switchChange = 1;
-        %Only need to resolve voltage is there are switches which changes
-        if switchChange 
-            LHS = [Equations.KCLCoeff .* compPtr.comp.resistance(:,ones(Equations.NumberOfNodes-1,1)).' ; ...
-                   Equations.KVLCoeff];
-            RHS = [RHSZeros ; 1.0];
-
-            % Solve equation:
-            V = LHS\RHS; %temporary Voltage
-            %ii
+        onOrOffNew   = componentConductance > 1.1*Components.offResistance(1);     
+        if SimulationOptions.saveEventsOnly == true && SimulationOptions.saveFilStateOnly == false
+            events(ii) = sum(abs(onOrOffNew - onOrOffOld));
         end
         
         if ii == 1
-            compPtr.comp.voltage = V*Stimulus.Signal(ii);
+            % Get LHS (matrix) and RHS (vector) of equation:
+            Gmat = zeros(V,V);
+            for i = 1:E
+                Gmat(edgeList(i,1),edgeList(i,2)) = componentConductance(i);
+                Gmat(edgeList(i,2),edgeList(i,1)) = componentConductance(i);
+            end
+
+            Gmat = diag(sum(Gmat, 1)) - Gmat;
+
+            LHS          = LHSinit;
+
+            LHS(1:V,1:V) = Gmat;
+
+            for i = 1:numOfElectrodes
+                this_elec           = electrodes(i);
+                LHS(V+i,this_elec)  = 1;
+                LHS(this_elec,V+i)  = 1;
+                RHS(V+i)            = Signals{i,1}(ii);
+            end
+
+            % Solve equation:
+            sol = LHS\RHS;
+
+            tempWireV = sol(1:V);
+            compPtr.comp.voltage = tempWireV(edgeList(:,1)) - tempWireV(edgeList(:,2));
         end
         
-        %%}
-        
-        lam = compPtr.comp.filamentState;       
         
         % Update element fields:
-        %updateComponentState(compPtr, Stimulus.dt);    % ZK: changed to allow retrieval of local values
-        [lambda_vals(ii,:), voltage_vals(ii,:)] = updateComponentState(compPtr, Stimulus.dt);
+        [lambda, ~] = updateComponentState(compPtr, SimulationOptions.dt);    % ZK: changed to allow retrieval of local values
         
-        % Record tester voltage:
-        c_vals(ii,:) = compPtr.comp.resistance;
-        
-        testerVoltage(ii,:) = compPtr.comp.voltage(Equations.NumberOfEdges + 1: end);
-        
-        %Record average value of lambda 
-        avLambda(ii) = mean(abs(compPtr.comp.filamentState));            
-        
-        % Record the activity of the whole network
-        
-        if find(snapshots_idx == ii) 
-                frame.Timestamp  = SimulationOptions.TimeVector(ii);
-                frame.Voltage    = compPtr.comp.voltage;
-                frame.Resistance = compPtr.comp.resistance;
-                frame.OnOrOff    = compPtr.comp.OnOrOff;
-                frame.filamentState = compPtr.comp.filamentState;
-                frame.netV = Stimulus.Signal(ii);
-                frame.netI = testerVoltage(ii) * compPtr.comp.resistance(end);
-                frame.netC = compPtr.comp.resistance(end)/((Stimulus.Signal(ii) / testerVoltage(ii) - 1));
-                snapshots{kk} = frame;
-                kk = kk + 1;
+        if SimulationOptions.saveFilStateOnly == true
+            filamentStates(ii,:) = lambda;
         end
         
+        electrodeCurrent(ii,:)   = sol(V+1:end); 
+
     end
     
-    % Store some important fields
-    SimulationOptions.SnapshotsIdx = snapshots_idx; % Save these to access the right time from .TimeVector.
+    % Calculate network resistance and save:
+    OutputDynamics.electrodeCurrent   = electrodeCurrent;
+    OutputDynamics.wireVoltage        = sol(1:V)';
+    
+    OutputDynamics.storevoltage       = compPtr.comp.voltage';
+    OutputDynamics.storeCon           = compPtr.comp.resistance';
+    
+    if SimulationOptions.saveFilStateOnly == true
+        if SimulationOptions.saveEventsOnly == true
+            d = (Components.criticalFlux(1) - abs(filamentStates))*5/Components.criticalFlux(1);
+            d(d < 0.0) = 0.0;
+            switchC = tunnelSwitchL(d, 0.81, 0.17, Components.offResistance(1), Components.onResistance(1));
+            dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
+            dGG = abs(dG./switchC)/SimulationOptions.dt;
+            events = sum(thresholdCrossingPeaks(dGG, 1e-3),2);
+            OutputDynamics.lambda =  compPtr.comp.filamentState';
+        else
+           OutputDynamics.lambda = filamentStates;
+        end
+    else
+        OutputDynamics.lambda             =  compPtr.comp.filamentState';
+    end    
+   
+    if SimulationOptions.saveEventsOnly == true
+        events(1) = 0;
+        OutputDynamics.events  = events;
+    end
 
     % Calculate network resistance and save:
-    OutputDynamics.testerVoltage     = testerVoltage;
-    OutputDynamics.networkCurrent    = testerVoltage .* compPtr.comp.resistance(end);
-    OutputDynamics.networkResistance = 1./(Stimulus.Signal ./ testerVoltage - 1).*compPtr.comp.resistance(end);
-    OutputDynamics.AverageLambda = avLambda;
+    OutputDynamics.networkCurrent    =  electrodeCurrent(:, 2:end);
+    OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent(:,end) ./ Signals{1});
 
-    % ZK: also for local values:
-    OutputDynamics.lambda = lambda_vals;
-    OutputDynamics.storevoltage = voltage_vals;
-    OutputDynamics.storeCon  = c_vals;
-    
-    
+
     
 end
