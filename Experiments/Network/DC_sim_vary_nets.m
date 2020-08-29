@@ -8,7 +8,7 @@ function DC_sim_vary_nets(idx, netFolder, saveFolder, usePoint, saveEvents, useU
         useUncorrelated = false;
     end
 
-    numNets = 100;
+    numNets = 1000;
     netIdx = mod((idx-1), numNets) + 1; 
     Vidx    = floor((idx-1)/numNets) + 1;
     seed = netIdx - 1;

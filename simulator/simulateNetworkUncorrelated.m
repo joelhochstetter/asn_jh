@@ -118,6 +118,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkUncorrelated(Conne
 
             tempWireV = sol(1:V);
             compPtr.comp.voltage = tempWireV(edgeList(:,1)) - tempWireV(edgeList(:,2));
+            
+            disp('Using uncorrelated (ii = 1)')
         end
         
         
