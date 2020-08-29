@@ -9,12 +9,9 @@ ensembleID: 0 (fixed density, change size),
 %}
 
 
-     numSeeds = 200;
-     seedIdx  = mod((idx-1), numSeeds) + 1 + 300;
+     numSeeds = 900;
+     seedIdx  = mod((idx-1), numSeeds) + 1 + 100;
 
-
-%      numSeeds = 400;
-%      seedIdx  = mod((idx-1), numSeeds) + 1 + 100;
   
     % Gets connect file
     switch ensembleID
