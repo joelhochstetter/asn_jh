@@ -1,7 +1,7 @@
-%function resistance = updateComponentResistance(compPtr)
-function [switchChange, resistance] = updateComponentResistance(compPtr)
+%function conductance = updateComponentConductance(compPtr)
+function [switchChange, conductance] = updateComponentConductance(compPtr)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The function updates the 'resistance' field of the input struct (which is 
+% The function updates the 'conductance' field of the input struct (which is 
 % passed by reference).
 %
 % ARGUMENTS: 
@@ -9,7 +9,7 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
 %           state of the electrical components of the network.
 %
 % OUTPUT:
-% resistance - resistances of individual switches
+% conductance - conductances of individual switches
 % switchChange - true if switches change and false otherwise
 %
 % REQUIRES:
@@ -33,18 +33,18 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
 
             % Create a _/-\_ shaped memristance (each component with its own
             % specific values):
-            resistance = (charge <= compPtr.comp.lowThreshold).*compPtr.comp.offResistance;
+            conductance = (charge <= compPtr.comp.lowThreshold).*compPtr.comp.offConductance;
 
-            resistance = ...
-                resistance + (charge > compPtr.comp.lowThreshold & ...
+            conductance = ...
+                conductance + (charge > compPtr.comp.lowThreshold & ...
                               charge <= compPtr.comp.highThreshold).* ...
                 (  ...
-                   compPtr.comp.offResistance + ...
-                   ((compPtr.comp.onResistance-compPtr.comp.offResistance)./(compPtr.comp.highThreshold-compPtr.comp.lowThreshold)) .* ...
+                   compPtr.comp.offConductance + ...
+                   ((compPtr.comp.onConductance-compPtr.comp.offConductance)./(compPtr.comp.highThreshold-compPtr.comp.lowThreshold)) .* ...
                    (charge-compPtr.comp.lowThreshold) ...
                 );
 
-            resistance = resistance + (charge >  compPtr.comp.highThreshold).*compPtr.comp.onResistance;
+            conductance = conductance + (charge >  compPtr.comp.highThreshold).*compPtr.comp.onConductance;
 
         case 'atomicSwitch'
             oldOnOff = compPtr.comp.OnOrOff;                       
@@ -54,15 +54,15 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             
 %             if ~sum(abs(oldOnOff - compPtr.comp.OnOrOff))
 %                 switchChange = false;
-%                 resistance = compPtr.comp.resistance;
+%                 conductance = compPtr.comp.conductance;
 %                 return
 %             end
             
             % passive elements (resistors) are always considered as "open" switches
             
-            resistance = (~compPtr.comp.OnOrOff) .* compPtr.comp.offResistance;
-            resistance = resistance + ...
-                         ( compPtr.comp.OnOrOff) .* compPtr.comp.onResistance;
+            conductance = (~compPtr.comp.OnOrOff) .* compPtr.comp.offConductance;
+            conductance = conductance + ...
+                         ( compPtr.comp.OnOrOff) .* compPtr.comp.onConductance;
        
                      
         case 'quantCSwitch'
@@ -73,24 +73,24 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
 %             
 %             if ~sum(abs(oldOnOff - compPtr.comp.OnOrOff))
 %                 switchChange = false;
-%                 resistance = compPtr.comp.resistance;
+%                 conductance = compPtr.comp.conductance;
 %                 return
 %             end
             
             % passive elements (resistors) are always considered as "open" switches
             
-            resistance = (~compPtr.comp.OnOrOff) .* compPtr.comp.offResistance;
-            resistance = resistance + ...
-                         ( compPtr.comp.OnOrOff) .* compPtr.comp.onResistance;
+            conductance = (~compPtr.comp.OnOrOff) .* compPtr.comp.offConductance;
+            conductance = conductance + ...
+                         ( compPtr.comp.OnOrOff) .* compPtr.comp.onConductance;
                    
                      
-            %adding tunnel resistance
+            %adding tunnel conductance
         case 'tunnelSwitch'
             V = compPtr.comp.voltage;
             phi = compPtr.comp.barrHeight; %2;          
             d = (compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1) + 0.4;
             d(d<0.4)=0.4;
-            resistance = tunnelSwitch(V,d,phi,0.4,compPtr.comp.offResistance(1));
+            conductance = tunnelSwitch(V,d,phi,0.4,compPtr.comp.offConductance(1));
             
             if max(abs(V)) > 2.5*phi %Checks conditions for Simmons is valid
                 disp('Results may be inaccurate');
@@ -98,14 +98,14 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
 
             
-        %adding tunnel resistance
+        %adding tunnel conductance
         case 'tunnelSwitch2'
             V = compPtr.comp.voltage;
             phi = compPtr.comp.barrHeight; %2;          
             d =(compPtr.comp.criticalFlux - abs(compPtr.comp.filamentState))*5/compPtr.comp.criticalFlux(1);
             d(d < 0.0) = 0.0;
             A = compPtr.comp.filArea; %0.17
-            resistance = tunnelSwitch2(V, d, phi, A, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
+            conductance = tunnelSwitch2(V, d, phi, A, compPtr.comp.offConductance(1), compPtr.comp.onConductance(1));
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
             
         case 'tunnelSwitchL'        
@@ -113,13 +113,13 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             d(d < 0.0) = 0.0;
             phi = compPtr.comp.barrHeight; %2;          
             A = compPtr.comp.filArea; %0.17            
-            resistance = tunnelSwitchL(d, phi, A, compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
+            conductance = tunnelSwitchL(d, phi, A, compPtr.comp.offConductance(1), compPtr.comp.onConductance(1));
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;
 
         case 'linearSwitch'         
             lambda = abs(compPtr.comp.filamentState);
             lambda(lambda >= compPtr.comp.criticalFlux(1)) = compPtr.comp.criticalFlux(lambda >= compPtr.comp.criticalFlux(1));
-            resistance = linearSwitch(lambda, compPtr.comp.criticalFlux(1), compPtr.comp.offResistance(1), compPtr.comp.onResistance(1));
+            conductance = linearSwitch(lambda, compPtr.comp.criticalFlux(1), compPtr.comp.offConductance(1), compPtr.comp.onConductance(1));
             compPtr.comp.OnOrOff = abs(compPtr.comp.filamentState) >= compPtr.comp.criticalFlux;                                    
             
             
@@ -128,7 +128,7 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             phi = 0.8;          
             d = (0.1-abs(compPtr.comp.filamentState))*30+0.4;
             d(d<0.4)=0.4;
-            resistance = tunnelSwitch(V,d,phi,0.4,compPtr.comp.offResistance(1));
+            conductance = tunnelSwitch(V,d,phi,0.4,compPtr.comp.offConductance(1));
             
             if max(abs(V)) > 2.5*phi %Checks conditions for Simmons is valid
                 'Results may be inaccurate'
@@ -137,30 +137,30 @@ function [switchChange, resistance] = updateComponentResistance(compPtr)
             compPtr.comp.OnOrOff = floor(abs(compPtr.comp.filamentState) / compPtr.comp.criticalFlux(1));
             compPtr.comp.OnOrOff(compPtr.comp.identity == 0) = true; 
             
-            onRes = tunnelSwitch(V,0.4,phi,0.4,compPtr.comp.offResistance(1));
+            onRes = tunnelSwitch(V,0.4,phi,0.4,compPtr.comp.offConductance(1));
             
-            resistance = resistance + ...
+            conductance = conductance + ...
                          ( compPtr.comp.OnOrOff) .* onRes;
                      
         case 'resistor'
-                resistance = zeros(size(compPtr.comp.identity)); 
-                % That's a place-holder. If resistance is not initialized, the 
+                conductance = zeros(size(compPtr.comp.identity)); 
+                % That's a place-holder. If conductance is not initialized, the 
                 % next statement which takes care of passive elements creates a
                 % row rather than a column vector.
                 
         case 'nonlinearres'
-            resistance =  compPtr.comp.voltage.^2+1e-7;
+            conductance =  compPtr.comp.voltage.^2+1e-7;
                 
         case 'brownModel'
             %updated in updateComponentState.m
-            resistance = (compPtr.comp.OnOrOff.*(compPtr.comp.onResistance - compPtr.comp.offResistance)) + compPtr.comp.offResistance;
+            conductance = (compPtr.comp.OnOrOff.*(compPtr.comp.onConductance - compPtr.comp.offConductance)) + compPtr.comp.offConductance;
     end    
     
-    % Components that are resistors have resistance 'lowResistance':
-    % treated as having negligible resistance
+    % Components that are resistors have conductance 'lowConductance':
+    % treated as having negligible conductance
     % regardless of anything else:
-    resistance(compPtr.comp.identity == 0) = compPtr.comp.lowResistance;
+    conductance(compPtr.comp.identity == 0) = compPtr.comp.lowConductance;
     
-    % Modify the input with the updated resistance values:
-    compPtr.comp.resistance = resistance;
+    % Modify the input with the updated conductance values:
+    compPtr.comp.conductance = conductance;
 end

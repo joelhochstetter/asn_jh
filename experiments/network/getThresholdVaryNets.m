@@ -43,8 +43,8 @@ function getThresholdVaryNets(idx, netFolder, saveFolder)
 
     %Set Components
     params.Comp.ComponentType  = 'tunnelSwitchL'; % 'quantCSwitch' \ 'atomicSwitch'
-    params.Comp.onResistance = 1e-6;
-    params.Comp.offResistance  = 1e-10;
+    params.Comp.onConductance = 1e-6;
+    params.Comp.offConductance  = 1e-10;
     params.Comp.setVoltage     = 2.1;
     params.Comp.resetVoltage  = 1.4;
     params.Comp.criticalFlux   = 0.1;
@@ -66,7 +66,7 @@ function getThresholdVaryNets(idx, netFolder, saveFolder)
 
     
     %% threshold
-%     netC = t{1}.Output.networkResistance;
+%     netC = t{1}.Output.networkConductance;
 %     find(netC > 100*netC(1));
     
 

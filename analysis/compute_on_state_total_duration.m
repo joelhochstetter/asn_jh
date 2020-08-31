@@ -20,7 +20,7 @@ for ii = 1:length(dc_amplitude_on)
         catch
             disp('not a file')
         end
-	    c = 1./ Output.networkResistance;
+	    c = 1./ Output.networkConductance;
 
 	    idx = find(c > 2e-7);
 

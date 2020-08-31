@@ -1,8 +1,8 @@
 %Constants
 Components.criticalFlux  = 1e-1;
 Components.maxFlux       = 0.15;
-Components.offResistance = 1e-9;
-Components.onResistance  = 7.77e-5;
+Components.offConductance = 1e-9;
+Components.onConductance  = 7.77e-5;
 Components.resetVoltage  = 1e-3;
 Components.setVoltage    = 1e-2;
 Components.boost         = 10;
@@ -51,15 +51,15 @@ for i = 1:size(tvec)
     updateComponentState(compPt1, dt);
     compPt1.comp.OnOrOff = abs(compPt1.comp.filamentState) >= compPt1.comp.criticalFlux;    
     
-    compPt1.comp.resistance = (~compPt1.comp.OnOrOff) * compPt1.comp.offResistance + (compPt1.comp.OnOrOff) .* compPt1.comp.onResistance;
-    co1(i) = compPt1.comp.resistance;
+    compPt1.comp.conductance = (~compPt1.comp.OnOrOff) * compPt1.comp.offConductance + (compPt1.comp.OnOrOff) .* compPt1.comp.onConductance;
+    co1(i) = compPt1.comp.conductance;
     la1(i) = compPt1.comp.filamentState;
     
     lam(i) = compPtr.comp.filamentState;
     d = (Components.criticalFlux-abs(lam(i)))*30+0.4;
     d(d<0.4) = 0.4;
     con(i) = tunnelSwitch(Signal(i),d,phi,0.4);
-    compPr.comp.resistance = con(i);
+    compPr.comp.conductance = con(i);
     
 end
 

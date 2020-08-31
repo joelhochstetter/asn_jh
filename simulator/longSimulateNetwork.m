@@ -19,20 +19,20 @@ function [OutputDynamics, SimulationOptions, snapshots] = longSimulateNetwork(Co
 % SimulationOptions - Structure that contains general simulation details that are indepedent of 
 %           the other structures (eg, dt and simulation length);
 % varargin - if not empty, contains an array of indidces in which a
-%            snapshot of the resistances and voltages in the network is
+%            snapshot of the conductances and voltages in the network is
 %            requested. This indices are based on the length of the simulation.
 % OUTPUT:
 % OutputDynamics -- is a struct with the activity of the network
-%                    .networkResistance - the resistance of the network (between the two 
+%                    .networkConductance - the conductance of the network (between the two 
 %                     contacts) as a function of time.
 %                    .networkCurrent - the overall current from contact (1) to contact (2) as a
 %                     function of time.
 % Simulationoptions -- same struct as input, with updated field names
-% snapshots - a cell array of structs, holding the resistance and voltage 
+% snapshots - a cell array of structs, holding the conductance and voltage 
 %             values in the network, at the requested time-stamps.
         
 % REQUIRES:
-% updateComponentResistance
+% updateComponentConductance
 % updateComponentState
 %
 % USAGE:
@@ -66,7 +66,7 @@ function [OutputDynamics, SimulationOptions, snapshots] = longSimulateNetwork(Co
     wireVoltage        = zeros(niterations, V);
     electrodeCurrent   = zeros(niterations, numOfElectrodes);
     junctionVoltage    = zeros(niterations, E);
-    junctionResistance = zeros(niterations, E);
+    junctionConductance = zeros(niterations, E);
     junctionFilament   = zeros(niterations, E);
     %condition          = zeros(niterations, 1);
 
@@ -88,9 +88,9 @@ function [OutputDynamics, SimulationOptions, snapshots] = longSimulateNetwork(Co
         % Show progress:
         progressBar(ii,niterations);
         
-        % Update resistance values:
-        updateComponentResistance(compPtr); 
-        componentConductance = compPtr.comp.resistance;
+        % Update conductance values:
+        updateComponentConductance(compPtr); 
+        componentConductance = compPtr.comp.conductance;
         
         % Get LHS (matrix) and RHS (vector) of equation:
         Gmat = zeros(V,V);
@@ -137,7 +137,7 @@ function [OutputDynamics, SimulationOptions, snapshots] = longSimulateNetwork(Co
         wireVoltage(ii,:)        = sol(1:V);
         electrodeCurrent(ii,:)   = sol(V+1:end);
         junctionVoltage(ii,:)    = compPtr.comp.voltage;
-        junctionResistance(ii,:) = compPtr.comp.resistance;
+        junctionConductance(ii,:) = compPtr.comp.conductance;
         junctionFilament(ii,:)   = compPtr.comp.filamentState;
         
        if sum(abs(lam(1:E) - compPtr.comp.filamentState(1:E))) < 1e-14
@@ -145,7 +145,7 @@ function [OutputDynamics, SimulationOptions, snapshots] = longSimulateNetwork(Co
             for jj = (ii + 1):niterations
                 junctionFilament(jj,:) = junctionFilament(ii,:);
                 junctionVoltage(jj,:) = junctionVoltage(ii,:);
-                junctionResistance(jj,:) = junctionResistance(ii,:);
+                junctionConductance(jj,:) = junctionConductance(ii,:);
                 electrodeCurrent(jj,:) = electrodeCurrent(ii,:);  
                 wireVoltage(jj,:) = wireVoltage(ii,:);              
             end
@@ -154,20 +154,20 @@ function [OutputDynamics, SimulationOptions, snapshots] = longSimulateNetwork(Co
 
     end
     
-    % Calculate network resistance and save:
+    % Calculate network conductance and save:
     OutputDynamics.electrodeCurrent   = electrodeCurrent;
     OutputDynamics.wireVoltage        = wireVoltage;
     
     OutputDynamics.storevoltage       = junctionVoltage;
-    OutputDynamics.storeCon           = junctionResistance;
+    OutputDynamics.storeCon           = junctionConductance;
     OutputDynamics.lambda             = junctionFilament;
     
-    % Calculate network resistance and save:
+    % Calculate network conductance and save:
     OutputDynamics.networkCurrent    = electrodeCurrent(:, 2:end);
-    OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent ./ Signals{1});
+    OutputDynamics.networkConductance = abs(OutputDynamics.networkCurrent ./ Signals{1});
 
     OutputDynamics.EndTime            = ii;
-    OutputDynamics.MaxG               = OutputDynamics.networkResistance(ii);    
+    OutputDynamics.MaxG               = OutputDynamics.networkConductance(ii);    
     
     %OutputDynamics.condition = condition;
     %figure;plot(condition);

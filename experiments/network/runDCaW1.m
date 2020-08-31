@@ -26,7 +26,7 @@ params.Stim.OffTime = 5.0;
 
 %Set Components
 params.Comp.ComponentType  = 'atomicSwitch';
-params.Comp.offResistance  = 1e-8;
+params.Comp.offConductance  = 1e-8;
 params.Comp.setVoltage     = 1e-2;
 params.Comp.resetVoltage   = 1e-3;
 params.Comp.criticalFlux   =  0.1;
@@ -50,7 +50,7 @@ mkdir offV
 
 %Set Components
 params.Comp.ComponentType  = 'atomicSwitch';
-params.Comp.offResistance  = 1e-8;
+params.Comp.offConductance  = 1e-8;
 params.Comp.setVoltage     = 1e-2;
 params.Comp.resetVoltage   = 1e-3;
 params.Comp.criticalFlux   =  0.1;

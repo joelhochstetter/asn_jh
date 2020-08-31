@@ -17,7 +17,7 @@ for ii = 1:length(dc_amplitude_on)
 		load([datestr(now, 29) '-' filename '_on-' num2str(ii, '%04d') '_off-' num2str(kk, '%04d') '.mat'], 'Output', 'SimulationOptions', 'Stimulus')
 
         
-	    c = 1./ Output.networkResistance;
+	    c = 1./ Output.networkConductance;
 	    c_off = c(floor(SimulationOptions.NumberOfIterations/2):end);
 
 	    idx = find(c_off < 1e-4);

@@ -1,4 +1,4 @@
-function Components = initializeComponents(E,Components, NodalAnal)
+function Components = initializeComponents(E,Components)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Initializes a structure which holds the characteristics and current state
 % of all the electrical elemetns in the network.
@@ -9,7 +9,7 @@ function Components = initializeComponents(E,Components, NodalAnal)
 %           must contain a field 'Component Type' which must be one of the
 %           following strings:
 %           - 'resistor' - passive element
-%           - 'memristor' - an element with a charge-dependent resistance
+%           - 'memristor' - an element with a charge-dependent conductance
 %                           function (memristance) 
 %           - 'atomicSwitch' - an element in which switching events are 
 %                              driven by voltage.
@@ -18,7 +18,7 @@ function Components = initializeComponents(E,Components, NodalAnal)
 % OUTPUT:
 % Components - a struct containing all the properties of the electrical
 %              components in the network. {identity, type, voltage, 
-%              resistance, onResistance, offResistance} are obligatory 
+%              conductance, onConductance, offConductance} are obligatory 
 %              fields, other fields depend on 'componentType'.
 %
 % REQUIRES:
@@ -34,13 +34,31 @@ function Components = initializeComponents(E,Components, NodalAnal)
 % Ido Marcus, Joel Hochstetter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+    % making new and old scripts compatible
+    if isfield(Components, 'onConductance')
+        disp('Warning: onConductance provided')
+        if ~isfield(Components, 'onConductance')
+            Components.onConductance = Components.onConductance;
+        end
+        disp(strcat2({'Using onConductance = ', Components.onConductance}));        
+    end
+
+    if isfield(Components, 'offConductance')
+        disp('Warning: offConductance provided')
+        if ~isfield(Components, 'offConductance')
+            Components.offConductance = Components.offConductance;
+        end
+        disp(strcat2({'Using onConductance = ', Components.offConductance}));        
+    end
+
     if nargin == 2
         NodalAnal = false;
     end
 
     %initialises to default values if none are given 
-    default.onResistance  = 7.77e-5;
-    default.offResistance = 1e-8;
+    default.onConductance  = 7.77e-5;
+    default.offConductance = 1e-8;
     default.filamentState = 0.0;
     
     %random initial state
@@ -50,8 +68,8 @@ function Components = initializeComponents(E,Components, NodalAnal)
     default.initBinProb       = 0.5; %binary probability of being in initRandUpper other than initRandUpper
     default.initSeed           = 0; %random seed for initial seed
     
-    default.resistance    = 1e-7; %conductance of passive elements
-    default.lowResistance = 0.1; %for passive elements with fixed resistance
+    default.conductance    = 1e-7; %conductance of passive elements
+    default.lowConductance = 0.1; %for passive elements with fixed conductance
     default.passiveRes     = []; %list of passive resistive elements
     %default.OnOrOff       = 0.0;
     default.setVoltage    = 0.3;%1e-2; %0.3
@@ -82,7 +100,7 @@ function Components = initializeComponents(E,Components, NodalAnal)
         default.setEField     = 10;
         default.resetCurrent  = 0.01;
         default.barrHeight    = 100;
-        default.onResistance  = 10;     
+        default.onConductance  = 10;     
         default.filamentWidth = default.maxFilWidth;
         default.filamentState  = default.gapDistance;
     end    
@@ -158,58 +176,43 @@ function Components = initializeComponents(E,Components, NodalAnal)
 
     
     Components.voltage       = zeros(E,1);             % (Volt)
-    Components.resistance    = ones(E,1)*100;             % (Ohm) (memory allocation)
-    Components.onResistance  = ones(E,1)*Components.onResistance;   % (Ohm) 1/(12.9 kOhm) = conductance quantum
-    Components.offResistance = ones(E,1)*Components.offResistance; %*1e7;   % (Ohm) literature values
-    
-    
-    if NodalAnal
-        sz = E;
-    else
-        Components.onResistance(end + 1)  = 100;
-        Components.offResistance(end + 1) = 100;  
-        Components.identity(end + 1)      = 0;
-        Components.voltage(end + 1)       = 0;
-        Components.resistance(end + 1)    = 0;
-        sz = E + 1;
-        if numel(Components.filamentState) == E
-            Components.filamentState = [Components.filamentState; 0.0];
-        end
-    end
+    Components.conductance    = ones(E,1)*100;             % (Ohm) (memory allocation)
+    Components.onConductance  = ones(E,1)*Components.onConductance;   % (Ohm) 1/(12.9 kOhm) = conductance quantum
+    Components.offConductance = ones(E,1)*Components.offConductance; %*1e7;   % (Ohm) literature values
 
     switch Components.ComponentType        
         case 'memristor'
-            Components.charge         = zeros(sz,1);                                   % (Coulomb)
+            Components.charge         = zeros(E,1);                                   % (Coulomb)
             % parameters of (... _/-\_/-\ ...) shape:
-            Components.lowThreshold   = rand(sz,1)*1e-8;                               % (Coulomb) (1V applied across an OFF-state switch will cause it to open up in about 0.1 sec)
-            Components.highThreshold  = (1+rand(sz,1)*1e1) .*Components.lowThreshold;  % (Coulomb)
-            Components.period         = (2+rand(sz,1))     .*Components.highThreshold; % (Coulomb) (optional, usually memristance is not a periodic function)
+            Components.lowThreshold   = rand(E,1)*1e-8;                               % (Coulomb) (1V applied across an OFF-state switch will cause it to open up in about 0.1 sec)
+            Components.highThreshold  = (1+rand(E,1)*1e1) .*Components.lowThreshold;  % (Coulomb)
+            Components.period         = (2+rand(E,1))     .*Components.highThreshold; % (Coulomb) (optional, usually memristance is not a periodic function)
             Components.OnOrOff        = []; % Dummy field only required in atomic switch
         case {'atomicSwitch', 'tunnelSwitch', 'quantCSwitch', 'hybridSwitch', 'tunnelSwitch2', 'tunnelSwitchL', 'linearSwitch'}
             % parameters of filament formation\dissociation:
-            Components.setVoltage    = ones(sz,1).*Components.setVoltage; %1e-2;    % (Volt) %% sawtooth: 0.3
-            Components.resetVoltage  = ones(sz,1).*Components.resetVoltage; %1e-3;    % (Volt) %% sawtooth: 0.01
-            Components.criticalFlux  = ones(sz,1).*Components.criticalFlux; %1e-1;  % (Volt*sec)  %% sawtooth: 1e-4
-            Components.maxFlux       = ones(sz,1).*Components.maxFlux; %1.5e-1 % (Volt*sec) %% sawtooth: 0.1
+            Components.setVoltage    = ones(E,1).*Components.setVoltage; %1e-2;    % (Volt) %% sawtooth: 0.3
+            Components.resetVoltage  = ones(E,1).*Components.resetVoltage; %1e-3;    % (Volt) %% sawtooth: 0.01
+            Components.criticalFlux  = ones(E,1).*Components.criticalFlux; %1e-1;  % (Volt*sec)  %% sawtooth: 1e-4
+            Components.maxFlux       = ones(E,1).*Components.maxFlux; %1.5e-1 % (Volt*sec) %% sawtooth: 0.1
             Components.penalty       = Components.penalty; %10
             Components.boost         = Components.boost; %10
-            Components.filamentState = ones(sz,1) .* Components.filamentState;        % (Volt*sec)
-            Components.OnOrOff       = true(sz,1); %This gets fixed upon running sim
+            Components.filamentState = ones(E,1) .* Components.filamentState;        % (Volt*sec)
+            Components.OnOrOff       = true(E,1); %This gets fixed upon running sim
             
             
         case 'resistor'
-            Components.identity      = zeros(sz,1);        % 0 for a passive resistor, 1 for an active element
+            Components.identity      = zeros(E,1);        % 0 for a passive resistor, 1 for an active element
             Components.OnOrOff       = []; % Dummy field only required in atomic swithc
             
         case 'nonlinearres'
            Components.OnOrOff        = [];
            
         case 'brownModel'
-            Components.gapDistance   = ones(sz,1).*Components.gapDistance;
-            Components.filamentState = ones(sz,1).*Components.filamentState;
-            Components.filamentWidth = ones(sz,1).*Components.filamentWidth;
-            Components.OnOrOff       = true(sz,1); 
-            Components.offResistance = Components.tunRes.*exp(Components.gapDistance .* Components.barrHeight);
+            Components.gapDistance   = ones(E,1).*Components.gapDistance;
+            Components.filamentState = ones(E,1).*Components.filamentState;
+            Components.filamentWidth = ones(E,1).*Components.filamentWidth;
+            Components.OnOrOff       = true(E,1); 
+            Components.offConductance = Components.tunRes.*exp(Components.gapDistance .* Components.barrHeight);
   
     end
     
@@ -219,10 +222,10 @@ function Components = initializeComponents(E,Components, NodalAnal)
         case 'none'
             %do nothing states already initialised 
         case 'binary'
-            r = binornd(1, Components.initBinProb, [sz,1]);
+            r = binornd(1, Components.initBinProb, [E,1]);
             Components.filamentState = (1-r)*Components.initRandLower + r*Components.initRandUpper;
         case 'uniform'
-            r = rand(sz,1);
+            r = rand(E,1);
             Components.filamentState = (1-r)*Components.initRandLower + r*Components.initRandUpper;            
     end
     

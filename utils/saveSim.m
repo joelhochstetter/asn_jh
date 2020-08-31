@@ -6,7 +6,7 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
     
     sim.Stim = Stimulus;
     %sim.Stim = rmfield(sim.Stim,'TimeAxis'); %does not same timevector as this would be double stored
-    sim.netC = Output.networkResistance;
+    sim.netC = Output.networkConductance;
     
     if SimulationOptions.megaLiteSave
         sim.Stim = rmfield(sim.Stim,'TimeAxis'); %does not same timevector as this would be double stored
@@ -59,8 +59,8 @@ function [filename] = saveSim(Stimulus,SimulationOptions,Output,Components, Conn
     sim.Comp.boost = Components.boost;
     sim.Comp.critFlux = Components.criticalFlux(1);
     sim.Comp.maxFlux = Components.maxFlux(1);
-    sim.Comp.onR = Components.onResistance(1);
-    sim.Comp.offR = Components.offResistance(1);
+    sim.Comp.onG = Components.onConductance(1);
+    sim.Comp.offG = Components.offConductance(1);
     sim.Comp.swType = swType;
     sim.Comp.nonpolar = Components.nonpolar;
     sim.Comp.stateEquation = Components.stateEquation;

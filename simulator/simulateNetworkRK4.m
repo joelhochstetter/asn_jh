@@ -19,20 +19,20 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkRK4(Connectivity, 
 % SimulationOptions - Structure that contains general simulation details that are indepedent of 
 %           the other structures (eg, dt and simulation length);
 % varargin - if not empty, contains an array of indidces in which a
-%            snapshot of the resistances and voltages in the network is
+%            snapshot of the conductances and voltages in the network is
 %            requested. This indices are based on the length of the simulation.
 % OUTPUT:
 % OutputDynamics -- is a struct with the activity of the network
-%                    .networkResistance - the resistance of the network (between the two 
+%                    .networkConductance - the conductance of the network (between the two 
 %                     contacts) as a function of time.
 %                    .networkCurrent - the overall current from contact (1) to contact (2) as a
 %                     function of time.
 % Simulationoptions -- same struct as input, with updated field names
-% snapshots - a cell array of structs, holding the resistance and voltage 
+% snapshots - a cell array of structs, holding the conductance and voltage 
 %             values in the network, at the requested time-stamps.
         
 % REQUIRES:
-% updateComponentResistance
+% updateComponentConductance
 % updateComponentState
 %
 %
@@ -57,7 +57,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkRK4(Connectivity, 
     wireVoltage        = zeros(niterations, V);
     electrodeCurrent   = zeros(niterations, numOfElectrodes);
     junctionVoltage    = zeros(niterations, E);
-    junctionResistance = zeros(niterations, E);
+    junctionConductance = zeros(niterations, E);
     junctionFilament   = zeros(niterations, E);
 
    
@@ -85,8 +85,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkRK4(Connectivity, 
         
         k1Ptr = compPtr;        
         % Calculate k1      
-        % Update resistance values:
-        updateComponentResistance(k1Ptr); 
+        % Update conductance values:
+        updateComponentConductance(k1Ptr); 
         
         %Update component voltage:
         sol = updateComponentVoltages(k1Ptr, edgeList, electrodes, Signals, LHSinit, RHS, 2*ii-1, V, E, numOfElectrodes);
@@ -97,8 +97,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkRK4(Connectivity, 
         k2Ptr = compPtr; 
         k2Ptr.comp.filamentState = (compPtr.comp.filamentState + k1Ptr.comp.filamentState)/2;
         %Calculate k2
-        % Update resistance values:
-        updateComponentResistance(k2Ptr); 
+        % Update conductance values:
+        updateComponentConductance(k2Ptr); 
         
         %Update component voltage:
         updateComponentVoltages(k2Ptr, edgeList, electrodes, Signals, LHSinit, RHS, 2*ii, V, E, numOfElectrodes);
@@ -111,8 +111,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkRK4(Connectivity, 
         k3Ptr.comp.filamentState = (compPtr.comp.filamentState + k2Ptr.comp.filamentState)/2;
         
         %Calculate k3
-        % Update resistance values:
-        updateComponentResistance(k3Ptr); 
+        % Update conductance values:
+        updateComponentConductance(k3Ptr); 
         
         %Update component voltage:
         updateComponentVoltages(k3Ptr, edgeList, electrodes, Signals, LHSinit, RHS, 2*ii, V, E, numOfElectrodes);
@@ -125,8 +125,8 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkRK4(Connectivity, 
         %Filament state is just same as previous
         
         %Calculate k4
-        % Update resistance values:
-        updateComponentResistance(k4Ptr); 
+        % Update conductance values:
+        updateComponentConductance(k4Ptr); 
         
         %Update component voltage:
         updateComponentVoltages(k4Ptr, edgeList, electrodes, Signals, LHSinit, RHS, 2*ii+1, V, E, numOfElectrodes);
@@ -151,22 +151,22 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkRK4(Connectivity, 
         wireVoltage(ii,:)        = sol(1:V);
         electrodeCurrent(ii,:)   = sol(V+1:end);
         junctionVoltage(ii,:)    = compPtr.comp.voltage;
-        junctionResistance(ii,:) = compPtr.comp.resistance;
+        junctionConductance(ii,:) = compPtr.comp.conductance;
         junctionFilament(ii,:)   = compPtr.comp.filamentState;
         
         
     end
     
-    % Calculate network resistance and save:
+    % Calculate network conductance and save:
     OutputDynamics.electrodeCurrent   = electrodeCurrent;
     OutputDynamics.wireVoltage        = wireVoltage;
     
     OutputDynamics.storevoltage       = junctionVoltage;
-    OutputDynamics.storeCon           = junctionResistance;
+    OutputDynamics.storeCon           = junctionConductance;
     OutputDynamics.lambda             = junctionFilament;
 
-    % Calculate network resistance and save:
+    % Calculate network conductance and save:
     OutputDynamics.networkCurrent    = electrodeCurrent(:, 2);
-    OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent ./ Signals{1}(2:2:end));
+    OutputDynamics.networkConductance = abs(OutputDynamics.networkCurrent ./ Signals{1}(2:2:end));
     
 end

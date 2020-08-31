@@ -12,7 +12,7 @@
 %% Correlation analysis
 swLam = Output.lambda(:,1:Connectivity.NumberOfEdges);
 swV   = Output.storevoltage(:,1:Connectivity.NumberOfEdges);
-con   = Output.networkResistance;
+con   = Output.networkConductance;
 lam   = abs(swLam(1:floor(end/2),:));
 vol   = abs(swV(1:floor(end/2),:));
 adjMat = Connectivity.weights;
@@ -115,12 +115,12 @@ legend 'max' 'min' 'mean' 'std'
 %% We calculate the statistical mechanical correlation function'
 %{
     <s1(0).s2(r)> - <s1(0)><s2(r)>
-    Here we use resistance
+    Here we use conductance
 
 %}
 
-Ron  = Components.onResistance(1);
-Roff = Components.offResistance(1);
+Ron  = Components.onConductance(1);
+Roff = Components.offConductance(1);
 swR  = Output.storeCon(end,1:end-1);
 swR = Ron * swR;
 

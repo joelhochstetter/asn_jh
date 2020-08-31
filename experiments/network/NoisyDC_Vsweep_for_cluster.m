@@ -93,8 +93,8 @@ function NoisyDC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, co
 
     %Set Components
     params.Comp.ComponentType  = 'tunnelSwitchL'; %tunnelSwitch2
-    params.Comp.onResistance   = 7.77e-5;
-    params.Comp.offResistance  = 1e-8;
+    params.Comp.onConductance   = 7.77e-5;
+    params.Comp.offConductance  = 1e-8;
     params.Comp.setVoltage     = 1e-2;
     params.Comp.resetVoltage   = Vreset; %5e-3;
     params.Comp.criticalFlux   =  0.01;

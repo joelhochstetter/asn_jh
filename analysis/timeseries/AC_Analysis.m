@@ -94,7 +94,7 @@ title 'DC and Wait - Beta'
 
 
 t = SimulationOptions.TimeVector;
-c= 1./Output.networkResistance;
+c= 1./Output.networkConductance;
 lam_av = mean(abs(Output.lambda.'));
 lam_std = std(abs(Output.lambda.'));
 t1 = t(10000:end);

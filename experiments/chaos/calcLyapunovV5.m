@@ -58,6 +58,9 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     params.Comp.maxFlux = sim{1}.Comp.maxFlux;
     params.Comp.boost = sim{1}.Comp.boost;
     params.Comp.penalty = sim{1}.Comp.pen;
+    params.Comp.onConductance = sim{1}.Comp.onG;
+    params.Comp.offConductance = sim{1}.Comp.offG;
+    
     params.Comp.nonpolar = useNp;
     
 	

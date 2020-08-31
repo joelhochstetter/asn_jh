@@ -85,15 +85,15 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
             %If lambda > lambda max set to lambdamax
             compPtr.comp.filamentState(compPtr.comp.filamentState >  compPtr.comp.maxFlux) =  compPtr.comp.maxFlux(compPtr.comp.filamentState >  compPtr.comp.maxFlux);
 
-            %current = abs(compPtr.comp.voltage).* compPtr.comp.resistance;
+            %current = abs(compPtr.comp.voltage).* compPtr.comp.conductance;
             %compPtr.comp.filamentState(current >= fuseCurrent) = compPtr.comp.filamentState(current >= fuseCurrent)/1.1;
             %compPtr.comp.filamentState(abs(compPtr.comp.voltage) >= fuseVoltage) =  compPtr.comp.filamentState(abs(compPtr.comp.voltage) >= fuseVoltage)/1.1;
-            power = abs(compPtr.comp.voltage).^2 .* compPtr.comp.resistance;
+            power = abs(compPtr.comp.voltage).^2 .* compPtr.comp.conductance;
             compPtr.comp.filamentState(power >= compPtr.comp.fusePower) = compPtr.comp.filamentState(power >= compPtr.comp.fusePower)/compPtr.comp.fuseFactor;
      
         case 'HPnonpolar'
             compPtr.comp.filamentState = compPtr.comp.filamentState + ...
-                     (compPtr.comp.resistance./compPtr.comp.onResistance) .* ...
+                     (compPtr.comp.conductance./compPtr.comp.onConductance) .* ...
                      abs(compPtr.comp.voltage) * dt - compPtr.comp.resetVoltage ./ ...
                      compPtr.comp.maxFlux .* compPtr.comp.filamentState * dt;
                  
@@ -139,7 +139,7 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
         case 'brownModel'
             onOrOff = compPtr.comp.OnOrOff;
             electricField = abs(compPtr.comp.voltage./compPtr.comp.filamentState);
-            current       = abs(compPtr.comp.voltage.*compPtr.comp.resistance);
+            current       = abs(compPtr.comp.voltage.*compPtr.comp.conductance);
             
             %update filament length
             compPtr.comp.filamentState(electricField > compPtr.comp.setEField) = ...
@@ -162,12 +162,12 @@ function [local_lambda, local_voltage] = updateComponentState(compPtr, dt)
             %switched on:
             switchOn = compPtr.comp.OnOrOff > onOrOff;
             compPtr.comp.filamentWidth(switchOn) = compPtr.comp.maxFilWidth(switchOn);
-%             compPtr.comp.resistance(switchOn) = compPtr.comp.onResistance(switchOn);
+%             compPtr.comp.conductance(switchOn) = compPtr.comp.onConductance(switchOn);
             
             %switched off:
             switchOff = compPtr.comp.OnOrOff < onOrOff;         
             compPtr.comp.filamentState(switchOff) = compPtr.comp.gapDistance(switchOff);
-%             compPtr.comp.resistance(switchOff) = compPtr.comp.offResistance(switchOff);
+%             compPtr.comp.conductance(switchOff) = compPtr.comp.offConductance(switchOff);
             
             
     end          

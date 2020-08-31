@@ -1,10 +1,10 @@
-function plotResults(resistance,current,Stimulus)
+function plotResults(conductance,current,Stimulus)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plots the results of the simulation (including Fourier analysis and some
 % statistics).
 %
 % ARGUMENTS: 
-% resistance, current - the results of the simulation.
+% conductance, current - the results of the simulation.
 % Stimulus - the external voltage signal.
 %
 % OUTPUT:
@@ -16,15 +16,14 @@ function plotResults(resistance,current,Stimulus)
 %
 % USAGE:
 %{
-    [resistance, current, snapshots] = simulateNetwork(Equations, Components, Stimulus)
-    plotResults(resistance, current, Stimulus);
+    [conductance, current, snapshots] = simulateNetwork(Equations, Components, Stimulus)
+    plotResults(conductance, current, Stimulus);
 %}
 %
 % Authors:
 % Ido Marcus
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     cplot2 = true;
-    conductance = resistance;
     figure;
     switch Stimulus.BiasType
 %        case {'DC'}

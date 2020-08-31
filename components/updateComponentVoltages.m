@@ -2,7 +2,7 @@ function sol = updateComponentVoltages(compPtr, edgeList, electrodes, Signals, L
 %Updates voltages for components in Ruomin's version of the code
 
 
-        componentConductance = compPtr.comp.resistance;
+        componentConductance = compPtr.comp.conductance;
         
         % Get LHS (matrix) and RHS (vector) of equation:
         Gmat = zeros(V,V);

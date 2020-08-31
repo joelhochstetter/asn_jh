@@ -1,4 +1,4 @@
-function result = onOrOff(AdjacencyMatrix, OnOrOff, contact)
+function result = onOrOff(Connectivity, OnOrOff, contact)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Determines whether the network is in a collective ON or in a collective
 % OFF state. The network's collective state is defined to be "ON" iff there 
@@ -30,7 +30,7 @@ function result = onOrOff(AdjacencyMatrix, OnOrOff, contact)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Find the edges which correspond to OFF switches:
-badPairs = Connectivity.EdgeList(~Snapshot.OnOrOff);
+badPairs = Connectivity.EdgeList(~OnOrOff);
     % Reminder: EdgeList is a 2XE matrix of vertex indices, where each 
     % column represents an edge. The index of an edge is defined as the 
     % index of the corresponding column in this list.

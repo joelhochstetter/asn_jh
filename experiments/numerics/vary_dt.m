@@ -33,7 +33,7 @@ params.SimOpt.T  = 60;
 
 %Set Components
 params.Comp.ComponentType  = 'tunnelSwitch'; %'tunnelSwitch'
-params.Comp.offResistance  = 1e-9;
+params.Comp.offConductance  = 1e-9;
 params.Comp.setVoltage     = 1e-2;
 params.Comp.resetVoltage   = 1e-3;
 params.Comp.criticalFlux   =  0.1;

@@ -20,20 +20,20 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkUncorrelated(Conne
 % SimulationOptions - Structure that contains general simulation details that are indepedent of 
 %           the other structures (eg, dt and simulation length);
 % varargin - if not empty, contains an array of indidces in which a
-%            snapshot of the resistances and voltages in the network is
+%            snapshot of the conductances and voltages in the network is
 %            requested. This indices are based on the length of the simulation.
 % OUTPUT:
 % OutputDynamics -- is a struct with the activity of the network
-%                    .networkResistance - the resistance of the network (between the two 
+%                    .networkConductance - the conductance of the network (between the two 
 %                     contacts) as a function of time.
 %                    .networkCurrent - the overall current from contact (1) to contact (2) as a
 %                     function of time.
 % Simulationoptions -- same struct as input, with updated field names
-% snapshots - a cell array of structs, holding the resistance and voltage 
+% snapshots - a cell array of structs, holding the conductance and voltage 
 %             values in the network, at the requested time-stamps.
         
 % REQUIRES:
-% updateComponentResistance
+% updateComponentConductance
 % updateComponentState
 %
 % USAGE:
@@ -73,7 +73,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkUncorrelated(Conne
 
     if SimulationOptions.saveEventsOnly == true
         events  = zeros(niterations, 1);
-        componentConductance = compPtr.comp.resistance;
+        componentConductance = compPtr.comp.conductance;
     end
     
     %% Solve equation systems for every time step and update:
@@ -81,13 +81,13 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkUncorrelated(Conne
         % Show progress:
         %progressBar(ii,niterations);
 
-        onOrOffOld   = compPtr.comp.resistance > 1.1*Components.offResistance(1);      
+        onOrOffOld   = compPtr.comp.conductance > 1.1*Components.offConductance(1);      
         
-        % Update resistance values:
-        updateComponentResistance(compPtr); 
-        componentConductance = compPtr.comp.resistance;
+        % Update conductance values:
+        updateComponentConductance(compPtr); 
+        componentConductance = compPtr.comp.conductance;
         
-        onOrOffNew   = componentConductance > 1.1*Components.offResistance(1);     
+        onOrOffNew   = componentConductance > 1.1*Components.offConductance(1);     
         if SimulationOptions.saveEventsOnly == true && SimulationOptions.saveFilStateOnly == false
             events(ii) = sum(abs(onOrOffNew - onOrOffOld));
         end
@@ -134,18 +134,18 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkUncorrelated(Conne
 
     end
     
-    % Calculate network resistance and save:
+    % Calculate network conductance and save:
     OutputDynamics.electrodeCurrent   = electrodeCurrent;
     OutputDynamics.wireVoltage        = sol(1:V)';
     
     OutputDynamics.storevoltage       = compPtr.comp.voltage';
-    OutputDynamics.storeCon           = compPtr.comp.resistance';
+    OutputDynamics.storeCon           = compPtr.comp.conductance';
     
     if SimulationOptions.saveFilStateOnly == true
         if SimulationOptions.saveEventsOnly == true
             d = (Components.criticalFlux(1) - abs(filamentStates))*5/Components.criticalFlux(1);
             d(d < 0.0) = 0.0;
-            switchC = tunnelSwitchL(d, 0.81, 0.17, Components.offResistance(1), Components.onResistance(1));
+            switchC = tunnelSwitchL(d, 0.81, 0.17, Components.offConductance(1), Components.onConductance(1));
             dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
             dGG = abs(dG./switchC)/SimulationOptions.dt;
             events = sum(thresholdCrossingPeaks(dGG, 1e-3),2);
@@ -162,9 +162,9 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkUncorrelated(Conne
         OutputDynamics.events  = events;
     end
 
-    % Calculate network resistance and save:
+    % Calculate network conductance and save:
     OutputDynamics.networkCurrent    =  electrodeCurrent(:, 2:end);
-    OutputDynamics.networkResistance = abs(OutputDynamics.networkCurrent(:,end) ./ Signals{1});
+    OutputDynamics.networkConductance = abs(OutputDynamics.networkCurrent(:,end) ./ Signals{1});
 
 
     

@@ -23,7 +23,7 @@ params.Stim.Amplitude    =  0.1;
 
 %Set Components
 params.Comp.ComponentType  = 'tunnelSwitch2';
-params.Comp.offResistance  = 1e-8;
+params.Comp.offConductance  = 1e-8;
 params.Comp.setVoltage     = 1e-2;
 params.Comp.resetVoltage   = 1e-3;
 params.Comp.criticalFlux   = 0.10;

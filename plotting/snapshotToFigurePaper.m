@@ -6,7 +6,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
 % currents distribution and the dissipation (heat-map).
 %
 % ARGUMENTS: 
-% snapshot - A struct containing the voltage, resistance, etc. of the 
+% snapshot - A struct containing the voltage, conductance, etc. of the 
 %            electrical components in the network, at a particular 
 %            timestamp.
 % contact - the indices of the two wires that serve as contacts.
@@ -284,7 +284,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
        
 
         % Calculate currents:
-        currents = 5e3*full(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
+        currents = 5e3*full(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Conductance(1:connectivity.NumberOfEdges)); % (nA)
 
         %Lengths of quiver vectors
         sectionCurrentX = (p.XData(connectivity.EdgeList(2,:)) -  p.XData(connectivity.EdgeList(1,:))).*currents'/axesLimits.CurrentArrowScaling;
@@ -305,7 +305,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         % Defaults order (if multiple are suggested): diss > lam > VDrop
 
         if whatToPlot.Dissipation
-            p.EdgeCData = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2./(snapshot.Resistance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
+            p.EdgeCData = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2./(snapshot.Conductance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
             cbar  = colorbar;    
             cbar.Label.String = 'P (nW)';
             %upperLimit = 0.15;
@@ -314,7 +314,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             if whatToPlot.Weights
                 edgeLabels = cell(numedges(G),1);
                 for i = 1:numedges(G)
-                   edgeLabels{i} = num2str(1e9*(snapshot.Voltage(i)).^2./(snapshot.Resistance(i)), '%.2e');
+                   edgeLabels{i} = num2str(1e9*(snapshot.Voltage(i)).^2./(snapshot.Conductance(i)), '%.2e');
                 end
                
                 labeledge(p,1:numedges(G),edgeLabels)                      
@@ -404,7 +404,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         
         elseif whatToPlot.Conductance
             % calculate power consumption:
-            p.EdgeCData = log10(snapshot.Resistance(1:connectivity.NumberOfEdges)/7.77e-5);          
+            p.EdgeCData = log10(snapshot.Conductance(1:connectivity.NumberOfEdges)/7.77e-5);          
             cbar  = colorbar;
             caxis([log10(axesLimits.ConCbar(1)/7.77e-5),round(log10(axesLimits.ConCbar(2)/7.77e-5))]);
             %caxis([log10(axesLimits.ConCbar(1)),round(log10(axesLimits.ConCbar(2)))]);
@@ -420,7 +420,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             colormap('parula');
 
         elseif whatToPlot.JnCurrents
-            currents =(abs(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges))); % (nA)
+            currents =(abs(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Conductance(1:connectivity.NumberOfEdges))); % (nA)
             p.EdgeCData = currents;
 
             if ~isfield(axesLimits, 'CurrentCbar')
@@ -512,7 +512,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
     %% Effective currents
         if whatToPlot.EffectiveCurrents
             % Calculate currents:
-            currents = (snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
+            currents = (snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Conductance(1:connectivity.NumberOfEdges)); % (nA)
             wireCurrents  = zeros(connectivity.NumberOfNodes,1);
             % Wire by wire:
             for currWire=1 : connectivity.NumberOfNodes            
@@ -578,7 +578,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             junctionSize = 50;
 
             % calculate power consumption:
-            %power = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2./(snapshot.Resistance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
+            %power = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2./(snapshot.Conductance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
             power = abs(snapshot.filamentState);
             % if possible, give different marker to open switches, otherwise
             % just plot all the switches in the same manner:
@@ -641,7 +641,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             junctionSize = 50;
 
             % calculate power consumption:
-            power = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2.*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
+            power = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2.*(snapshot.Conductance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
             
             
             % if possible, give different marker to open switches, otherwise
@@ -699,7 +699,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             junctionSize = 50;
 
             % calculate power consumption:
-            %power = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2./(snapshot.Resistance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
+            %power = 1e9*(snapshot.Voltage(1:connectivity.NumberOfEdges)).^2./(snapshot.Conductance(1:connectivity.NumberOfEdges)); % Joule heating is V^2/R.
             power = abs(snapshot.Voltage(1:connectivity.NumberOfEdges));
             % if possible, give different marker to open switches, otherwise
             % just plot all the switches in the same manner:
@@ -766,7 +766,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             numSectionsDone = 0;
 
             % Calculate currents:
-            currents = 1e6*(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Resistance(1:connectivity.NumberOfEdges)); % (nA)
+            currents = 1e6*(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Conductance(1:connectivity.NumberOfEdges)); % (nA)
 
             % Calculate wire angles ([-pi/2,pi/2]):
                     % first [0,pi]

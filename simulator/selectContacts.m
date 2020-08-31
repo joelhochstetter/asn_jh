@@ -97,3 +97,6 @@ function SimulationOptions = selectContacts(Connectivity, SimulationOptions)
             
     end
     SimulationOptions.numOfElectrodes = numel(SimulationOptions.ContactNodes);
+    
+    
+end

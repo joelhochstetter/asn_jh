@@ -1,7 +1,7 @@
-function resistance = atomicSwitch(lambda, lambdaCrit, Ron, Roff)
-    resistance = zeros(size(lambda));
-    resistance(lambda < lambdaCrit) = Roff; 
-    resistance(lambda >= lambdaCrit) = Ron;
+function conductance = atomicSwitch(lambda, lambdaCrit, Con, Coff)
+    conductance = zeros(size(lambda));
+    conductance(lambda < lambdaCrit) = Coff; 
+    conductance(lambda >= lambdaCrit) = Con;
     
 
 end

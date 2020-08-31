@@ -55,7 +55,7 @@ function [initStates, netC, spE] = equilibriateSimsV1(numInitStates, folder, nam
 
     %Set Components
     params.Comp.ComponentType  = 'tunnelSwitch';
-    params.Comp.offResistance  = 1e-7;
+    params.Comp.offConductance  = 1e-7;
     params.Comp.setVoltage     = 1e-2;
     params.Comp.resetVoltage   = 1e-3;
     params.Comp.criticalFlux   =  0.1;
@@ -77,15 +77,15 @@ function [initStates, netC, spE] = equilibriateSimsV1(numInitStates, folder, nam
         
         u = multiRun(p);  
         initStates(: ,i) = u{1}.Output.lambda(end, 1:E);
-        netC(i)          = u{1}.Output.networkResistance(end);
+        netC(i)          = u{1}.Output.networkConductance(end);
         j = 1;
         sprintf('%d %d\n', i, j);
         
-        while ~checkDCEquilibrium(1e-12, u{1}.Output.networkResistance, u{1}.Output.lambda) && j < 10
+        while ~checkDCEquilibrium(1e-12, u{1}.Output.networkConductance, u{1}.Output.lambda) && j < 10
             p.Comp.filamentState = initStates(: ,i);
             u = multiRun(p);  
             initStates(: ,i) = u{1}.Output.lambda(end, 1:E);
-            netC(i)          = u{1}.Output.networkResistance(end); 
+            netC(i)          = u{1}.Output.networkConductance(end); 
             j = j + 1;
             sprintf('%d %d\n', i, j);
         end
@@ -96,7 +96,7 @@ function [initStates, netC, spE] = equilibriateSimsV1(numInitStates, folder, nam
         p.Comp.filamentState     = initStates(: ,i);
         u = multiRun(p);  
         initStates(: ,i) = u{1}.Output.lambda(end, 1:E);
-        netC(i)          = u{1}.Output.networkResistance(end); 
+        netC(i)          = u{1}.Output.networkConductance(end); 
         
         
     end

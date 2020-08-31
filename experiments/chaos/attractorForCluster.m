@@ -82,8 +82,8 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
 
     %Set Components
     params.Comp.ComponentType  = 'tunnelSwitchL'; %tunnelSwitch2
-    params.Comp.onResistance   = 7.77e-5;
-    params.Comp.offResistance   = 7.77e-8;
+    params.Comp.onConductance   = 7.77e-5;
+    params.Comp.offConductance   = 7.77e-8;
     params.Comp.setVoltage      = 1e-2;
     params.Comp.resetVoltage  = 1e-2;
     params.Comp.criticalFlux   =  0.01;

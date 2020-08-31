@@ -22,9 +22,9 @@ Connectivity      = tn0.Connectivity;
 
 %% Plot conductance power spectrum
 figure;
-semilogy(qc1.SimulationOptions.TimeVector, qc1.Output.networkResistance)
+semilogy(qc1.SimulationOptions.TimeVector, qc1.Output.networkConductance)
 hold on 
-semilogy(tn1.SimulationOptions.TimeVector, tn1.Output.networkResistance)
+semilogy(tn1.SimulationOptions.TimeVector, tn1.Output.networkConductance)
 ylabel 'G (S)'
 xlabel 't (s)'
 legend 'qc' 'tun'
@@ -139,7 +139,7 @@ plot(timeShift,sum(turnOff,2));
 plot(timeShift,sum(turnOn,2));
 plot(timeVec,isCurrentPath)
 yyaxis right;
-plot(timeVec,Output.networkResistance);
+plot(timeVec,Output.networkConductance);
 ylabel 'Conductance (S)'
 legend 'lie on current' 'on or off' 'switch changes' 'turn off' 'turn on' 'isCurrent Path' 'conductance';
 title 'Tunnelling'
@@ -174,7 +174,7 @@ xlabel 'time (s)'
 legend 'On current path' 'Off current path'
 title 'Tunnel - Current path are stable'
 yyaxis right
-plot(timeVec,Output.networkResistance)
+plot(timeVec,Output.networkConductance)
 ylabel 'Conductance (S)'
 
 figure;
@@ -186,7 +186,7 @@ plot(timeShift,sum(turnOff,2));log10
 plot(timeShift,sum(turnOn,2));
 plot(timeVec,isCurrentPath)
 yyaxis right;
-plot(timeVec,Output.networkResistance);
+plot(timeVec,Output.networkConductance);
 ylabel 'Conductance (S)'
 legend('lie on current','on or off', 'switch changes', 'turn off', 'turn on', 'isCurrent Path', 'conductance', 'location', 'NorthWest');
 title 'Tunnel'

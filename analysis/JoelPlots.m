@@ -2,7 +2,7 @@
 
 figure
 yyaxis left
-plot(SimulationOptions.TimeVector, Output.networkResistance)
+plot(SimulationOptions.TimeVector, Output.networkConductance)
 yyaxis right
 plot(SimulationOptions.TimeVector, Stimulus.Signal)
 
@@ -11,7 +11,7 @@ plot(SimulationOptions.TimeVector, Stimulus.Signal)
 %% Plots average Lambda
 
 figure
-plot(max(abs(Output.lambda'))', Output.networkResistance)
+plot(max(abs(Output.lambda'))', Output.networkConductance)
 xlabel 'ave(abs(lambda))'
 ylabel 'Network Conductance'
 figure
@@ -79,13 +79,13 @@ plot(sum(changeOn,2))
 
 
 
-%% Change in resistance
+%% Change in conductance
 figure;
 subplot(2,1,1);
 plot(Stimulus.TimeAxis(1:end-1),sum((changeOn),2))
 ylabel 'Number of switches changing at a given timestep'
 yyaxis right
-plot(Stimulus.TimeAxis, Output.networkResistance);
+plot(Stimulus.TimeAxis, Output.networkConductance);
 xlabel 'Time (s)'
 ylabel 'Conductance (S)'
 title 'DC 0.1V - Activation - Tunnel'
@@ -93,7 +93,7 @@ subplot(2,1,2)
 plot(Stimulus.TimeAxis(1:end-1),sum((changeOn),2))
 ylabel 'Number of switches changing at a given timestep'
 yyaxis right
-plot(Stimulus.TimeAxis, Output.networkResistance);
+plot(Stimulus.TimeAxis, Output.networkConductance);
 xlabel 'Time (s)'
 ylabel 'Conductance (S)'
 xlim([0,100])
@@ -162,7 +162,7 @@ xlabel 't'
 ylabel '\Delta |n_{on} - n_off|'
 %{
 %%Plot dC/dt
-C = 1./Output.networkResistance;
+C = 1./Output.networkConductance;
 dCdL = diff(C)/0.001/1.5*100;
 t1 = 1.5*SimulationOptions.dt:SimulationOptions.dt:SimulationOptions.T;
 t1 = 1.5*t1/100;
@@ -185,10 +185,10 @@ len = len(2) - 1;
 t = SimulationOptions.dt*0.5:SimulationOptions.dt:(SimulationOptions.T-1001*SimulationOptions.dt);
 
 for i = 1:len-1000
-    size(log10(snapshots{1,i+1}.Resistance ./ snapshots{1,i}.Resistance));
-    lchange(i,:) = max(snapshots{1,i+1000}.Resistance ./ snapshots{1,i}.Resistance);
-    lchastd(i,:) = std(log10(snapshots{1,i+1}.Resistance ./ snapshots{1,i}.Resistance));
-    totalrc(i)   = max(snapshots{1,i+1}.Resistance ./ snapshots{1,i}.Resistance);
+    size(log10(snapshots{1,i+1}.Conductance ./ snapshots{1,i}.Conductance));
+    lchange(i,:) = max(snapshots{1,i+1000}.Conductance ./ snapshots{1,i}.Conductance);
+    lchastd(i,:) = std(log10(snapshots{1,i+1}.Conductance ./ snapshots{1,i}.Conductance));
+    totalrc(i)   = max(snapshots{1,i+1}.Conductance ./ snapshots{1,i}.Conductance);
     resstuf(i)   = max(snapshots{1,i}.Voltage);
     %nchange(i) = sum(snapshots{1,i}.OnOrOff);
 end 
@@ -201,7 +201,7 @@ plot(t, lchange)
 xlabel 'Time (s)'
 ylabel 'Maximum switch change ratio per ms'
 yyaxis right
-semilogy(SimulationOptions.TimeVector,Output.networkResistance)
+semilogy(SimulationOptions.TimeVector,Output.networkConductance)
 ylabel 'Conductance (S)'
 title '1.5DC Ido Model'
 
@@ -235,7 +235,7 @@ t = SimulationOptions.dt*0.5:SimulationOptions.dt:(SimulationOptions.T);
 
 for i = 1:len
     Vs(i,:) = abs(snapshots{i}.Voltage(1:end-1));
-    Cs(i,:) = snapshots{i}.Resistance(1:end-1);
+    Cs(i,:) = snapshots{i}.Conductance(1:end-1);
     Fs(i,:) = snapshots{i}.filamentState(1:end-1);
 end 
 
