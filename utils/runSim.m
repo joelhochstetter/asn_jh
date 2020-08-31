@@ -271,7 +271,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         Signals{2} = zeros(2*SimulationOptions.NumberOfIterations + 1,1);
 
         SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-        Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);    
+        Components = initializeComponents(Connectivity.NumberOfEdges,Components);    
         
         
     else
@@ -283,7 +283,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             Signals{2} = zeros(SimulationOptions.NumberOfIterations,1);
 
             SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-            Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);
+            Components = initializeComponents(Connectivity.NumberOfEdges,Components);
         
         elseif SimulationOptions.oneSrcMultiDrn %single source multiple drains
             %First electrode in contacts is source. Rest are drains
@@ -296,7 +296,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             end
 
             SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-            Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);            
+            Components = initializeComponents(Connectivity.NumberOfEdges,Components);            
         
         elseif SimulationOptions.MultiSrcOneDrn %single source multiple drains
             %First electrode in contacts is source. Rest are drains
@@ -309,7 +309,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             end
 
             SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-            Components = initializeComponents(Connectivity.NumberOfEdges,Components, true);            
+            Components = initializeComponents(Connectivity.NumberOfEdges,Components);            
 
         end 
 
