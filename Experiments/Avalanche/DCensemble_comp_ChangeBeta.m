@@ -7,7 +7,7 @@ saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
 binSize = [-0.5,-1,-2]';%[-1, 10, 50, 100];
 
-bvals = [0.01,0.05,0.1,0.5,1.0]';%[0.2:0.2:1.0]';
+bvals = [0.001,0.005,0.01,0.05,0.1,0.5,1.0]';%[0.2:0.2:1.0]';
 
 N = numel(bvals);
 Nbs = numel(binSize);

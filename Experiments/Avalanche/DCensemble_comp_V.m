@@ -7,10 +7,10 @@ baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
-binSize = [-1,10, 50, 100]';
+binSize = [-2, -1, -0.5];%[-1,10, 50, 100]';
 Nbs = numel(binSize);
 % Vvals = [0.33, 0.45, 0.562, 0.675, 0.787, 0.9]';
-Vvals = [0.7:0.1:1.8]';
+Vvals = sort([0.7:0.1:1.8, 1.05]');
 % Vvals = [2:5]';
 Vstar = Vvals;
 N = numel(Vvals);
@@ -76,18 +76,18 @@ for j = 1:Nbs
     for i = 1:N
         meanG(i,j) = critResults{i,j}.net.meanG;
         V(i,j) = mean(critResults{i,j}.net.V);
-        PSDbeta(i,j) = critResults{i,j}.PSD.beta;
-        PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
+%         PSDbeta(i,j) = critResults{i,j}.PSD.beta;
+%         PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
         numEvents(i,j) = critResults{i,j}.events.numEvents;
         meanIEI(i,j) = critResults{i,j}.IEI.meanIEI;
         IEItau(i,j) = critResults{i,j}.IEI.tau;
         IEIdta(i,j) = critResults{i,j}.IEI.sigmaTau;
         IEIbins{i,j} = critResults{i,j}.IEI.bins;
         IEIprob{i,j} = critResults{i,j}.IEI.prob;
-        dGalpha(i,j) = critResults{i,j}.dG.alpha;
-        dGdalph(i,j) = critResults{i,j}.dG.dalph;
-        dGbins{i,j} = critResults{i,j}.dG.bins;
-        dGprob{i,j} = critResults{i,j}.dG.prob;
+%         dGalpha(i,j) = critResults{i,j}.dG.alpha;
+%         dGdalph(i,j) = critResults{i,j}.dG.dalph;
+%         dGbins{i,j} = critResults{i,j}.dG.bins;
+%         dGprob{i,j} = critResults{i,j}.dG.prob;
         Stau(i,j) = critResults{i,j}.avalanche.sizeFit.tau;
         Sdta(i,j) = critResults{i,j}.avalanche.sizeFit.dTau;
         Slct(i,j) = critResults{i,j}.avalanche.sizeFit.lc;
@@ -119,27 +119,27 @@ for j = 1:Nbs
     end
 
     %% Comparison by parameter
-    %% dG
-    figure('visible', 'off');
-    errorbar(Vstar, dGalpha(:,j), dGdalph(:,j), '--o');
-    xlabel('V^*')
-    ylabel('\alpha')
-    yyaxis right;
-    semilogy(Vstar, meanG(:,j), '-o');
-    ylabel('<G>')
-    vline(1, 'k')
-    title('\Delta G exponent')
-    print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
-
-
-
-    %% PSD
-    figure('visible', 'off');
-    errorbar(Vstar, PSDbeta(:,j), PSDdbet(:,j), '--o');
-    xlabel('V^*')
-    ylabel('\beta')
-    title('PSD exponent')
-    print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
+%     %% dG
+%     figure('visible', 'off');
+%     errorbar(Vstar, dGalpha(:,j), dGdalph(:,j), '--o');
+%     xlabel('V^*')
+%     ylabel('\alpha')
+%     yyaxis right;
+%     semilogy(Vstar, meanG(:,j), '-o');
+%     ylabel('<G>')
+%     vline(1, 'k')
+%     title('\Delta G exponent')
+%     print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
+% 
+% 
+% 
+%     %% PSD
+%     figure('visible', 'off');
+%     errorbar(Vstar, PSDbeta(:,j), PSDdbet(:,j), '--o');
+%     xlabel('V^*')
+%     ylabel('\beta')
+%     title('PSD exponent')
+%     print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
 
 
 
@@ -215,17 +215,17 @@ for j = 1:Nbs
 
 
     %% dG
-    figure('visible', 'off');
-    for i = 1:N 
-        loglog(dGbins{i,j}, dGprob{i,j});
-        hold on;
-    end
-    xlabel('\Delta G')
-    ylabel('P(\Delta G)')
-    title('\Delta G')
-    leg = legend(num2str(Vstar,'%.2f'), 'location', 'best');
-    title(leg,'V^*')
-    print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
+%     figure('visible', 'off');
+%     for i = 1:N 
+%         loglog(dGbins{i,j}, dGprob{i,j});
+%         hold on;
+%     end
+%     xlabel('\Delta G')
+%     ylabel('P(\Delta G)')
+%     title('\Delta G')
+%     leg = legend(num2str(Vstar,'%.2f'), 'location', 'best');
+%     title(leg,'V^*')
+%     print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
 
 
 
@@ -287,7 +287,7 @@ for j = 1:N
     mkdir(saveFolder);
     
     %% Comparison by parameter
-    binSize(1) = meanIEI(j,1);
+    binSize(binSize < 0) = abs(binSize(binSize < 0))*meanIEI(j,1);
 
     %% Size
     figure('visible', 'off');

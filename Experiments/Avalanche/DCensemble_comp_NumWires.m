@@ -8,8 +8,8 @@ cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
 % binSize = [-1, 10, 50, 100];
-binSize = [-0.5,-1.0,-2.0];
-Nvals = [1300:100:1600]';
+binSize = [-0.5,-1.0,-2.0]';
+Nvals = [1300:100:1600, 2000]';
 
 % Nvals = [600:100:1000]';
 
@@ -287,7 +287,7 @@ for j = 1:N
     mkdir(saveFolder);
     
     %% Comparison by parameter
-%     binSize(1) = meanIEI(j,1);
+    binSize(binSize < 0) = abs(binSize(binSize < 0))*meanIEI(j,1);
 
     %% Size
     figure('visible', 'off');

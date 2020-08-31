@@ -1,16 +1,16 @@
 %%
 close all;
 % baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/FixedWires/';
-baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/kingSims/FixedWires/';
+% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/kingSims/FixedWires/';
 % 
-% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedDensity/';
+baseFolder = '~/Documents/NeuroNanoAI/Avalanche/FixedDensity/';
 % baseFolder = '~/Documents/NeuroNanoAI/Avalanche/kingSims/FixedDensity/';
 
 % baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangePLength/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
-binSize = -1;%[-1, 10, 50, 100]';
+binSize = [-0.5,-1,-2];%[-1, 10, 50, 100]';
 
 Lvals = [40:10:80]';
 % Lvals = [5:10:45]';
@@ -68,8 +68,8 @@ for j = 1:Nbs
     mkdir(saveFolder);
 
     for i = 1:numel(Lvals)
-        critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i), '%04.f'), '/bs', bs, '/critResults.mat'}));
-%         critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
+%         critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i), '%04.f'), '/bs', bs, '/critResults.mat'}));
+        critResults{i,j} = load(strcat2({baseFolder, 'Length', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
 %         critResults{i,j} = load(strcat2({baseFolder, 'ChangePLength', num2str(Lvals(i)), '/bs', bs, '/critResults.mat'}));    
         critResults{i,j} = critResults{i,j}.critResults;
     end
@@ -79,18 +79,18 @@ for j = 1:Nbs
     for i = 1:N
         meanG(i,j) = critResults{i,j}.net.meanG;
         V(i,j) = mean(critResults{i,j}.net.V);
-        PSDbeta(i,j) = critResults{i,j}.PSD.beta;
-        PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
+%         PSDbeta(i,j) = critResults{i,j}.PSD.beta;
+%         PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
         numEvents(i,j) = critResults{i,j}.events.numEvents;
         meanIEI(i,j) = critResults{i,j}.IEI.meanIEI;
         IEItau(i,j) = critResults{i,j}.IEI.tau;
         IEIdta(i,j) = critResults{i,j}.IEI.sigmaTau;
         IEIbins{i,j} = critResults{i,j}.IEI.bins;
         IEIprob{i,j} = critResults{i,j}.IEI.prob;
-        dGalpha(i,j) = critResults{i,j}.dG.alpha;
-        dGdalph(i,j) = critResults{i,j}.dG.dalph;
-        dGbins{i,j} = critResults{i,j}.dG.bins;
-        dGprob{i,j} = critResults{i,j}.dG.prob;
+%         dGalpha(i,j) = critResults{i,j}.dG.alpha;
+%         dGdalph(i,j) = critResults{i,j}.dG.dalph;
+%         dGbins{i,j} = critResults{i,j}.dG.bins;
+%         dGprob{i,j} = critResults{i,j}.dG.prob;
         Stau(i,j) = critResults{i,j}.avalanche.sizeFit.tau;
         Sdta(i,j) = critResults{i,j}.avalanche.sizeFit.dTau;
         Slct(i,j) = critResults{i,j}.avalanche.sizeFit.lc;
@@ -126,25 +126,25 @@ for j = 1:Nbs
 
     %% Comparison by parameter
     %% dG
-    figure('visible', 'off');
-    errorbar(Lvals, dGalpha(:,j), dGdalph(:,j), '--o');
-    xlabel('L')
-    ylabel('\alpha')
-    yyaxis right;
-    semilogy(Lvals, meanG(:,j), '-o');
-    ylabel('<G>')
-    title('\Delta G exponent')
-    print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
-
-
-
-    %% PSD
-    figure('visible', 'off');
-    errorbar(Lvals, PSDbeta(:,j), PSDdbet(:,j), '--o');
-    xlabel('L')
-    ylabel('\beta')
-    title('PSD exponent')
-    print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
+%     figure('visible', 'off');
+%     errorbar(Lvals, dGalpha(:,j), dGdalph(:,j), '--o');
+%     xlabel('L')
+%     ylabel('\alpha')
+%     yyaxis right;
+%     semilogy(Lvals, meanG(:,j), '-o');
+%     ylabel('<G>')
+%     title('\Delta G exponent')
+%     print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
+% 
+% 
+% 
+%     %% PSD
+%     figure('visible', 'off');
+%     errorbar(Lvals, PSDbeta(:,j), PSDdbet(:,j), '--o');
+%     xlabel('L')
+%     ylabel('\beta')
+%     title('PSD exponent')
+%     print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
 
 
 
@@ -219,18 +219,18 @@ for j = 1:Nbs
     print(gcf,strcat(saveFolder, '/IEIPlot.png'), '-dpng', '-r300', '-painters')
 
 
-    %% dG
-    figure('visible', 'off');
-    for i = 1:N 
-        loglog(dGbins{i,j}, dGprob{i,j});
-        hold on;
-    end
-    xlabel('\Delta G')
-    ylabel('P(\Delta G)')
-    title('\Delta G')
-    leg = legend(num2str(Lvals), 'location', 'best');
-    title(leg,'L')
-    print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
+%     %% dG
+%     figure('visible', 'off');
+%     for i = 1:N 
+%         loglog(dGbins{i,j}, dGprob{i,j});
+%         hold on;
+%     end
+%     xlabel('\Delta G')
+%     ylabel('P(\Delta G)')
+%     title('\Delta G')
+%     leg = legend(num2str(Lvals), 'location', 'best');
+%     title(leg,'L')
+%     print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
 
 
 
@@ -292,7 +292,7 @@ for j = 1:N
     mkdir(saveFolder);
     
     %% Comparison by parameter
-    binSize(1) = meanIEI(j,1);
+    binSize(binSize < 0)  = binSize(binSize < 0)*meanIEI(j,1);
 
     %% Size
     figure('visible', 'off');
