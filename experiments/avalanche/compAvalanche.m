@@ -288,7 +288,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
         mkdir(saveFolder);
 
         %% Comparison by parameter
-        binSize(1) = meanIEI(j,1);
+        binSize(binSize < 0) = binSize(binSize < 0)*meanIEI(j,1);
 
         %% Size
         figure('visible', 'off');
