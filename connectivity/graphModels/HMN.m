@@ -25,7 +25,7 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
 
     Example usage: adjMat = HMN(2, 2, 2, 2, 10, 0, 1);
 
-    Written by Joel Hochstetter (27/08/20)
+    Written by Joel Hochstetter (Last updated 02/09/20)
 
 %}
     if seed >= 0 
