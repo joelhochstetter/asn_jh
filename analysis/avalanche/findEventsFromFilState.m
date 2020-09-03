@@ -55,6 +55,7 @@ function events = findEventsFromFilState(sim, eventDetect)
             dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
             dGG = abs(dG./switchC)/sim.dt;
             events = sum(thresholdCrossingPeaks(dGG, eventDetect.dGGratio),2);
+            events(end-1:end) = 0;
     end
     
 end
