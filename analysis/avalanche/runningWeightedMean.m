@@ -17,17 +17,17 @@ function [mx, fx] = runningWeightedMean(x, w, dt)
     
     %% Initial datapoints
     for i = 1:dt1
-        mx(i) = mean(x(1:i).*w(1:i))/sum(w(1:i));
+        mx(i) = sum(x(1:i).*w(1:i))/sum(w(1:i));
     end   
     
     %% Central datapoints
     for i = (dt1 + 1):(N-dt2)
-        mx(i) = mean(x(i - dt1:i + dt2).*w(i - dt1:i + dt2))/sum(w(i - dt1:i + dt2));
+        mx(i) = sum(x(i - dt1:i + dt2).*w(i - dt1:i + dt2))/sum(w(i - dt1:i + dt2));
     end
     
     %% End datapoints
     for i = (N - dt2 + 1):N
-        mx(i) = mean(x(i:end).*w(i:end))/sum(w(i:end));
+        mx(i) = sum(x(i:end).*w(i:end))/sum(w(i:end));
     end 
     
     mx(isnan(mx)) = 0;

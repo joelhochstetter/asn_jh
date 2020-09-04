@@ -10,6 +10,6 @@ function mx =  runningMeanSeq(x, times, N, dt)
 
     seq                      = binSequence(x, times, N);
     [means, counts] = seqMeanCounts(seq);
-     mx = runningWeightedMean(means, counts, dt);l
+     mx = runningWeightedMean(means, counts, dt);
 
 end

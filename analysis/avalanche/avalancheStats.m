@@ -1,4 +1,4 @@
-function [sizeAv, lifeAv, avTime] = avalancheStats(events, t, joinperiod)
+function [sizeAv, lifeAv, avTime, branchAv] = avalancheStats(events, t, joinperiod)
 %{
     Input:
         events (Nx1 array) - number of events at given time bin
@@ -21,9 +21,11 @@ function [sizeAv, lifeAv, avTime] = avalancheStats(events, t, joinperiod)
         sizeAv (Ax1 array) - number of events in given avalanche
         lifeAv (Ax1 array) - number of bins avalanche goes for 
         avTime (Ax1 array) - time-stamp of the start of avalanche
+        branchAv (Ax1 array) - (num events in time bin 2)/(num events in time bin 1)
        
 %}
 
+    dt = t(2) - t(1);
 
     if nargin == 1
         runMode = 1; %
@@ -44,6 +46,7 @@ function [sizeAv, lifeAv, avTime] = avalancheStats(events, t, joinperiod)
     A      = numel(avEdg) - 1;    
     sizeAv = zeros(A,1);
     lifeAv = zeros(A,1);
+    branchAv = zeros(A,1);
     avTime = zeros(A,1);
     
     if runMode == 1
@@ -52,29 +55,35 @@ function [sizeAv, lifeAv, avTime] = avalancheStats(events, t, joinperiod)
                 sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
                 lifeAv(avId) = avEdg(avId+1) - avEdg(avId) - 1;
                 avTime(avId) = avEdg(avId);
+                branchAv(avId) = events(avEdg(avId)+2)/events(avEdg(avId)+1);
             else
+                branchAv(avId) = 0;
                 sizeAv(avId) = 0;
                 lifeAv(avId)   = 0;
-                avTime(avId) = avEdg(avId);                
+                avTime(avId) = 0;                
             end
         end   
     elseif runMode == 2
         for avId = 1:A
             if floor((avEdg(avId)-1)/joinperiod) == floor((avEdg(avId + 1)-1)/joinperiod)
                 sizeAv(avId) = sum(events(avEdg(avId):avEdg(avId+1)));
-                lifeAv(avId) = t(avEdg(avId+1)) - t(avEdg(avId)) - 1;
-                avTime(avId) = avEdg(avId);                
+                lifeAv(avId) = t(avEdg(avId+1)) - t(avEdg(avId)) - dt;
+                avTime(avId) = avEdg(avId);
+                branchAv(avId) = events(avEdg(avId)+2)/events(avEdg(avId)+1);                
             else
                 sizeAv(avId) = 0;
                 lifeAv(avId)   = 0;    
-                avTime(avId) = 0;                
+                avTime(avId) = 0;
+                branchAv(avId) = 0;                
             end
         end   
     end
     
-    sizeAv = sizeAv(sizeAv > 0);
-    lifeAv = lifeAv(lifeAv > 0);
-    avTime = avTime(sizeAv > 0);
+    
+    avTime     = avTime(avTime > 0);    
+    sizeAv      = sizeAv(sizeAv > 0);
+    branchAv = branchAv(branchAv > 0);    
+    lifeAv        = lifeAv(lifeAv > 0);
 
     
     

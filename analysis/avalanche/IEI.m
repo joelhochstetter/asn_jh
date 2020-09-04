@@ -69,10 +69,11 @@ function [ieiData, ieiTime] = IEI(events, dt, joinperiod, t)
                 end
                 prevEvent = i;                
             end
-        end        
+        end     
+        ieiTime = ieiTime(ieiData > 0);        
         ieiData  = ieiData(ieiData > 0);
-        ieiTime = ieiTime(ieiData > 0);
-        
+        ieiTime = ieiTime(ieiTime > 0);
+        assert(numel(ieiTime) == numel(ieiData));
     end
 
 end

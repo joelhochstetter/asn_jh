@@ -9,8 +9,8 @@ function [means, counts] = seqMeanCounts(seq)
     counts = zeros(size(seq));
 
     for i = 1:numel(seq)
-        counts = numel(seq);
-        means = mean(seq);
+        counts(i) = numel(seq{i});
+        means(i) = mean(seq{i});
     end
     
     means(isnan(means)) = 0;

@@ -13,7 +13,7 @@ function seqs = binSequence(x, times, N)
 
     seqs = cell(N,1);
     for i = 1:numel(x)
-        seqs(times) = [seqs(times(i)), x(i)];
+        seqs{times(i)} = [seqs{times(i)}, x(i)];
     end
 
 
