@@ -300,7 +300,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         xlabel('\Delta t')
         ylabel('1/\sigma\tau\nu')
         yyaxis right;
-        plot(vals, branch(j,:))
+        plot(binSize, branch(j,:))
         ylabel('\sigma_r = s_2/s_1')        
         legend('S,T', '<S>(T)', 'Shape',  '\sigma_r', 'location', 'best')
         title('Crackling relationship')
