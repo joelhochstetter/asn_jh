@@ -7,8 +7,7 @@ function savemat(saveFolder, critResults, events, netC)
         save(strcat(saveFolder,'/events.mat'),       'events');
     end
     
-    if numel(netC) > 0
-        save(strcat(saveFolder,'/netC.mat'),       'netC');
-    end
+    if numel(netC)
+    save(strcat(saveFolder,'/netC.mat'),       'netC');
     
 end
