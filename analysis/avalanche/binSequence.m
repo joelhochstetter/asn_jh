@@ -11,6 +11,8 @@ function seqs = binSequence(x, times, N)
 
 %}
 
+    assert(numel(times) == numel(x));
+
     seqs = cell(N,1);
     for i = 1:numel(x)
         seqs{times(i)} = [seqs{times(i)}, x(i)];

@@ -24,7 +24,7 @@ function [binned, times] = binData(data, tStep, roundUp)
         binned(i) = sum(data((1 + (i - 1)*tStep):i*tStep));
     end
 
-    times = [floor(tStep/2):tStep:nStep*tStep]';
+    times = [round(tStep/2):tStep:nStep*tStep]';
     
     % A bin of smaller size is added if number of bins does
     %not divide length and specify to
