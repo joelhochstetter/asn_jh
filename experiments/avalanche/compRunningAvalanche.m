@@ -70,6 +70,15 @@ function compRunningAvalanche()
     plot(time1*dt, netCav, '-', 'LineWidth', 2);
     ylabel('<G>(t) (S)')
 
+    %% Branching ratio as a function of time
+    figure;
+    plot(time1*dt, brAvg, '-', 'LineWidth', 2);
+    xlabel('time (s)')
+    ylabel('\sigma')
+    yyaxis right;
+    plot(time1*dt, netCav, '-', 'LineWidth', 2);
+    ylabel('<G>(t) (S)')
+    
 
 
     %% <S> as a function of time
