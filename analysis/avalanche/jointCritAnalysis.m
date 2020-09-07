@@ -58,7 +58,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
             tjoin = [tjoin, t];
             Gjoin = [Gjoin, G];
             Vjoin = [Vjoin, V]; 
-            joinSpots = [joinSpots, numel(t) + joinSpots(end)]; %stores index of joins for fixing IEI
+            joinSpots = [joinSpots, numel(t) + joinSpots(end)]; %stores index of joins (index of last element in time-series) for fixing IEI
         end
     end
     

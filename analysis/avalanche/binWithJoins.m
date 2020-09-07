@@ -20,6 +20,8 @@ function [binned,  times,  binJoinPeriod] = binWithJoins(data, tStep, joinperiod
         return;
     elseif numel(joinperiod) == 1
         joinperiod = [0, joinperiod:joinperiod:numel(data)];
+    elseif joinperiod(1) > 1
+        joinperiod = [0, joinperiod];
     end
     
     data = reshape(data, [numel(data),1]);
