@@ -7,7 +7,7 @@ function maxes = seqMaxCounts(seq)
     maxes = zeros(size(seq));
 
     for i = 1:numel(seq)
-        maxes(i) = max(seq{i});
+        maxes(i) = max([seq{i},0]);
     end
     
     maxes(isnan(maxes)) = 0;

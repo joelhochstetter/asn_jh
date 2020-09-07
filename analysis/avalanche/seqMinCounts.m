@@ -7,7 +7,7 @@ function mins = seqMinCounts(seq)
     mins = zeros(size(seq));
 
     for i = 1:numel(seq)
-        mins(i) = min(seq{i});
+        mins(i) = min([seq{i},0]);
     end
     
     mins(isnan(mins)) = 0;
