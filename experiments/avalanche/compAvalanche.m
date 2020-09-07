@@ -1,18 +1,30 @@
-function compAvalanche(baseFolder, vals, varName, subtype, binSize)
+function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
+%{
+    Plots comparison between avalanche simulations when changing a
+    parameter, for different binSizes
 
+    Inputs:
+        baseFolder: folder where simulations are found
+                    vals: possible values of the independ
+
+%}
+
+    %% defaults
+    if nargin < 6
+        fmt = '%g';
+    end
+    
+    
+    %% reshape data
     vals = reshape(vals, [numel(vals),1]);
     binSize = reshape(binSize, [numel(binSize),1]);
     
     %%
     close all;
-%     baseFolder = '~/Documents/NeuroNanoAI/Avalanche/WSBA/';
-
+    
     cd(baseFolder)
     saveFolder = strcat(baseFolder, '/AvCompare/');
     mkdir(saveFolder)
-%     binSize = [-1, 10, 50, 100];
-
-%     vals = [0.2:0.2:1.0]';
 
     N = numel(vals);
     Nbs = numel(binSize);
@@ -21,14 +33,11 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
     %%
     meanG = zeros(N,Nbs);
     V = zeros(N,Nbs);
-    PSDbeta = zeros(N,Nbs);
-    PSDdbet = zeros(N,Nbs);
     numEvents = zeros(N,Nbs);
     meanIEI = zeros(N,Nbs);
     IEItau = zeros(N,Nbs);
     IEIdta = zeros(N,Nbs);
-    dGalpha = zeros(N,Nbs);
-    dGdalph = zeros(N,Nbs);
+    branch = zeros(N,Nbs);
     Stau = zeros(N,Nbs);
     Sdta = zeros(N,Nbs);
     Slct = zeros(N,Nbs);
@@ -46,8 +55,6 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
     kingAv = zeros(N,Nbs);
     IEIbins = cell(N,Nbs);
     IEIprob = cell(N,Nbs);
-    dGbins  = cell(N,Nbs);
-    dGprob  = cell(N,Nbs);
     Szbins  = cell(N,Nbs);
     Szprob  = cell(N,Nbs);
     Tmbins  = cell(N,Nbs);
@@ -61,14 +68,13 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
     %%
     for j = 1:Nbs
         bs = binSize(j);
-        %Vvals = [0.113, 0.225, 0.338, 0.45, 0.562, 0.675, 0.787, 0.9];
-
+        
         saveFolder = strcat(baseFolder, '/AvCompare/bs', num2str(bs),'/');
         mkdir(saveFolder);
 
 
         for i = 1:numel(vals)
-            critResults{i,j} = load(strcat2({baseFolder, '/', subtype, vals(i), '/bs', bs, '/critResults.mat'}));
+            critResults{i,j} = load(strcat2({baseFolder, '/', subtype, num2str(vals(i), fmt), '/bs', bs, '/critResults.mat'}));
             critResults{i,j} = critResults{i,j}.critResults;
         end
 
@@ -77,18 +83,15 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
         for i = 1:N
             meanG(i,j) = critResults{i,j}.net.meanG;
             V(i,j) = mean(critResults{i,j}.net.V);
-%             PSDbeta(i,j) = critResults{i,j}.PSD.beta;
-%             PSDdbet(i,j) = critResults{i,j}.PSD.dbeta;    
             numEvents(i,j) = critResults{i,j}.events.numEvents;
             meanIEI(i,j) = critResults{i,j}.IEI.meanIEI;
             IEItau(i,j) = critResults{i,j}.IEI.tau;
             IEIdta(i,j) = critResults{i,j}.IEI.sigmaTau;
             IEIbins{i,j} = critResults{i,j}.IEI.bins;
             IEIprob{i,j} = critResults{i,j}.IEI.prob;
-%             dGalpha(i,j) = critResults{i,j}.dG.alpha;
-%             dGdalph(i,j) = critResults{i,j}.dG.dalph;
-%             dGbins{i,j} = critResults{i,j}.dG.bins;
-%             dGprob{i,j} = critResults{i,j}.dG.prob;
+            if isfield(critResults{i,j}.avalanche, 'branchRatio')
+                branch(i,j) = critResults{i,j}.avalanche.branchRatio;            
+            end
             Stau(i,j) = critResults{i,j}.avalanche.sizeFit.tau;
             Sdta(i,j) = critResults{i,j}.avalanche.sizeFit.dTau;
             Slct(i,j) = critResults{i,j}.avalanche.sizeFit.lc;
@@ -121,41 +124,6 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
 
 
         %% Comparison by parameter
-%         %% dG
-%         figure('visible', 'off');
-%         errorbar(vals, dGalpha(:,j), dGdalph(:,j), '--o');
-%         xlabel(varName)
-%         ylabel('\alpha')
-%         yyaxis right;
-%         semilogy(vals, meanG(:,j), '-o');
-%         ylabel('<G>')
-%         title('\Delta G exponent')
-%         print(gcf,strcat(saveFolder, '/dGComp.png'), '-dpng', '-r300', '-painters')
-% 
-% 
-% 
-%         %% PSD
-%         figure('visible', 'off');
-%         errorbar(vals, PSDbeta(:,j), PSDdbet(:,j), '--o');
-%         xlabel(varName)
-%         ylabel('\beta')
-%         title('PSD exponent')
-%         print(gcf,strcat(saveFolder, '/PSDComp.png'), '-dpng', '-r300', '-painters')
-
-
-
-        %% IEI
-        figure('visible', 'off');
-        errorbar(vals, IEItau(:,j), IEIdta(:,j), '--o');
-        xlabel(varName)
-        ylabel('\alpha')
-        yyaxis right;
-        semilogy(vals, meanIEI(:,j), 'o-');
-        ylabel('<IEI>')
-        title('Inter-event interval')
-        print(gcf,strcat(saveFolder, '/IEIComp.png'), '-dpng', '-r300', '-painters')
-
-
         %% Size
         figure('visible', 'off');
         errorbar(vals, Stau(:,j), Sdta(:,j));
@@ -187,7 +155,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
         print(gcf,strcat(saveFolder, '/LifeAv.png'), '-dpng', '-r300', '-painters')
 
 
-        %% Gamma
+        %% Gamma + branch
         figure('visible', 'off');
         errorbar(vals,x1(:,j), dx1(:,j));
         hold on;
@@ -195,40 +163,15 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
         errorbar(vals,x3(:,j), dx3(:,j));
         xlabel(varName)
         ylabel('1/\sigma\tau\nu')
-        legend('S,T', '<S>(T)', 'Shape', 'location', 'best')
+        yyaxis right;
+        plot(vals, branch(:,j))
+        ylabel('\sigma_r = s_2/s_1')
+        legend('S,T', '<S>(T)', 'Shape', '\sigma_r', 'location', 'best')
         title('Crackling relationship')
         print(gcf,strcat(saveFolder, '/CrackComp.png'), '-dpng', '-r300', '-painters')
 
 
         %% Distributions
-        %% IEI
-        figure('visible', 'off');
-        for i = 1:N 
-            loglog(IEIbins{i,j}, IEIprob{i,j});
-            hold on;
-        end
-        xlabel('T')
-        ylabel('P(T)')
-        title('IEI')
-        leg = legend(num2str(vals), 'location', 'best');
-        title(leg,varName)
-        print(gcf,strcat(saveFolder, '/IEIPlot.png'), '-dpng', '-r300', '-painters')
-
-
-%         %% dG
-%         figure('visible', 'off');
-%         for i = 1:N 
-%             loglog(dGbins{i,j}, dGprob{i,j});
-%             hold on;
-%         end
-%         xlabel('\Delta G')
-%         ylabel('P(\Delta G)')
-%         title('\Delta G')
-%         leg = legend(num2str(vals), 'location', 'best');
-%         title(leg,varName)
-%         print(gcf,strcat(saveFolder, '/dGPlot.png'), '-dpng', '-r300', '-painters')
-
-
 
         %% Size
         figure('visible', 'off');
@@ -271,12 +214,38 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
         leg = legend(num2str(vals), 'location', 'best');
         title(leg,varName)
         print(gcf,strcat(saveFolder, '/AvSzPlot.png'), '-dpng', '-r300', '-painters')
+       
 
         %%
         close all;
     end
 
+    %% bin free plots (variables with no bin dependence)
+    saveFolder = strcat(baseFolder, '/AvCompare/binFree');
+    mkdir(saveFolder)
+    
+    %% IEI
+    figure('visible', 'off');
+    errorbar(vals, IEItau(:,j), IEIdta(:,j), '--o');
+    xlabel(varName)
+    ylabel('\alpha')
+    yyaxis right;
+    semilogy(vals, meanIEI(:,j), 'o-');
+    ylabel('<IEI>')
+    title('Inter-event interval')
+    print(gcf,strcat(saveFolder, '/IEIComp.png'), '-dpng', '-r300', '-painters')
 
+    figure('visible', 'off');
+    for i = 1:N 
+        loglog(IEIbins{i,j}, IEIprob{i,j});
+        hold on;
+    end
+    xlabel('T')
+    ylabel('P(T)')
+    title('IEI')
+    leg = legend(num2str(vals), 'location', 'best');
+    title(leg,varName)
+    print(gcf,strcat(saveFolder, '/IEIPlot.png'), '-dpng', '-r300', '-painters')
 
 
 
@@ -330,7 +299,10 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize)
         errorbar(binSize,x3(j,:), dx3(j,:), 'h');
         xlabel('\Delta t')
         ylabel('1/\sigma\tau\nu')
-        legend('S,T', '<S>(T)', 'Shape', 'location', 'best')
+        yyaxis right;
+        plot(vals, branch(:,j))
+        ylabel('\sigma_r = s_2/s_1')        
+        legend('S,T', '<S>(T)', 'Shape',  '\sigma_r', 'location', 'best')
         title('Crackling relationship')
         print(gcf,strcat(saveFolder, '/CrackComp.png'), '-dpng', '-r300', '-painters')
 
