@@ -59,7 +59,7 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
         events =  findEvents(G, eventDetect);
         
         %perform criticality analysis
-        critAnalysis(events, dt, G, t, V, fname, strcat(saveFolder, '/', fname, '/'), fitML, binSize, saveNetC);
+        critAnalysis(events, dt, G, t, V, fname, strcat(saveFolder, '/', fname, '/'), fitML, binSize, -1, saveNetC);
     end
        
    

@@ -41,6 +41,8 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     fname = 'joint folders:';
     joinSpots = [0];
     
+    saveNetC = true;    
+    
     numFolders = numel(importFolder);
     for j = 1:numFolders
         numFiles = howManyFiles(importMode, importFolder{j});
@@ -75,7 +77,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     dt = (tjoin(end) - tjoin(1))/(numel(tjoin) - 1);
     
     %perform criticality analysis
-    critAnalysis(events, dt, Gjoin, tjoin, Vjoin, fname, strcat(saveFolder, '/'), fitML, binSize, joinSpots);
+    critAnalysis(events, dt, Gjoin, tjoin, Vjoin, fname, strcat(saveFolder, '/'), fitML, binSize, joinSpots, saveNetC);
 
     
 end
