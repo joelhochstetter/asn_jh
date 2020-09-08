@@ -25,7 +25,7 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
 
     Example usage: adjMat = HMN(2, 2, 2, 2, 10, 0, 1);
 
-    Written by Joel Hochstetter (27/08/20)
+    Written by Joel Hochstetter (Last updated 02/09/20)
 
 %}
     if seed >= 0 
@@ -40,8 +40,8 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
     nBlock0 = b^numLevels; %number of blocks at the base level 
     adjMat  = zeros(Nd);
     baseMod = ones(M0) - eye(M0);  %adjMat of fully connected module size M0
-    bComb   = combnk([1:b],2); %is the possible combinations of blocks
-    nbComb  = size(bComb,1); %number of combination of blocks
+    bComb   = combnk([1:b],2)'; %is the possible combinations of blocks
+    nbComb  = size(bComb,2); %number of combination of blocks
     
     %% Generate level 0 modules
     for i = 1:nBlock0
@@ -63,10 +63,10 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
                 %re-map to indices within block and add edges to adjMat
                 probs = binornd(1, probi, [nbComb,NdBlockl,NdBlockl]);
                 [bidx,Ndx,Ndy] = ind2sub(size(probs),find(probs));             
-                Ex = Ndx + (b*(i - 1) + bComb(bidx,1) - 1)*NdBlockl; 
-                Ey = Ndy + (b*(i - 1) + bComb(bidx,2) - 1)*NdBlockl; 
-                adjMat(Ex, Ey) = 1;
-                adjMat(Ey, Ex) = 1;
+                Ex = Ndx + (b*(i - 1) + bComb(1,bidx) - 1)*NdBlockl; 
+                Ey = Ndy + (b*(i - 1) + bComb(2,bidx) - 1)*NdBlockl;              
+                adjMat(sub2ind([Nd,Nd],Ex,Ey)) = 1; %assign elements of array corresponding to (Ex(i), Ey(i)) for i = 1:numel(Ex)
+                adjMat(sub2ind([Nd,Nd],Ey,Ex)) = 1; %same for other diagonal
             end
         end 
     elseif HMtype == 2
@@ -81,10 +81,10 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
                 % possible edge choices and re-map them to 3d indices.
                 Edgs = randperm(nbComb*NdBlockl^2, alpha);
                 [bidx, Ndx, Ndy] = ind2sub([nbComb,NdBlockl,NdBlockl],Edgs);                
-                Ex = Ndx + (b*(i - 1) + bComb(bidx,1) - 1)*NdBlockl; 
-                Ey = Ndy + (b*(i - 1) + bComb(bidx,2) - 1)*NdBlockl; 
-                adjMat(Ex, Ey) = 1;
-                adjMat(Ey, Ex) = 1;
+                Ex = Ndx + (b*(i - 1) + bComb(1,bidx) - 1)*NdBlockl; 
+                Ey = Ndy + (b*(i - 1) + bComb(2,bidx) - 1)*NdBlockl; 
+                adjMat(sub2ind([Nd,Nd],Ex,Ey)) = 1; %assign elements of array corresponding to (Ex(i), Ey(i)) for i = 1:numel(Ex)
+                adjMat(sub2ind([Nd,Nd],Ey,Ex)) = 1; %same for other diagonal
             end
         end        
     end
