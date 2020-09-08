@@ -1,0 +1,13 @@
+function I =  extractInterval(x, lc, uc)
+%{
+    Extracts the first interval that occurs in a given time-series vector
+    
+    Based on a lower and upper cut-off 
+
+%}
+
+
+
+
+
+end

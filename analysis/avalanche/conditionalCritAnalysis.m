@@ -3,8 +3,6 @@ function conditionalCritAnalysis(conditions, events, dt, G, time, V, filename, s
     Run avalanche analysis limited by certain conditions such as time,
     conductance, etc.
 
-
-
 %}
 
     %% Modify joinperiod so is in right format to process

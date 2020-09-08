@@ -16,6 +16,8 @@ function [G, V, t, I] = applyConditions(G, V, t, conditions)
     switch conditions.type
         case 'crossing'
             I = subTimeseries(G, conditions.after, conditions.thresh);
+        case 'tInterval'
+            
     end
 
     G = G(I);
