@@ -1,4 +1,4 @@
-function [G, V, t] = applyConditions(G, V, t, conditions)
+function [G, V, t, I] = applyConditions(G, V, t, conditions)
 %{
     Applies conditions as specified by the conditions struct to the
     conductance (G), voltage (V) and time (t) time-series

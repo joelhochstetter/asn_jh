@@ -1,0 +1,30 @@
+function conditionalCritAnalysis(conditions, events, dt, G, time, V, filename, saveFolder, fitML, binSize, joinperiod)
+%{
+    Run avalanche analysis limited by certain conditions such as time,
+    conductance, etc.
+
+
+
+%}
+
+    %% Deal with joinperiod
+    if joinperiod == -1
+        joinperiod = numel(events) + 1;
+    end
+    
+    if numel(joinperiod) == 1
+        joinperiod = [0; [joinperiod:joinperiod:(numel(events) + 1)]'];
+    end
+    
+    if joinperiod(1) > 1
+        joinperiod = reshape(joinperiod, [numel(joinperiod), 1]);
+        joinperiod = [0; joinperiod];
+    end    
+
+    %%
+    
+    
+    %%
+    
+    critAnalysis(events, dt, G, time, V, filename, saveFolder, fitML, binSize, joinperiod, false)    
+end
