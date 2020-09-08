@@ -46,7 +46,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     fitTrun          = true;
     
     
-    mkdir(saveFolder)
+    mkdir(fullfile(saveFolder))
     
     results = struct();
     
