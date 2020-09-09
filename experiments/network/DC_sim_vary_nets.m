@@ -24,7 +24,7 @@ function DC_sim_vary_nets(idx, netFolder, saveFolder, usePoint, saveEvents, useU
 %         DC_Vsweep_for_cluster(Vidx, saveF1, 1.3*0.01, 3.5*0.01, 0.2*0.01, netName, 0 , '.', -1, 30, true, true, -1, 1, true, 0.015, '', 1, saveEvents, useUncorrelated); 
         
     else
-        DC_Vsweep_for_cluster(Vidx, saveF1, 1.05*0.01, 1.08*0.01, 0.25*0.01, netName, 0 , '.', -1, 30, true, true, -1, 1, true, 0.05)
+        DC_Vsweep_for_cluster(Vidx, saveF1, 1.05*0.01, 1.08*0.01, 0.25*0.01, netName, 0 , '.', -1, 30, true, true, -1, 1, true, 0.05, '', 1, false)
 %         DC_Vsweep_for_cluster(Vidx, saveF1, 0.7*0.01, 1.8*0.01, 0.1*0.01, nets(netIdx).name, 0 , '.', -1, 30, true, true, -1, 1, true, 0.015, '', 1, true); 
 %         DC_Vsweep_for_cluster(Vidx, saveF1, 0.89*0.01, 1.11*0.01, 0.02*0.01, netName, 0 , '.', -1, 30, true, true, -1, 1, true, 0.015, '', 1, saveEvents, useUncorrelated); 
         
