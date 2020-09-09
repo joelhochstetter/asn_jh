@@ -37,7 +37,7 @@ function conditionalCritAnalysis(conditions, events, dt, G, time, V, filename, s
     
     
     %%
-    critAnalysis(events1, dt, G1, t1, V, filename, saveFolder, fitML, binSize, conJoinPeriod, false)    
+    critAnalysis(events1, dt, G1, t1, V, filename, saveFolder, fitML, binSize, conJoinPeriod, false);
     
     
 end
