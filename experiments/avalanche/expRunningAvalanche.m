@@ -43,7 +43,6 @@ function expRunningAvalanche(baseFolder, window)
         yyaxis right;
         plot(time1*dt, netC, '-', 'LineWidth', 1);
         ylabel('<G>(t) (S)')
-        legend('<S>', 'S_{min}', 'S_{max}', 'G')
         print(gcf,strcat(saveFolder1, '/aveSize.png'), '-dpng', '-r300', '-painters') 
 
         %% <T> as a function of time
@@ -54,7 +53,6 @@ function expRunningAvalanche(baseFolder, window)
         yyaxis right;
         plot(time1*dt, netC, '-', 'LineWidth', 1);
         ylabel('<G>(t) (S)')
-        legend('<T>', 'T_{min}', 'T_{max}', 'G')
         print(gcf,strcat(saveFolder1, '/aveTime.png'), '-dpng', '-r300', '-painters') 
 
         %%
@@ -76,19 +74,6 @@ function expRunningAvalanche(baseFolder, window)
 
         %% bin free plots (variables with no window dependence)
         ieiAvg =  runningMeanSeq(critResults.IEI.ieiDat, time1(critResults.IEI.ieiTime(2:end)), numTSteps, window);
-%         eventAvg = runningMean(events, window);
-%         %% Events as a function of time
-%         figure('visible', 'off');
-%         semilogy(time1*dt, eventAvg/dt, '.');
-%         hold on;
-%         plot(time1*dt, runningMean(eventAvg, window)/dt, '-', 'LineWidth', 1);
-%         xlabel('time (s)')
-%         ylabel('Events per second')
-%         yyaxis right;
-%         semilogy(time1*dt, netC, '-', 'LineWidth', 1);
-%         ylabel('<G>(t) (S)')
-%         print(gcf,strcat(saveFolder1, '/eventRate.png'), '-dpng', '-r300', '-painters') 
-
 
         %% IEI as a function of time
         figure('visible', 'off');
