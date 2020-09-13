@@ -56,7 +56,13 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
                 continue
             end
             
+            t  = reshape(t, [1, numel(t)]);
+            G = reshape(G, [1, numel(t)]);
+            V = reshape(V, [1, numel(t)]);
+            
             t = t + tjoin(end) - t(1);
+            
+            
             tjoin = [tjoin, t];
             Gjoin = [Gjoin, G];
             Vjoin = [Vjoin, V]; 
