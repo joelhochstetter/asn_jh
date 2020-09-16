@@ -1,17 +1,17 @@
 %%
 close all;
 % baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/ChangeV/';
-% baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV/';
+baseFolder = '/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV/';
 % baseFolder = '~/Documents/NeuroNanoAI/Avalanche/ACavalanches/AvChangeAmp/';
-baseFolder = '~/Documents/NeuroNanoAI/Avalanche/RectSmall/';
+% baseFolder = '~/Documents/NeuroNanoAI/Avalanche/RectSmall/';
 cd(baseFolder)
 saveFolder = strcat(baseFolder, '/AvCompare/');
 mkdir(saveFolder)
-binSize = [-2, -1, -0.5]';%[-1,10, 50, 100]';
+binSize = [-0.5, -1, -2]';%[-1,10, 50, 100]';
 Nbs = numel(binSize);
 % Vvals = [0.33, 0.45, 0.562, 0.675, 0.787, 0.9]';
-% Vvals = sort([0.7:0.1:1.8, 1.05]');
-Vvals = sort([0.89:0.02:1.11, 1.5:0.2:3.5])';
+Vvals = sort([0.7:0.1:1.8, 1.05]');
+% Vvals = sort([0.89:0.02:1.11, 1.5:0.2:3.5])';
 % Vvals = [2:5]';
 Vstar = Vvals;
 N = numel(Vvals);
