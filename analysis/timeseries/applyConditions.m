@@ -9,6 +9,10 @@ function [G, V, t, I] = applyConditions(G, V, t, conditions)
     
 %}
 
+    G = reshape(G, [numel(G),1]);
+    t  = reshape(t, [numel(t),1]);
+    V = reshape(V, [numel(V),1]);    
+
     if ~isfield(conditions, 'type')
         conditions.type = 'none';
     end
@@ -21,7 +25,9 @@ function [G, V, t, I] = applyConditions(G, V, t, conditions)
         case 'tInterval'
             I = extractInterval(t, conditions.lc, conditions.uc);
         case 'GInterval'
-            I = extractInterval(G, conditions.lc, conditions.uc);            
+            I = extractInterval(G, conditions.lc, conditions.uc);  
+        case 'Gchange'
+            I =  changeInterval(G,conditions.thresh);
     end
 
     G = G(I);

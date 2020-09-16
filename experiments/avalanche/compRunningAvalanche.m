@@ -73,7 +73,7 @@ compRunningAvalanche('/import/silo2/joelh/Criticality/Avalanche/ACavalanches/AvC
         close all;
         
         %% handle AC 
-        if numel(ACfreq(i)) > 0
+        if ACfreq(i) > 0
             PeriodTSteps = 1/(ACfreq(i)*dt);
             timeVec = floor(mod(timeVec0 - 1,  PeriodTSteps) + 1); %modulo doesnt need to be integer
             k = floor(numTSteps/PeriodTSteps);
@@ -121,8 +121,15 @@ compRunningAvalanche('/import/silo2/joelh/Criticality/Avalanche/ACavalanches/AvC
             xlabel('time (s)')
             ylabel('\sigma')
             yyaxis right;
-            plot(time1*dt, netCAvg, '-', 'LineWidth', 2);
+            semilogy(time1*dt, netCAvg, '-', 'LineWidth', 2);
             ylabel('<G>(t) (S)')
+            if T == 30
+                xticks(0:30); 
+                ax = gca;
+                labels = string(ax.XAxis.TickLabels); % extract
+                labels([2:5:end, 3:5:end, 4:5:end, 5:5:end]) = ''; % remove every other one
+                xticklabels(labels);
+            end
             print(gcf,strcat(saveFolder, '/meanBranch.png'), '-dpng', '-r300', '-painters') 
 
             %% <S> as a function of time
@@ -223,8 +230,15 @@ compRunningAvalanche('/import/silo2/joelh/Criticality/Avalanche/ACavalanches/AvC
         xlabel('time (s)')
         ylabel('<IEI> per time')
         yyaxis right;
-        plot(time1*dt, netCAvg, '-', 'LineWidth', 2);
+        semilogy(time1*dt, netCAvg, '-', 'LineWidth', 2);
         ylabel('<G>(t) (S)')
+        if T == 30
+            xticks(0:30); 
+            ax = gca;
+            labels = string(ax.XAxis.TickLabels); % extract
+            labels([2:5:end, 3:5:end, 4:5:end, 5:5:end]) = ''; % remove every other one
+            xticklabels(labels);
+        end
         print(gcf,strcat(saveFolder, '/meanIEI.png'), '-dpng', '-r300', '-painters') 
 
     end

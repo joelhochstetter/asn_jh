@@ -1,7 +1,7 @@
 function expRunningAvalanche(baseFolder, window)
 %{
     Example usage:
-        expRunningAvalanche('/import/silo2/joelh/nanowire-network-experimental/Adrian/Activation_Data_July_2020/S6.M1_2/act_preamp_100K_varying_voltage/Av/bs-1/', 50)
+        expRunningAvalanche('/import/silo2/joelh/nanowire-network-experimental/Adrian/Activation_Data_July_2020/S6.M1_2/act_preamp_100K_varying_voltage/Av1/bs-1/', 50)
 
 %}
 
@@ -16,44 +16,43 @@ function expRunningAvalanche(baseFolder, window)
         saveFolder1 = strcat(saveFolder, '/', fname);
         mkdir(fullfile(saveFolder1))
         load(strcat(critFiles(i).folder, '/', critFiles(i).name), 'results');
-        dt = results.net.dt;
-        netC = results.net.G;
+        critResults = results;
+        dt = critResults.net.dt;
+        netC = critResults.net.G;
         numTSteps = numel(netC);
         time1 = 1:numTSteps;
-        brAvg =  runningMeanSeq(critResults.avalanche.branchAv, timeVec(critResults.avalanche.timeAv), numTSteps, window);
-        SAvg =  runningMeanSeq(critResults.avalanche.sizeAv, timeVec(critResults.avalanche.timeAv), numTSteps, window);
-        TAvg =  runningMeanSeq(critResults.avalanche.lifeAv, timeVec(critResults.avalanche.timeAv), numTSteps, window);
+        brAvg =  runningMeanSeq(critResults.avalanche.branchAv, time1(critResults.avalanche.timeAv), numTSteps, window);
+        SAvg =  runningMeanSeq(critResults.avalanche.sizeAv, time1(critResults.avalanche.timeAv), numTSteps, window);
+        TAvg =  runningMeanSeq(critResults.avalanche.lifeAv, time1(critResults.avalanche.timeAv), numTSteps, window);
 
         %% Branching ratio as a function of time
         figure('visible', 'off');
-        plot(time1*dt, brAvg, '-', 'LineWidth', 2);
+        plot(time1*dt, brAvg, '-', 'LineWidth', 1);
         xlabel('time (s)')
         ylabel('\sigma')
         yyaxis right;
-        plot(time1*dt, netC, '-', 'LineWidth', 2);
+        plot(time1*dt, netC, '-', 'LineWidth', 1);
         ylabel('<G>(t) (S)')
         print(gcf,strcat(saveFolder1, '/meanBranch.png'), '-dpng', '-r300', '-painters') 
 
         %% <S> as a function of time
         figure('visible', 'off');
-        semilogy(time1*dt, SAvg, '-', 'LineWidth', 2);
+        semilogy(time1*dt, SAvg, '-', 'LineWidth', 1);
         xlabel('time (s)')
         ylabel('S per time')
         yyaxis right;
-        plot(time1*dt, netC, '-', 'LineWidth', 2);
+        plot(time1*dt, netC, '-', 'LineWidth', 1);
         ylabel('<G>(t) (S)')
-        legend('<S>', 'S_{min}', 'S_{max}', 'G')
         print(gcf,strcat(saveFolder1, '/aveSize.png'), '-dpng', '-r300', '-painters') 
 
         %% <T> as a function of time
         figure('visible', 'off');
-        semilogy(time1*dt, TAvg, '-', 'LineWidth', 2);
+        semilogy(time1*dt, TAvg, '-', 'LineWidth', 1);
         xlabel('time (s)')
         ylabel('T per time')
         yyaxis right;
-        plot(time1*dt, netC, '-', 'LineWidth', 2);
+        plot(time1*dt, netC, '-', 'LineWidth', 1);
         ylabel('<G>(t) (S)')
-        legend('<T>', 'T_{min}', 'T_{max}', 'G')
         print(gcf,strcat(saveFolder1, '/aveTime.png'), '-dpng', '-r300', '-painters') 
 
         %%
@@ -74,29 +73,16 @@ function expRunningAvalanche(baseFolder, window)
         print(gcf,strcat(saveFolder1, '/GvsAvST.png'), '-dpng', '-r300', '-painters')     
 
         %% bin free plots (variables with no window dependence)
-        ieiAvg =  runningMeanSeq(critResults.IEI.ieiDat, timeVec(critResults.IEI.ieiTime(2:end)), numTSteps, window);
-
-        %% Events as a function of time
-        figure('visible', 'off');
-        semilogy(time1*dt, eventAvg/dt, '.');
-        hold on;
-        plot(time1*dt, runningMean(eventAvg, window)/dt, '-', 'LineWidth', 2);
-        xlabel('time (s)')
-        ylabel('Events per second')
-        yyaxis right;
-        semilogy(time1*dt, netC, '-', 'LineWidth', 2);
-        ylabel('<G>(t) (S)')
-        print(gcf,strcat(saveFolder1, '/eventRate.png'), '-dpng', '-r300', '-painters') 
-
+        ieiAvg =  runningMeanSeq(critResults.IEI.ieiDat, time1(critResults.IEI.ieiTime(2:end)), numTSteps, window);
 
         %% IEI as a function of time
         figure('visible', 'off');
-        semilogy(time1*dt, ieiAvg, '-', 'LineWidth', 2);
+        semilogy(time1*dt, ieiAvg, '-', 'LineWidth', 1);
         hline(critResults.IEI.meanIEI);
         xlabel('time (s)')
         ylabel('<IEI> per time')
         yyaxis right;
-        plot(time1*dt, netC, '-', 'LineWidth', 2);
+        plot(time1*dt, netC, '-', 'LineWidth', 1);
         ylabel('<G>(t) (S)')
         print(gcf,strcat(saveFolder1, '/meanIEI.png'), '-dpng', '-r300', '-painters')     
 

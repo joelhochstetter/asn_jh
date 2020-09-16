@@ -27,7 +27,7 @@ function conditionalCritAnalysis(conditions, events, dt, G, time, V, filename, s
     conJoinPeriod = zeros(numPeriods + 1, 1);
     
     for i = 1:numPeriods
-        [cG, ~, ct, I] = applyConditions(G(1+joinperiod(i):joinperiod(i+1)), 0, time(1+joinperiod(i):joinperiod(i+1)) - joinperiod(i), conditions);
+        [cG, ~, ct, I] = applyConditions(G(1+joinperiod(i):joinperiod(i+1)), 0, time(1+joinperiod(i):joinperiod(i+1)) - joinperiod(i)*dt, conditions);
         G1 = [G1; cG];
         t1   = [t1; ct];
         iEvents  = events(1+joinperiod(i):joinperiod(i+1));
@@ -37,7 +37,7 @@ function conditionalCritAnalysis(conditions, events, dt, G, time, V, filename, s
     
     
     %%
-    critAnalysis(events1, dt, G1, t1, V, filename, saveFolder, fitML, binSize, conJoinPeriod, false)    
+    critAnalysis(events1, dt, G1, t1, V, filename, saveFolder, fitML, binSize, conJoinPeriod, false);
     
     
 end
