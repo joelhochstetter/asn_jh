@@ -7,6 +7,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         baseFolder: folder where simulations are found
                     vals: possible values of the independ
 
+    compAvalanche('/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV', 0.7:0.1:1.8, 'V^*', 'Vstar', [-2,-1,-0.5])
 %}
 
     %% defaults
