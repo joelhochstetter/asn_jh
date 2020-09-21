@@ -82,8 +82,8 @@ function [tau, xmin, xmax, L] = plmle(x, varargin)
 %% Parse command line for parameters
 xmin = min(x);
 xmax = max(x);
-tauRange = [1,5];
-precision = 10^-3;
+tauRange = [1,3];
+precision = 10^-2;
 
 iVarArg = 1;
 while iVarArg <= length(varargin)

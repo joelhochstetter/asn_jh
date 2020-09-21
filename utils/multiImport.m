@@ -77,6 +77,14 @@ function [sims] = multiImport (params)
                         sims{i}.swC   =  h5read(h5file, '/swC'); 
                     end
                 end     
+                
+                if isfield(sims{i}.Comp, 'onG') && ~isfield(sims{i}.Comp, 'onR')
+                    sims{i}.Comp.onR = sims{i}.Comp.onG;
+                end
+
+                if isfield(sims{i}.Comp, 'offG') && ~isfield(sims{i}.Comp, 'offR')
+                    sims{i}.Comp.offR = sims{i}.Comp.offG;
+                end                
             
             	sims{i}.filename = filenames{i};
             end
@@ -98,6 +106,14 @@ function [sims] = multiImport (params)
                         sims{i}.swC   =  h5read(h5file, '/swC');  
                     end
                 end     
+
+                if isfield(sims{i}.Comp, 'onG') && ~isfield(sims{i}.Comp, 'onR')
+                    sims{i}.Comp.onR = sims{i}.Comp.onG;
+                end
+
+                if isfield(sims{i}.Comp, 'offG') && ~isfield(sims{i}.Comp, 'offR')
+                    sims{i}.Comp.offR = sims{i}.Comp.offG;
+                end                    
                 
             	sims{i}.filename = filenames{i};
             end

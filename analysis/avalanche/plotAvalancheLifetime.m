@@ -70,6 +70,15 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
 %     upperCut = min(edges(N < fitP.minBinEvents));
 %     lifeAv(lifeAv >= upperCut) = [];    
     
+    %% Extract region of distribution that is strictly decreasing
+    [~, firstMin] = findpeaks(-N);
+    firstMin = firstMin(1);
+    if firstMin < numel(N)
+        fitP.uc = edges(firstMin + 1);
+    end
+
+    %%
+
     loglog(bins, N, 'bx')
     hold on;
 

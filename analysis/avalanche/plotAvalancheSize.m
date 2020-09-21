@@ -69,21 +69,30 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
     else 
         [N,edges] = histcounts(sizeAv, 'Normalization', 'probability');
         bins = (edges(1:end-1) + edges(2:end))/2;
-    end
-
+    end    
+    
     %Exclude bins which have too few events
 %     sizeAv = sort(sizeAv);
 %     upperCut = min(edges(N < fitP.minBinEvents));
 %     sizeAv(sizeAv >= upperCut) = [];
+
+    %% Extract region of distribution that is strictly decreasing
+    [~, firstMin] = findpeaks(-N);
+    firstMin = firstMin(1);
+    if firstMin < numel(N)
+        fitP.uc = edges(firstMin + 1);
+    end
     
+    %%
+
     loglog(bins, N, 'bx')
     hold on;
 
     if fitPL
         
         if fitP.useML
-            if numel(unique(sizeAv)) > 2
-                MLcompare = mlFit(sizeAv, fitP.fitTrun);
+            if numel(unique(sizeAv(sizeAv <= fitP.uc))) > 2
+                MLcompare = mlFit(sizeAv(sizeAv <= fitP.uc), fitP.fitTrun);
                 tau   = MLcompare.PL.tau;
                 xmin = MLcompare.PL.xmin;
                 xmax = MLcompare.PL.xmax;

@@ -67,6 +67,14 @@ function sim = importSim(Components, Stimulus, T, num, saveFolder, nameComment, 
         end
     end
     
+    if isfield(sim.Comp, 'onG') && ~isfield(sim.Comp, 'onR')
+        sim.Comp.onR = sim.Comp.onG;
+    end
+ 
+    if isfield(sim.Comp, 'offG') && ~isfield(sim.Comp, 'offR')
+        sim.Comp.offR = sim.Comp.offG;
+    end    
+    
     sim.filename = filename;
     
 end

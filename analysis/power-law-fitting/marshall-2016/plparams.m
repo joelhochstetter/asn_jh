@@ -101,7 +101,7 @@ function [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(x, varargin)
 
 nSamples = 500; %500
 pCrit = 0.1; %0.2
-likelihood = 1e-3; %1e-3
+likelihood = 1e-2; %1e-3
 
 iVarArg = 1;
 while iVarArg <= length(varargin)
@@ -151,7 +151,7 @@ lnRInv = log(rInv) / log(max(rInv));
 rank = lnRInv.^2;
 
 % sort support pairs by rank in descending order
-[unused, idx] = sort(rank, 'descend');
+[~, idx] = sort(rank, 'descend');
 support = support(idx,:);
 
 %% Initiate greedy search for optimal support
@@ -172,7 +172,7 @@ while sweepFlag && iSupport <= nSupport
     xmax = support(iSupport,2);
     
     % MLE of truncated distribution
-    [tau, waste1, waste2, waste3] = plmle(x, 'xmin', xmin, 'xmax', xmax);
+    [tau, ~, ~, ~] = plmle(x, 'xmin', xmin, 'xmax', xmax);
     
     % p-value for MLE
     p = pvcalc(x, tau, 'xmin', xmin, 'xmax', xmax, 'samples', nSamples,...
