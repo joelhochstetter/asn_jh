@@ -122,6 +122,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
             dx3(i,j) = critResults{i,j}.avalanche.gamma.dx3;
             bins = critResults{i,j}.avalanche.sizeFit.bins;
             prob = critResults{i,j}.avalanche.sizeFit.prob;
+            kingAv(i,j) = kingAv(x, N, c)
             [pks, locs] = findpeaks(prob);
             possMax = find(bins(locs) > critResults{i,j}.avalanche.sizeFit.uc);
             [~, I] = max(pks(possMax));

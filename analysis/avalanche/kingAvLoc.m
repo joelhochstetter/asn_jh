@@ -1,4 +1,4 @@
-function kingLoc = kingAv(x, N, c)
+function kingLoc = kingAvLoc(x, N, c)
 %{
     Determines location of king avalanche given bin-centre x and N (which can
     be either counts or probability.
