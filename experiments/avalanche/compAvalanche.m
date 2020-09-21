@@ -42,10 +42,14 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
     Sdta = zeros(N,Nbs);
     Slct = zeros(N,Nbs);
     Suct = zeros(N,Nbs);
+    Sksd = zeros(N,Nbs);
+    Spvl = zeros(N,Nbs);
     Talp = zeros(N,Nbs);
     Tdal = zeros(N,Nbs);
     Tlct = zeros(N,Nbs);
     Tuct = zeros(N,Nbs);
+    Tksd = zeros(N,Nbs);
+    Tpvl = zeros(N,Nbs);    
     x1  = zeros(N,Nbs);
     dx1 = zeros(N,Nbs);
     x2  = zeros(N,Nbs);
@@ -96,12 +100,16 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
             Sdta(i,j) = critResults{i,j}.avalanche.sizeFit.dTau;
             Slct(i,j) = critResults{i,j}.avalanche.sizeFit.lc;
             Suct(i,j) = critResults{i,j}.avalanche.sizeFit.uc;
+            Sksd(i,j) = critResults{i,j}.avalanche.sizeFit.ksd;
+            Spvl(i,j) = critResults{i,j}.avalanche.sizeFit.pvl;
             Szbins{i,j} = critResults{i,j}.avalanche.sizeFit.bins;
             Szprob{i,j} = critResults{i,j}.avalanche.sizeFit.prob;    
             Talp(i,j) = critResults{i,j}.avalanche.timeFit.alpha;
             Tdal(i,j) = critResults{i,j}.avalanche.timeFit.dAlpha;
             Tlct(i,j) = critResults{i,j}.avalanche.timeFit.lc;
             Tuct(i,j) = critResults{i,j}.avalanche.timeFit.uc;
+            Tksd(i,j) = critResults{i,j}.avalanche.timeFit.ksd;
+            Tpvl(i,j) = critResults{i,j}.avalanche.timeFit.pvl;            
             Tmbins{i,j} = critResults{i,j}.avalanche.timeFit.bins;
             Tmprob{i,j} = critResults{i,j}.avalanche.timeFit.prob;        
             ASlife{i,j} = critResults{i,j}.avalanche.avSizeFit.mLife;
@@ -153,6 +161,22 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         ylabel('cut-off')
         legend('\alpha', 'lc', 'uc', 'location', 'best')
         print(gcf,strcat(saveFolder, '/LifeAv.png'), '-dpng', '-r300', '-painters')
+
+        %% Goodness of fit
+        figure('visible', 'off');
+        plot(vals,Sksd(:,j), 'o--');
+        hold on;
+        plot(vals,Tksd(:,j), '^--');
+        xlabel(varName)
+        ylabel('KSD')
+        yyaxis right;
+        plot(vals,Spvl(:,j), '.--');
+        hold on;
+        plot(vals,Tpvl(:,j), 'h--');
+        ylabel('p-value')        
+        legend('KSD_S', 'KSD_T', 'p_S',  'p_T', 'location', 'best')
+        title('Goodness of fit')
+        print(gcf,strcat(saveFolder, '/KSD.png'), '-dpng', '-r300', '-painters')
 
 
         %% Gamma + branch
@@ -291,6 +315,22 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         print(gcf,strcat(saveFolder, '/LifeComp.png'), '-dpng', '-r300', '-painters')
 
 
+        %% Goodness of fit
+        figure('visible', 'off');
+        plot(binSize,Sksd(j,:), 'o--');
+        hold on;
+        plot(binSize,Tksd(j,:), '^--');
+        xlabel('\Delta t')
+        ylabel('KSD')
+        yyaxis right;
+        plot(binSize,Spvl(j,:), '.--');
+        hold on;
+        plot(binSize,Tpvl(j,:), 'h--');
+        ylabel('p-value')        
+        legend('KSD_S', 'KSD_T', 'p_S',  'p_T', 'location', 'best')
+        title('Goodness of fit')
+        print(gcf,strcat(saveFolder, '/KSD.png'), '-dpng', '-r300', '-painters')
+        
         %% Gamma
         figure('visible', 'off');
         errorbar(binSize,x1(j,:), dx1(j,:), 'o');
