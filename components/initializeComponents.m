@@ -36,18 +36,18 @@ function Components = initializeComponents(E,Components)
 
 
     % making new and old scripts compatible
-    if isfield(Components, 'onConductance')
-        disp('Warning: onConductance provided')
+    if isfield(Components, 'onResistance')
+        disp('Warning: onResistance provided')
         if ~isfield(Components, 'onConductance')
-            Components.onConductance = Components.onConductance;
+            Components.onConductance = Components.onResistance;
         end
         disp(strcat2({'Using onConductance = ', Components.onConductance}));        
     end
 
-    if isfield(Components, 'offConductance')
-        disp('Warning: offConductance provided')
+    if isfield(Components, 'offResistance')
+        disp('Warning: offResistance provided')
         if ~isfield(Components, 'offConductance')
-            Components.offConductance = Components.offConductance;
+            Components.offConductance = Components.offResistance;
         end
         disp(strcat2({'Using onConductance = ', Components.offConductance}));        
     end

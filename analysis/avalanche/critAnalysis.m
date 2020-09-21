@@ -194,7 +194,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.avalanche.sizeFit.bins = bins;
     results.avalanche.sizeFit.prob = prob;
     results.avalanche.sizeFit.MLcompare = MLcompare;
-    results.avalanche.sizeFit.kingAv = kingAv(bins, prob, xmx);
+    results.avalanche.sizeFit.kingAv = kingAvLoc(bins, prob, xmx);
     saveas(gcf, strcat(saveFolder, '/avSize.png'))
     close all;
     
@@ -216,7 +216,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.avalanche.timeFit.bins = bins;
     results.avalanche.timeFit.prob = prob;    
     results.avalanche.timeFit.MLcompare = MLcompare;    
-    results.avalanche.timeFit.kingAv = kingAv(bins, prob, xmx);    
+    results.avalanche.timeFit.kingAv = kingAvLoc(bins, prob, xmx);    
     saveas(gcf, strcat(saveFolder, '/avLife.png'))
     close all;
     
