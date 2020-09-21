@@ -7,6 +7,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         baseFolder: folder where simulations are found
                     vals: possible values of the independ
 
+    compAvalanche('/home/joelh/Documents/NeuroNanoAI/Avalanche/RectChangeV', 0.7:0.1:1.8, 'V^*', 'Vstar', [-2,-1,-0.5])
 %}
 
     %% defaults
@@ -122,12 +123,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
             dx3(i,j) = critResults{i,j}.avalanche.gamma.dx3;
             bins = critResults{i,j}.avalanche.sizeFit.bins;
             prob = critResults{i,j}.avalanche.sizeFit.prob;
-            [pks, locs] = findpeaks(prob);
-            possMax = find(bins(locs) > critResults{i,j}.avalanche.sizeFit.uc);
-            [~, I] = max(pks(possMax));
-            if numel(I) > 0
-                kingAv(i,j) = bins(locs(possMax(I)));
-            end
+            kingAv(i,j) = kingAvLoc(bins, prob, Suct(i,j));
         end
 
 
