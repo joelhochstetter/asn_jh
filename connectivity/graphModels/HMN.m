@@ -57,8 +57,8 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
             NdBlockl = M0*b^(l-1); %number of nodes per block
             nBlockl  =  b^(numLevels - l); %number of blocks at l-th level
             probi = alpha*p^l;
-            if probi > 1 || probi < 0
-                disp('WARNING: Probability outside [0,1].')
+            if probi >= 1 || probi <= 0
+                disp('WARNING: Probability outside (0,1).')
             end
             
             for i = 1:nBlockl
@@ -67,8 +67,6 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
                 %randomly sample these edges according to probability for
                 %each level
                 %re-map to indices within block and add edges to adjMat
-%                 for xx = 1:NdBlockl
-%                     for yy = 1:NdBlockl
                 probs = binornd(1, probi, [nbComb,NdBlockl,NdBlockl]);
                 [bidx,Ndx,Ndy] = ind2sub(size(probs),find(probs)');             
                 Ex = Ndx + (b*(i - 1) + bComb(1,bidx) - 1)*NdBlockl; 
