@@ -11,6 +11,8 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
             connections
         M0     (integer): Number of nodes in fully connected modules
          b     (integer): Number of modules in set of higher level blocks
+         alpha  (double): constant number of connections for HMN2. For
+                            HMN1, alpha*p^l is the probability.
      numLevels (integer): Number of levels in network hierarchy
              p  (double): probability 0<p<1
           seed (integer): If >=0 then random seed of number generated. If < 0 then use
@@ -55,6 +57,10 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
             NdBlockl = M0*b^(l-1); %number of nodes per block
             nBlockl  =  b^(numLevels - l); %number of blocks at l-th level
             probi = alpha*p^l;
+            if probi > 1 || probi < 0
+                disp('WARNING: Probability outside [0,1].')
+            end
+            
             for i = 1:nBlockl
                 %[b,Ndx,Ndy] is a 3D array (size b x NdBlockl x NdBlockl)
                 %of all possible edge choices
