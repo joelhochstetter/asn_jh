@@ -148,6 +148,10 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
     if ~isfield(whatToPlot, 'Conductance')
        whatToPlot.Conductance = false; 
     end        
+
+    if ~isfield(whatToPlot, 'LogConductance')
+       whatToPlot.LogConductance = false; 
+    end         
     
     if ~isfield(whatToPlot, 'JnCurrents')
        whatToPlot.JnCurrents = false; 
@@ -195,7 +199,6 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
 %         set(0,'defaultAxesFontName', 'Times')
 %         set(0,'defaultTextFontName', 'Times')
         %set(gca,'xtick',[],'ytick',[]);
-
         
         
         %Convert to graph rep
@@ -402,15 +405,16 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
              colormap(parula1);
         
         
-        elseif whatToPlot.Conductance
+        elseif whatToPlot.LogConductance
             % calculate power consumption:
             p.EdgeCData = log10(snapshot.Conductance(1:connectivity.NumberOfEdges)/7.77e-5);          
             cbar  = colorbar;
             caxis([log10(axesLimits.ConCbar(1)/7.77e-5),round(log10(axesLimits.ConCbar(2)/7.77e-5))]);
             %caxis([log10(axesLimits.ConCbar(1)),round(log10(axesLimits.ConCbar(2)))]);
             
-            % colorbar:               
-            cbar.Label.String = 'Junction Conductance (units of G_0)';
+            % colorbar: 
+            title(cbar, 'G_{jn} (G_0)', 'FontSize', 10);%, 'FontWeight', 'bold');    
+%             cbar.Label.String = 'Junction Conductance (units of G_0)';
             cbar.FontSize = 9;
             for i = 1:numel(cbar.Ticks)
                 cbar.TickLabels{i} = num2str(10.^(cbar.Ticks(i)), '%10.1e');
@@ -418,6 +422,22 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             
 %             cbar.TickLabels = string(10.^(cbar.Ticks));          
             colormap('parula');
+            
+        elseif whatToPlot.Conductance
+            % calculate power consumption:
+            p.EdgeCData = snapshot.Conductance(1:connectivity.NumberOfEdges)/7.77e-5;          
+            cbar  = colorbar;
+            caxis([axesLimits.ConCbar(1)/7.77e-5,axesLimits.ConCbar(2)/7.77e-5]);
+            %caxis([log10(axesLimits.ConCbar(1)),round(log10(axesLimits.ConCbar(2)))]);
+            
+            % colorbar:               
+            title(cbar, 'G_{jn} (G_0)', 'FontSize', 10);%, 'FontWeight', 'bold');                        
+%             cbar.Label.String = 'Junction Conductance (units of G_0)';
+            cbar.FontSize = 9;
+            
+%             cbar.TickLabels = string(10.^(cbar.Ticks));          
+            colormap('parula');
+            
 
         elseif whatToPlot.JnCurrents
             currents =(abs(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Conductance(1:connectivity.NumberOfEdges))); % (nA)

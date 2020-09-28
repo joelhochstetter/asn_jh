@@ -61,8 +61,10 @@ function adjMat = HMN(HMtype, M0, b, alpha, numLevels, p, seed)
                 %randomly sample these edges according to probability for
                 %each level
                 %re-map to indices within block and add edges to adjMat
+%                 for xx = 1:NdBlockl
+%                     for yy = 1:NdBlockl
                 probs = binornd(1, probi, [nbComb,NdBlockl,NdBlockl]);
-                [bidx,Ndx,Ndy] = ind2sub(size(probs),find(probs));             
+                [bidx,Ndx,Ndy] = ind2sub(size(probs),find(probs)');             
                 Ex = Ndx + (b*(i - 1) + bComb(1,bidx) - 1)*NdBlockl; 
                 Ey = Ndy + (b*(i - 1) + bComb(2,bidx) - 1)*NdBlockl;              
                 adjMat(sub2ind([Nd,Nd],Ex,Ey)) = 1; %assign elements of array corresponding to (Ex(i), Ey(i)) for i = 1:numel(Ex)
