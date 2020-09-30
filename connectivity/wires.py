@@ -682,7 +682,7 @@ def export_to_matlab(wires_dict, filename=None, save_pkl=False, folder = 'connec
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    pathfile = os.path.join(folder, filename)
+    pathfile = os.path.join(folder, filename + '.mat')
     print('Saved to: ', pathfile)
     savemat(pathfile, temp_dict)
     
