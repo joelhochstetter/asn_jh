@@ -145,7 +145,7 @@ clc
             Connectivity.VertexPosition = [xc;yc].';
             Connectivity.WireEnds       = [xa;ya;xb;yb].';
             Connectivity.EdgePosition   = [xi;yi].';
-            
+            Connectivity.seed = this_seed;
 
             if exist('KCLCoeff','var')
                Connectivity.KCLCoeff = KCLCoeff;
