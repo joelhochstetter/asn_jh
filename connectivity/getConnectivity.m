@@ -136,7 +136,7 @@ clc
         case 'nanoWires'
             load(Connectivity.filename, 'length_x', 'length_y', 'number_of_wires', 'adj_matrix', 'wire_distances');
             %load(Connectivity.filename, 'xc', 'yc', 'xi', 'yi', 'xa', 'ya', 'xb', 'yb', 'KCLCoeff', 'KVLCoeff');
-            load(Connectivity.filename, 'xc', 'yc', 'xi', 'yi', 'xa', 'ya', 'xb', 'yb');
+            load(Connectivity.filename, 'xc', 'yc', 'xi', 'yi', 'xa', 'ya', 'xb', 'yb', 'this_seed');
             
             Connectivity.GridSize       = [length_x,length_y];
             Connectivity.NumberOfNodes  = number_of_wires;
