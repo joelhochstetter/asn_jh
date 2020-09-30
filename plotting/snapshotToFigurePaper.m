@@ -431,9 +431,9 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             %caxis([log10(axesLimits.ConCbar(1)),round(log10(axesLimits.ConCbar(2)))]);
             
             % colorbar:               
-            title(cbar, 'G_{jn} (G_0)', 'FontSize', 10);%, 'FontWeight', 'bold');                        
+            title(cbar, 'G_{jn} (G_0)', 'FontSize', 15);%, 'FontWeight', 'bold');                        
 %             cbar.Label.String = 'Junction Conductance (units of G_0)';
-            cbar.FontSize = 9;
+            cbar.FontSize = 15;
             
 %             cbar.TickLabels = string(10.^(cbar.Ticks));          
             colormap('parula');
