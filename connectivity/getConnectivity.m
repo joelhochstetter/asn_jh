@@ -243,7 +243,7 @@ clc
             for i = 1:(Connectivity.sizex - 1)
                 for j = 1:Connectivity.sizey
                     Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = 1;
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = 1;                
+                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = 1;            
                 end
             end
 
@@ -275,8 +275,10 @@ clc
                     Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = p;                
                 end
             end                  
-        end
+        end       
         
+        nds = 0:(Connectivity.NumberOfNodes - 1);
+        Connectivity.VertexPosition = 1 +  [floor(nds/Connectivity.sizex); mod(nds, Connectivity.sizex)].';      
         
     %---------------------------------------------------------------------%  
 
@@ -465,6 +467,8 @@ clc
 %                 AddEdges = size(Connectivity.EdgePosition, 1)  + (1:numel(Connectivity.addNodes{i}));
                 %Edge position currently doesn't work
                 Connectivity.EdgePosition(end + (1:numel(Connectivity.addNodes{i})),1:2) = Connectivity.VertexPosition(Connectivity.addNodes{i},1:2);
+            elseif isfield(Connectivity, 'VertexPosition')
+                Connectivity.VertexPosition(oldNumNodes + i,1:2) = mean(Connectivity.VertexPosition(Connectivity.addNodes{i},1:2), 1);
             end
 %             if isfield(Connectivity,'EdgeList')
 %                 Connectivity.EdgeList(1:2, end + (1:numel(Connectivity.addNodes{i}))) = [Connectivity.addNodes{i}; oldNumNodes + i];
@@ -513,7 +517,7 @@ clc
     
     if ~isfield(Connectivity,'VertexPosition')
         % Generate position
-        Connectivity.VertexPosition = [(1:Connectivity.NumberOfNodes).' zeros(Connectivity.NumberOfNodes,2)];
+        Connectivity.VertexPosition = zeros(Connectivity.NumberOfNodes,2);
     end
     
     

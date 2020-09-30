@@ -183,7 +183,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
         % https://au.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.graphplot-properties.html
         %Set-up figure and colour
         snapshotFigure = figure('visible','off', 'color','w', 'units', 'centimeters', 'OuterPosition', [5 5 25 20]);
-        set(gca,'Color',[0 0 0],'xtick',[],'ytick',[]);
+        set(gca,'Color',[0.2 0.2 0.2],'xtick',[],'ytick',[]);
         
         %set(gca,'xtick',[],'ytick',[]);
 
@@ -198,10 +198,17 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
         %G.Edges.Weight = full(snapshot.Voltage(1:connectivity.NumberOfEdges));
 
         hold all;
-        p = plot(G,'Layout','auto','LineStyle','-','LineWidth',4, 'MarkerSize',5);
-
+        
+        if sum(abs(connectivity.VertexPosition(:))) == 0
+            p = plot(G,'Layout','auto','LineStyle','-','LineWidth',4, 'MarkerSize',5);
+        else
+            x = connectivity.VertexPosition(:,1);
+            y = connectivity.VertexPosition(:,2);            
+            p = plot(G, 'LineStyle', '-', 'LineWidth',10, 'MarkerSize',10, 'XData',x,'YData',y);
+        end
+            
         % Highlight on switches
-            % Find the edges which correspond to OFF switches:
+        % Find the edges which correspond to OFF switches:
         badPairs = connectivity.EdgeList(:,~snapshot.OnOrOff(1:connectivity.NumberOfEdges));
             % Get the original adjacency matrix:
         adjacencyMatrix = connectivity.weights;
@@ -209,7 +216,7 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             % Remove the edges which correspond to OFF switches:
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(1,:),badPairs(2,:))) = 0;
         adjacencyMatrix(sub2ind(size(adjacencyMatrix),badPairs(2,:),badPairs(1,:))) = 0;
-        highlight(p, graph(adjacencyMatrix),'EdgeColor','w','LineWidth',3.5,'LineStyle','-')
+%         highlight(p, graph(adjacencyMatrix))
 
         ax=plot(NaN,NaN,'b--',NaN,NaN,'w'); %plotting invisible points of desired colors
         %legend(ax,'OFF switch','ON switch');        %adding the legend
@@ -251,14 +258,14 @@ function snapshotFigure = snapshotToFigureThesis(snapshot, contacts, connectivit
             colours = ['r';'g'];
             if whatToPlot.Nanowires
                 for i = 1:numel(contacts)
-                    highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
+                    highlight(p,contacts(i),'Marker', '*','MarkerSize',30,'NodeColor',colours(1+isSource(i)))
                 end
             else
                 source = contacts(logical(isSource));
                 drain  = contacts(~logical(isSource));
                 
-                scatter(p.XData(source),p.YData(source),15,[[0 1 0];[1 0 0]],'Marker', '*','g');
-                scatter(p.XData(drain),p.YData(drain),15,[[0 1 0];[1 0 0]],'Marker', '*','r');
+                scatter(p.XData(source),p.YData(source),30,[[0 1 0];[1 0 0]],'Marker', '*','g');
+                scatter(p.XData(drain),p.YData(drain),30,[[0 1 0];[1 0 0]],'Marker', '*','r');
             end
         end
             
