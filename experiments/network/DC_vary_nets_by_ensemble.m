@@ -78,11 +78,12 @@ ensembleID: 0 (fixed density, change size),
 
     %%
     
-    saveF1 = strcat(saveFolder, '/Vidx', num2str(Vidx), '/seed', num2str(seedIdx - 1,'%03.f'), '/');
-    mkdir(fullfile(saveF1))
     Vstar =  [0.7, 1.0, 1.01, 1.05, 1.8];
     disp(strcat2({'Vstar = ', Vstar(Vidx)}));
-    DC_Vsweep_for_cluster(Vidx, saveF1, Vstar(Vidx)*0.01, Vstar(Vidx)*0.01, 1, connFile, 0 , '.', -1, 30, false, true, -1, 1, true, 0.025, nameComment, 1.0, true)
+    saveF1 = strcat(saveFolder, '/Vstar', num2str(Vstar(Vidx)), '/seed', num2str(seedIdx - 1,'%03.f'), '/');
+    mkdir(fullfile(saveF1))
+    
+    DC_Vsweep_for_cluster(1, saveF1, Vstar(Vidx)*0.01, Vstar(Vidx)*0.01, 1, connFile, 0 , '.', -1, 30, false, true, -1, 1, true, 0.025, nameComment, 1.0, true)
 %     DC_Vsweep_for_cluster(Vidx, saveF1, 1.05*0.01, 2.08*0.01, 0.95*0.01, connFile, 0 , '.', -1, 1e-2, true, true, -1, 1, true, 0.025, nameComment, 1.0, false)
     
     
