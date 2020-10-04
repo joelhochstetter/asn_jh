@@ -17,13 +17,20 @@ ensembleID: 0 (fixed density, change size),
     switch ensembleID
         case 0 %fixed density, change size 
             disp('Simulating networks of fixed density, changing size')
-            netSizes = 40:10:80;
+            netSizes = [50, 100, 200];
             Szeidx    = floor((idx-1)/numSeeds) + 1;
-            disp(strcat2({'Seed: ', seedIdx - 1, ', D = ', netSizes(Szeidx)}));
+            thisSize = netSizes(Szeidx);            
+            disp(strcat2({'Seed: ', seedIdx - 1, ', D = ', thisSize}));
 
-            nets = dir(strcat(netFolder, '/*_seed_', num2str(seedIdx - 1,'%03.f'), '*lx_', num2str(netSizes(Szeidx)),'*.mat'))';
-            connFile = nets(1).name;
-            nameComment = strcat2({'_Lx', netSizes(Szeidx), '_seed', seedIdx - 1}, '%03.f');
+            if exist(strcat2({'conn_lx_', thisSize, '.mat'}), 'file')
+                load(strcat2({'conn_lx_', thisSize, '.mat'}), 'conSeeds')
+                actualSeed = conSeeds(seedIdx);
+                nets = dir(strcat(netFolder, '/*_seed_', num2str(actualSeed,'%03.f'), '*lx_', num2str(thisSize),'*.mat'))';                
+            else
+                nets = dir(strcat(netFolder, '/*_seed_', num2str(seedIdx - 1,'%03.f'), '*lx_', num2str(thisSize),'*.mat'))';
+            end
+           connFile = nets(1).name;
+           nameComment = strcat2({'_Lx', thisSize, '_seed', seedIdx - 1}, '%03.f');
 
         case 1 %fixed wires, change density
             disp('Simulating networks of fixed wires, changing density')            

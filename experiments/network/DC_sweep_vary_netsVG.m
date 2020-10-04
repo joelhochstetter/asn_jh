@@ -1,9 +1,13 @@
 function DC_sweep_vary_netsVG(idx, netFolder, saveFolder) 
     
     nets = dir(strcat(netFolder, '/*.mat'))';
-    numNets = 25;
-    netIdx = mod((idx-1), numNets) + 1; 
-    Vidx    = floor((idx-1)/numNets) + 1;
+%     numNets = 25;
+%     netIdx = mod((idx-1), numNets) + 1; 
+%     Vidx = floor((idx-1)/numNets) + 1;
+    
+    numV = 76;
+    netIdx = floor((idx-1)/numV) + 1; 
+    Vidx    = mod((idx-1), numV) + 1; 
     saveF1 = strcat(saveFolder, '/NWN', nets(netIdx).name, '/');
     mkdir(saveF1)
 %     DC_Vsweep_for_cluster(Vidx, saveF1, 45*1.25*0.01, 45*1.25*0.01, 45*0.25*0.01, nets(netIdx).name, 0 , '.', 45)
