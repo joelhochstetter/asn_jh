@@ -22,8 +22,8 @@ ensembleID: 0 (fixed density, change size),
             thisSize = netSizes(Szeidx);            
             disp(strcat2({'Seed: ', seedIdx - 1, ', D = ', thisSize}));
 
-            if exist(strcat2({'conn_lx_', thisSize, '.mat'}), 'file')
-                load(strcat2({'conn_lx_', thisSize, '.mat'}), 'conSeeds')
+            if exist(strcat2({netFolder, '/conn_lx_', thisSize, '.mat'}), 'file')
+                load(strcat2({netFolder, '/conn_lx_', thisSize, '.mat'}), 'conSeeds')
                 actualSeed = conSeeds(seedIdx);
                 nets = dir(strcat(netFolder, '/*_seed_', num2str(actualSeed,'%03.f'), '*lx_', num2str(thisSize),'*.mat'))';                
             else
