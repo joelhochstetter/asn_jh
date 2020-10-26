@@ -64,7 +64,7 @@ function DC_sim_random_states(initSeed, connSeed, saveFolder, amp, useRect, resc
         Connectivity          = getConnectivity(params.Conn);
         params.SimOpt.RectElectrodes = true;
         params.SimOpt.NewEdgeRS      = false;
-        params.SimOpt.RectFractions  = 0.025;
+        params.SimOpt.RectFractions  = 0.05;
         params.SimOpt.XRectFraction  = 1.0;    
         [~, ~, SDpath] = addRectElectrode(Connectivity, params.SimOpt.RectFractions, params.SimOpt.XRectFraction);
         if SDpath == Inf
