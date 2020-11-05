@@ -142,6 +142,7 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
             
         case 'Custom'
             Stimulus.Signal = Stimulus.Signal;
+            Stimulus.stimName = 'custom';
             
         case 'Triangle'
             t  = SimulationOptions.TimeVector - SimulationOptions.dt - SimulationOptions.T/2; 

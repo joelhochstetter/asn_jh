@@ -53,7 +53,7 @@ function [runs] = multify (params)
     if isfield(params,'Stim') > 0     
         stFlds = fieldnames(params.Stim);
         for i = 1:numel(stFlds)
-            if isnumeric(params.Stim.(stFlds{i})) == 0
+            if isnumeric(params.Stim.(stFlds{i})) == 0 || strcmp('Signal', stFlds{i})
                 Stim.(stFlds{i}) = params.Stim.(stFlds{i});
             else
                 combs = combvec(combs,params.Stim.(stFlds{i}));
