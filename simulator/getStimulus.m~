@@ -73,6 +73,12 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
     Stimulus = getStimulus(Stimulus, Options);
 %}
 %
+% EDIT (5/11/2:
+%{
+    
+
+%}
+%
 %
 % Authors:
 % Ido Marcus
@@ -142,7 +148,6 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
             
         case 'Custom'
             Stimulus.Signal = Stimulus.Signal;
-            
         case 'Triangle'
             t  = SimulationOptions.TimeVector - SimulationOptions.dt - SimulationOptions.T/2; 
             w  = SimulationOptions.T;

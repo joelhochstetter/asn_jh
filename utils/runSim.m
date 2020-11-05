@@ -269,10 +269,6 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
         Signals{1} = Stimulus2.Signal;
 
         Signals{2} = zeros(2*SimulationOptions.NumberOfIterations + 1,1);
-
-        SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-        Components = initializeComponents(Connectivity.NumberOfEdges,Components);    
-        
         
     else
         if SimulationOptions.numOfElectrodes == 2
@@ -281,9 +277,6 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             Signals{1} = Stimulus.Signal;
 
             Signals{2} = zeros(SimulationOptions.NumberOfIterations,1);
-
-            SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-            Components = initializeComponents(Connectivity.NumberOfEdges,Components);
         
         elseif SimulationOptions.oneSrcMultiDrn %single source multiple drains
             %First electrode in contacts is source. Rest are drains
@@ -294,9 +287,6 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
             for i = 2:SimulationOptions.numOfElectrodes
                 Signals{i} = zeros(SimulationOptions.NumberOfIterations,1);
             end
-
-            SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-            Components = initializeComponents(Connectivity.NumberOfEdges,Components);            
         
         elseif SimulationOptions.MultiSrcOneDrn %single source multiple drains
             %First electrode in contacts is source. Rest are drains
@@ -308,13 +298,18 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
                 Signals{i} = Stimulus.Signal;
             end
 
-            SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
-            Components = initializeComponents(Connectivity.NumberOfEdges,Components);            
-
+        else %Multi-source, multi-drain
+            Signals = cell(SimulationOptions.numOfElectrodes, 1);            
+            for i = 1:SimulationOptions.numOfElectrodes
+                Signals{i} = Stimulus.Signal(:,i);
+            end            
         end 
 
     end
-        
+    SimulationOptions.electrodes      = SimulationOptions.ContactNodes;
+    Components = initializeComponents(Connectivity.NumberOfEdges,Components);    
+    
+    
     %% generate saveName
     if SimulationOptions.saveSim == 1 
         [saveName, alreadyExists] = genSaveName(SimulationOptions, Components, Stimulus);

@@ -92,6 +92,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
         
         if fitP.useML
             if numel(unique(sizeAv(sizeAv <= fitP.uc))) > 2
+%                 fitP.uc = 100;
                 MLcompare = mlFit(sizeAv(sizeAv <= fitP.uc), fitP.fitTrun);
                 tau   = MLcompare.PL.tau;
                 xmin = MLcompare.PL.xmin;
