@@ -77,11 +77,11 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
 %     sizeAv(sizeAv >= upperCut) = [];
 
     %% Extract region of distribution that is strictly decreasing
-    [~, firstMin] = findpeaks(-N);
-    firstMin = firstMin(1);
-    if firstMin < numel(N)
-        fitP.uc = edges(firstMin + 1);
-    end
+%     [~, firstMin] = findpeaks(-N);
+%     firstMin = firstMin(1);
+%     if firstMin < numel(N)
+%         fitP.uc = edges(firstMin + 1);
+%     end
     
     %%
 

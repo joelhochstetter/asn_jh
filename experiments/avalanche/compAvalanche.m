@@ -57,7 +57,8 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
     dx2 = zeros(N,Nbs);
     x3  = zeros(N,Nbs);
     dx3 = zeros(N,Nbs);
-    kingAv = zeros(N,Nbs);
+    kingAvS = zeros(N,Nbs);
+    kingAvT = zeros(N,Nbs);
     IEIbins = cell(N,Nbs);
     IEIprob = cell(N,Nbs);
     Szbins  = cell(N,Nbs);
@@ -97,6 +98,9 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
             if isfield(critResults{i,j}.avalanche, 'branchRatio')
                 branch(i,j) = critResults{i,j}.avalanche.branchRatio;            
             end
+            if ~isfield(critResults{i,j}.avalanche, 'sizeFit')
+                continue
+            end            
             Stau(i,j) = critResults{i,j}.avalanche.sizeFit.tau;
             Sdta(i,j) = critResults{i,j}.avalanche.sizeFit.dTau;
             Slct(i,j) = critResults{i,j}.avalanche.sizeFit.lc;
@@ -104,7 +108,10 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
             Sksd(i,j) = critResults{i,j}.avalanche.sizeFit.ksd;
             Spvl(i,j) = critResults{i,j}.avalanche.sizeFit.pvl;
             Szbins{i,j} = critResults{i,j}.avalanche.sizeFit.bins;
-            Szprob{i,j} = critResults{i,j}.avalanche.sizeFit.prob;    
+            Szprob{i,j} = critResults{i,j}.avalanche.sizeFit.prob;
+            if ~isfield(critResults{i,j}.avalanche, 'timeFit')
+                continue
+            end
             Talp(i,j) = critResults{i,j}.avalanche.timeFit.alpha;
             Tdal(i,j) = critResults{i,j}.avalanche.timeFit.dAlpha;
             Tlct(i,j) = critResults{i,j}.avalanche.timeFit.lc;
@@ -123,7 +130,10 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
             dx3(i,j) = critResults{i,j}.avalanche.gamma.dx3;
             bins = critResults{i,j}.avalanche.sizeFit.bins;
             prob = critResults{i,j}.avalanche.sizeFit.prob;
-            kingAv(i,j) = kingAvLoc(bins, prob, Suct(i,j));
+            kingAvS(i,j) = kingAvLoc(bins, prob, Suct(i,j));
+            bins = critResults{i,j}.avalanche.timeFit.bins;
+            prob = critResults{i,j}.avalanche.timeFit.prob;            
+            kingAvT(i,j) = kingAvLoc(bins, prob, Tuct(i,j));
         end
 
 
@@ -138,7 +148,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         plot(vals, Slct(:,j), ':');
         hold on;
         plot(vals, Suct(:,j), 'k--');
-        plot(vals, kingAv(:,j), 'r^', 'MarkerSize', 10)
+        plot(vals, kingAvS(:,j), 'r^', 'MarkerSize', 10)
         ylabel('cut-off')
         legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
         print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
@@ -291,7 +301,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         plot(binSize, Slct(j,:), '^');
         hold on;
         plot(binSize, Suct(j,:), 'kh');
-        plot(binSize, kingAv(j,:), 'r*', 'MarkerSize', 10)    
+        plot(binSize, kingAvS(j,:), 'r*', 'MarkerSize', 10)    
         ylabel('cut-off')
         legend('\alpha', 'lc', 'uc', 'king', 'location', 'best')
         print(gcf,strcat(saveFolder, '/SizeComp.png'), '-dpng', '-r300', '-painters')
@@ -388,6 +398,7 @@ function compAvalanche(baseFolder, vals, varName, subtype, binSize, fmt)
         close all;
 
     end
-    
+    clear('critResults');
+    save(strcat(baseFolder, '/AvCompare/AvComp.mat'))
     
 end
