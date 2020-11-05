@@ -50,15 +50,15 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
         for i = 1:numFiles
             %import file
             [G, V, t, ~] = importByType(importMode, importFolder{j}, i);
-            [G, V, t] = applyConditions(G, V, t, conditions);
+            [G, V, t]    = applyConditions(G, V, t, conditions);
             
             if numel(t) == 0
                 continue
             end
             
             t  = reshape(t, [1, numel(t)]);
-            G = reshape(G, [1, numel(G)]);
-            V = reshape(V, [1, numel(V)]);
+            G = reshape(G,  [1, numel(G)]);
+            V = reshape(V,  [1, numel(V)]);
             
             t = t + tjoin(end) - t(1);
             

@@ -195,7 +195,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         % https://au.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.graphplot-properties.html
         %Set-up figure and colour
         snapshotFigure = figure('visible','off', 'color','w', 'units', 'centimeters', 'OuterPosition', [5 5 25 20]);
-        set(gca,'Color',[0.2 0.2 0.2],'xtick',[],'ytick',[]);
+        set(gca,'Color', 0.4*[1 1 1],'xtick',[],'ytick',[]);
 %         set(0,'defaultAxesFontName', 'Times')
 %         set(0,'defaultTextFontName', 'Times')
         %set(gca,'xtick',[],'ytick',[]);
@@ -269,8 +269,8 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
                 source = contacts(logical(isSource));
                 drain  = contacts(~logical(isSource));
                 
-                scatter(p.XData(source),p.YData(source),15,[[0 1 0];[1 0 0]],'Marker', '*','g');
-                scatter(p.XData(drain),p.YData(drain),15,[[0 1 0];[1 0 0]],'Marker', '*','r');
+                scatter(p.XData(source),p.YData(source),20,[[0 1 0];[1 0 0]],'Marker', '*','g');
+                scatter(p.XData(drain),p.YData(drain),20,[[0 1 0];[1 0 0]],'Marker', '*','r');
             end
         end
             
@@ -341,7 +341,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         elseif whatToPlot.VDrop
             p.EdgeCData = abs(snapshot.Voltage(1:connectivity.NumberOfEdges));
             cbar  = colorbar;    
-            cbar.Label.String = '\Delta V (V)';    
+            cbar.Label.String = 'Voltage (V)';    
             %upperLimit = 0.15;
             caxis(axesLimits.dVCbar);
             if whatToPlot.Weights 
