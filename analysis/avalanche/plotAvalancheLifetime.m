@@ -85,8 +85,9 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
     if fitPL
         
         if fitP.useML
-            if numel(unique(lifeAv)) > 2             
-                MLcompare = mlFit(lifeAv, fitP.fitTrun);
+            if numel(unique(lifeAv)) > 2            
+%                 fitP.uc = 60;
+                MLcompare = mlFit(lifeAv(lifeAv <= fitP.uc), fitP.fitTrun);
                 alpha   = MLcompare.PL.tau;
                 xmin = MLcompare.PL.xmin;
                 xmax = MLcompare.PL.xmax;
