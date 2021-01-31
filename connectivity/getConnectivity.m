@@ -236,6 +236,10 @@ clc
             Connectivity.BondProb = 1;
         end
 
+        if ~isfield(Connectivity, 'RewireProb') %bond probability
+            Connectivity.RewireProb = 0;
+        end        
+        
         if Connectivity.BondProb == 1
             %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
             %nodeIdx = Connectivity.sizex * (j - 1) + i
@@ -276,6 +280,10 @@ clc
                 end
             end                  
         end       
+        
+        if Connectivity.RewireProb ~= 0
+            
+        end
         
         nds = 0:(Connectivity.NumberOfNodes - 1);
         Connectivity.VertexPosition = 1 +  [floor(nds/Connectivity.sizex); mod(nds, Connectivity.sizex)].';      

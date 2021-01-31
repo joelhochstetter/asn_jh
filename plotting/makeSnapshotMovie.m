@@ -52,11 +52,11 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
         swLambda              = swLam(i,:)';
         swCon = swC(i,:)';
         snapshot = generateSnapshotFromData(swVolt, swLambda, swCon, critLam,  Signal(i), netC(i), timeVec(i));
-        frameFig = snapshotToFigureThesis(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], [])
-%         frameFig = snapshotToFigurePaper(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);          
+%         frameFig = snapshotToFigureThesis(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);
+        frameFig = snapshotToFigurePaper(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);          
         xx = Connectivity.GridSize(1);
         yy = Connectivity.GridSize(2);
-        RF = 0.05;
+        RF = 0.075;
         ex = [0, xx, xx, 0];
         sy = yy*[1-RF, 1-RF, 1, 1];
         dy = [0, 0, yy*RF, yy*RF];

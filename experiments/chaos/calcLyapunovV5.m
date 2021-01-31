@@ -58,8 +58,8 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     params.Comp.maxFlux = sim{1}.Comp.maxFlux;
     params.Comp.boost = sim{1}.Comp.boost;
     params.Comp.penalty = sim{1}.Comp.pen;
-    params.Comp.onConductance = sim{1}.Comp.onG;
-    params.Comp.offConductance = sim{1}.Comp.offG;
+    params.Comp.onConductance = sim{1}.Comp.onR;
+    params.Comp.offConductance = sim{1}.Comp.offR;
     
     params.Comp.nonpolar = useNp;
     
@@ -87,8 +87,8 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     
 
 
-    params.Comp.ComponentType = 'tunnelSwitchL';
-	params.SimOpt.T                = 150;%10/params.Stim.Frequency;
+    params.Comp.ComponentType = 'tunnelSwitch2';
+	params.SimOpt.T                = 100;%10/params.Stim.Frequency;
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
     

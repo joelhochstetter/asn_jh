@@ -304,13 +304,14 @@ def select_largest_component(wires_dict):
     wires_dict['generating_number_of_wires']     =  wires_dict['number_of_wires']    
     wires_dict['number_of_wires']     = nw
     wires_dict['number_of_junctions'] = nj
-    wires_dict['xa'] = wires_dict['xa'][sorted(wires_dict['G'].nodes())] 
-    wires_dict['ya'] = wires_dict['ya'][sorted(wires_dict['G'].nodes())] 
-    wires_dict['xb'] = wires_dict['xb'][sorted(wires_dict['G'].nodes())] 
-    wires_dict['yb'] = wires_dict['yb'][sorted(wires_dict['G'].nodes())]
-    wires_dict['xc'] = wires_dict['xc'][sorted(wires_dict['G'].nodes())] 
-    wires_dict['yc'] = wires_dict['yc'][sorted(wires_dict['G'].nodes())]
-    			
+    wires_dict['xa']    = wires_dict['xa'][sorted(wires_dict['G'].nodes())] 
+    wires_dict['ya']    = wires_dict['ya'][sorted(wires_dict['G'].nodes())] 
+    wires_dict['xb']    = wires_dict['xb'][sorted(wires_dict['G'].nodes())] 
+    wires_dict['yb']    = wires_dict['yb'][sorted(wires_dict['G'].nodes())]
+    wires_dict['xc']    = wires_dict['xc'][sorted(wires_dict['G'].nodes())] 
+    wires_dict['yc']    = wires_dict['yc'][sorted(wires_dict['G'].nodes())]
+    wires_dict['theta'] = wires_dict['theta'][sorted(wires_dict['G'].nodes())]
+        			
     # Keep old edge_list
     old_edge_list = [(ii, kk) for ii, kk in  zip(wires_dict['edge_list'][:, 0], wires_dict['edge_list'][:, 1])]
     # Remove old edge list

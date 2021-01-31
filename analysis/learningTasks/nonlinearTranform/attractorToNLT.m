@@ -1,7 +1,15 @@
-function NLTres = attractorToNLT(attractorFolder, saveFolder)
+function NLTres = attractorToNLT(attractorFolder, saveFolder, nds, saveName)
 %{
     From a folder of attractors calculates the 
 %}
+
+    if nargin < 3
+        nds = 1:100;
+    end
+
+    if nargin < 4
+        saveName = 'NLTresults.mat';
+    end
 
     addpath(genpath(attractorFolder));
     files = dir(strcat(attractorFolder, '/*.mat'));
@@ -120,7 +128,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         target = getStimulus(targetStim, targetSOpt);
 
         %%%
-        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, 0);
+        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, nds);
         figure('visible','off');
         plot(timeVec, target.Signal);
         hold on;
@@ -143,7 +151,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         target = getStimulus(targetStim, targetSOpt);
 
         %%%
-        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, 0);
+        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, nds);
         figure('visible','off');
         plot(timeVec, target.Signal);
         hold on;
@@ -166,7 +174,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         target = getStimulus(targetStim, targetSOpt);
 
         %%%
-        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, 0);
+        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, nds);
         figure('visible','off');
         plot(timeVec, target.Signal);
         hold on;
@@ -188,7 +196,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
         target = getStimulus(targetStim, targetSOpt);
 
         %%%
-        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, 0);
+        [weights, mse, rnmse, y] = NLT(target.Signal, nwV, nds);
         figure('visible','off');
         plot(timeVec, target.Signal);
         hold on;
@@ -222,7 +230,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder)
     NLTres.squRNMSE = squRNMSE;
     NLTres.squResult = squResult;
 
-    save(strcat(attractorFolder, '/', saveFolder, '/NLTresults.mat'), 'NLTres');
+    save(strcat(attractorFolder, '/', saveFolder, '/', saveName), 'NLTres');
 
 
 

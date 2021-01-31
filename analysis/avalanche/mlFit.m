@@ -1,7 +1,7 @@
 function Fit = mlFit(x, fitTrun)
 %{
     Uses a maximum likelihood method to compare the fits between:
-    For functional form see Marshall et. all 2012
+    For functional form see Marshall et. all 2016
     - power law (PL): uses doubly truncated if PL is true
     - Exponential (E)
     - Log-normal (LN)
@@ -41,9 +41,9 @@ function Fit = mlFit(x, fitTrun)
         Fit.PL  = struct('tau', tau, 'xmin', xmin, 'xmax', xmax, ...
         'llike', llike, 'aic', AIC, 'bic', BIC, 'dtau', 0.0);
     end
-    
+        
     %% Exponential
-    [lambda, lambdaci] = expfit(x);
+    [lambda, lambdaci] = expfit(x, statset('MaxIter',10000, 'MaxFunEvals', 10000));
     dlambda = (lambdaci(2) - lambdaci(1))/2;
     llike   = -explike(lambda,x);
     AIC  = aic(llike, 1);
@@ -52,7 +52,7 @@ function Fit = mlFit(x, fitTrun)
         'aic', AIC, 'bic', BIC);   
     
     %% Lognormal
-    [parmhat, parmci] = lognfit(x);
+    [parmhat, parmci] = lognfit(x, statset('MaxIter',10000, 'MaxFunEvals', 10000));
     llike   = -lognlike(parmhat, x);
     AIC  = aic(llike, 2);
     BIC  = bic(llike, 2, N);     
@@ -60,7 +60,7 @@ function Fit = mlFit(x, fitTrun)
         parmci(1,:),  'dsigma', parmci(2,:),'llike', llike, 'aic', AIC, 'bic', BIC);    
     
     %% Weibull
-    [parmhat, parmci] = wblfit(x);
+    [parmhat, parmci] = wblfit(x, statset('MaxIter',10000, 'MaxFunEvals', 10000));
     llike   = -wbllike(parmhat, x);
     AIC  = aic(llike, 2);
     BIC  = bic(llike, 2, N);     
