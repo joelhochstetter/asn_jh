@@ -1,10 +1,12 @@
-function events = findEventsFromFilState(sim, eventDetect)
+function [events, eventMat] = findEventsFromFilState(sim, eventDetect)
 %{
                  sim: Imported simulation
     eventDetect: struct
 
     returns vector: events of same length as time-series
 %}
+
+    eventMat = []; %currently only implemented as dGG spike method
 
     defEvDet.method = 'conductanceRatio';  % 'conductanceRatio'  /  'conductanceCrossing' / 'voltageSpike'
     defEvDet.conductanceRatio = 1.1; %ratio for conductance ratio
@@ -54,7 +56,8 @@ function events = findEventsFromFilState(sim, eventDetect)
         case 'dGGSpike'
             dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
             dGG = abs(dG./switchC)/sim.dt;
-            events = sum(thresholdCrossingPeaks(dGG, eventDetect.dGGratio),2);
+            eventMat = thresholdCrossingPeaks(dGG, eventDetect.dGGratio); %saves events as matrix
+            events = sum(eventMat, 2);
             events(end-1:end) = 0;
     end
     

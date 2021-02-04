@@ -83,7 +83,7 @@ function [tau, xmin, xmax, L] = plmle(x, varargin)
 xmin = min(x);
 xmax = max(x);
 tauRange = [1,3];
-precision = 10^-2;
+precision = 1e-2;
 
 iVarArg = 1;
 while iVarArg <= length(varargin)

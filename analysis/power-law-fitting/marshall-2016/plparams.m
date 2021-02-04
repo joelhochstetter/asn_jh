@@ -96,11 +96,11 @@
 % ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [tau, xmin, xmax, sigmaTau, p, pCrit, ks] = plparams(x, varargin)
+function [tau, xmin, xmax, sigmaTau, p, pCrit, ks, fullResults] = plparams(x, varargin)
 %% Parse command line for parameters
 
 nSamples = 500; %500
-pCrit = 0.5;%0.1; %0.2
+pCrit = 1.0;%0.1; %0.2
 likelihood = 1e-2; %1e-3
 
 iVarArg = 1;
@@ -154,6 +154,12 @@ rank = lnRInv.^2;
 [~, idx] = sort(rank, 'descend');
 support = support(idx,:);
 
+%%
+fullResults = struct('xmin', zeros(nSupport,1), ...
+    'xmax', zeros(nSupport,1), 'p', zeros(nSupport,1), ...
+    'tau', zeros(nSupport,1));
+
+
 %% Initiate greedy search for optimal support
 if nSupport < 1
     'fuck'
@@ -177,6 +183,11 @@ while sweepFlag && iSupport <= nSupport
     % p-value for MLE
     p = pvcalc(x, tau, 'xmin', xmin, 'xmax', xmax, 'samples', nSamples,...
         'threshold', pCrit, 'likelihood', likelihood);
+    
+    fullResults.xmin(iSupport)  = xmin;
+    fullResults.xmax(iSupport) = xmax;
+    fullResults.p(iSupport)       = p;
+    fullResults.tau(iSupport)    = tau;
     
     % halt search if p-value reaches critical p-value
     if p >= pCrit
