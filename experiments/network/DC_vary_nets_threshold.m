@@ -8,7 +8,7 @@ ensembleID: 0 (fixed density, change size),
 
 %}
 
-    if nargin < 7
+    if nargin < 6
         EventThreshold = 1e-3;
     end
 
