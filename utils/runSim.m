@@ -113,6 +113,7 @@ function [ sim ] = runSim(SimulationOptions,  Stimulus, Components, Connectivity
     DSimulationOptions.RectElectrodes  = false;  %overwrites electrode configuration to use rectangular electrode
     DSimulationOptions.RectFractions     = 0.05; %fraction of nodes in each electrode          
     DSimulationOptions.XRectFraction     = 1.00; %fraction of nodes in each electrode  in x direction       
+    DSimulationOptions.EventThreshold  = 1e-3;
 
 
     %% Simulation general options:

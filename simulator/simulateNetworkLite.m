@@ -64,7 +64,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
     edgeList        = Connectivity.EdgeList.';
     RHS             = zeros(V+numOfElectrodes,1); % the first E entries in the RHS vector.
     LHSinit         = zeros(V+numOfElectrodes, V+numOfElectrodes);
-        
+    disp(SimulationOptions.EventThreshold)
     electrodeCurrent   = zeros(niterations, numOfElectrodes);
 
     if SimulationOptions.saveFilStateOnly == true
@@ -143,7 +143,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
             switchC = tunnelSwitchL(d, 0.81, 0.17, Components.offConductance(1), Components.onConductance(1));
             dG = diff(switchC); dG  = [dG; zeros(1,size(switchC, 2))];
             dGG = abs(dG./switchC)/SimulationOptions.dt;
-            events = sum(thresholdCrossingPeaks(dGG, 1e-3),2);
+            events = sum(thresholdCrossingPeaks(dGG, SimulationOptions.EventThreshold),2);
             OutputDynamics.lambda =  compPtr.comp.filamentState';
         else
            OutputDynamics.lambda = filamentStates;

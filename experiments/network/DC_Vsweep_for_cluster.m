@@ -1,4 +1,4 @@
-function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon, pen, multiElectrode, rectFraction, nameComment, XRectFraction, saveEvents, useUncorrelated)
+function DC_Vsweep_for_cluster(idx, saveFolder, minAmp, maxAmp, stepAmp, connFile, initStateFile , initStateFolder, contactDistance, T, saveFilState, rescalePLength, initCon, pen, multiElectrode, rectFraction, nameComment, XRectFraction, saveEvents, useUncorrelated, EventThreshold)
 %{
     e.g. usuage
     attractorForCluster(1, 'simulations/InitStateLyapunov/Attractors/', 'simulations/InitStateLyapunov/Lyapunov/', 'ACsaw', 0.2:0.05:0.4,  [0.1, 0.25, 0.5, 0.75, 1.0], 't2_T0.75_DC0.2V_s0.01_r0.01_c0.01_m0.015_b10_p0.mat')
@@ -91,6 +91,9 @@ if nargin < 20
     useUncorrelated = false;
 end
 
+if nargin < 21
+    EventThreshold = 1e-3;
+end
 
 
 %%
@@ -109,6 +112,7 @@ params.SimOpt.saveSwitches = false;
 
 params.SimOpt.saveFilStateOnly = saveFilState;
 params.SimOpt.saveEventsOnly  = saveEvents;
+params.SimOpt.EventThreshold  = EventThreshold;
 
 params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
 params.SimOpt.saveFolder      = saveFolder;
