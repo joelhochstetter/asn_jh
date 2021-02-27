@@ -62,7 +62,7 @@ function NLTres = attractorToNLT(attractorFolder, saveFolder, nds, saveName)
         params.SimOpt.saveFolder       = strcat(attractorFolder, '/', saveFolder);
         mkdir(params.SimOpt.saveFolder)
         
-        params.Comp.ComponentType = 'tunnelSwitch2';
+        params.Comp.ComponentType = 'tunnelSwitchL';
         params.Stim.BiasType = sim{1}.Stim.BiasType;
         params.Stim.Amplitude = sim{1}.Stim.Amplitude;    
         params.Stim.Frequency = sim{1}.Stim.Frequency; 
