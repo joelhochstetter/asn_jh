@@ -19,6 +19,9 @@ function [binned,  times,  binJoinPeriod] = binWithJoins(data, tStep, joinperiod
         binned = binData(data, tStep);
         return;
     elseif numel(joinperiod) == 1
+        if joinperiod <= 0
+            joinperiod = numel(data);
+        end
         joinperiod = [0, joinperiod:joinperiod:numel(data)];
     elseif joinperiod(1) > 1
         joinperiod = [0, joinperiod];

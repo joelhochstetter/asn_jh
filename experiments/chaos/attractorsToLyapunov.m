@@ -19,11 +19,13 @@ function attractorsToLyapunov(idx, numAtt, attractorFolder, lyFolder, runMode)
         runIdx = ceil(idx/numAtt);
         %calc
         calcLyapunovV5(0, runIdx, attractorFolder, files(attIdx).name, lyFolder, 0)
-    elseif runMode == 1
+    elseif runMode == 1 %each index corresponds to a perturbed junction
         for attIdx = 1:numAtt
             disp(strcat('Attractor: ', files(attIdx).name, ', idx: ', num2str(idx)));
             calcLyapunovV5(0, idx, attractorFolder, files(attIdx).name, lyFolder, 0)
         end            
+    elseif runMode == 2 %each index corresponds to one attractor:
+        calcLyapunovV5(0, -1, attractorFolder, files(idx).name, lyFolder, 0)
     end
     
 end

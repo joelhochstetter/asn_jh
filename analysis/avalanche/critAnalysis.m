@@ -233,46 +233,31 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
 
     
     
-    %% Avalanche shape analysis
+    %% Avalanche shape collapse
+    %old method from fitting polynomial. New method is independent of the
+    %polynomial fit
     [dur, size_t, time_t] = avalancheShape(binned);
     results.avalanche.shape.dur    = dur;
     results.avalanche.shape.size_t = size_t;
     results.avalanche.shape.time_t = time_t;
-    
-    %size distribution
+    minTime = 5;
+    minFreq  = 50;
+    ToPlot = true;
     figure('visible','off');
-    hold on;
-    for i = 2:numel(dur)
-        plot(time_t{i},size_t{i})
-    end
-    xlabel('t (bins)')
-    ylabel('s(t) (events)')
-    title('Average avalanche shape as a function of time');
-    saveas(gcf, strcat(saveFolder, '/avShape.png'))
-    close all;
+    [~, ~, ~, new_t, size_t_ave, ~] = scaleCollapse(bins, prob, time_t, size_t, results.avalanche.timeFit.uc, minTime, minFreq, ToPlot);
+    results.avalanche.shape.re_tm  = new_t;
+    results.avalanche.shape.re_sz  = size_t_ave;    
+
+    saveas(gcf, strcat(saveFolder, '/avalancheShape.png'))
 
     
-    %% Shape collapse and scaling function
-    [re_tm,re_sz, scale, acoeff, gamma] = avalancheShapeCollapse(dur, size_t, time_t);
-    results.avalanche.shape.re_tm  = re_tm;
-    results.avalanche.shape.re_sz  = re_sz;
-    results.avalanche.shape.scale  = scale;
-    results.avalanche.shape.acoeff = acoeff;
-    results.avalanche.shape.gamma  = gamma;
+    %% Calculate error in avalanche shape analysis
+    nBootstraps = 20;
+    sampleFraction = 1.0;
+    [invsignutau, errEst] = scaleCollapseWithErrors(binned, results.avalanche.timeFit.uc, minTime, minFreq, nBootstraps, sampleFraction, 0);
+    results.avalanche.shape.gamma  = invsignutau;
+    results.avalanche.shape.dgamma  = errEst;
     
-    figure('visible','off');
-    hold on;
-    for i = 2:numel(dur)
-        plot(re_tm{i}, scale{i}, '.--')
-    end
-    tt = 0:1e-3:1;
-    plot(tt, scaleFunction(tt, 1, acoeff, 1), '-', 'LineWidth',4)
-    xlabel('t (bins)')
-    ylabel('s(t) (events)')
-    title('Scaling function')
-    saveas(gcf, strcat(saveFolder, '/avScalingFun.png'))    
-    close all;
-
     
     %% Comparison of independent measures of gamma+1
     alpha = results.avalanche.timeFit.alpha;
@@ -284,8 +269,8 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     results.avalanche.gamma.dx1 = results.avalanche.gamma.x1 * sqrt((dta/tau)^2 + (dal/alpha)^2);   
     results.avalanche.gamma.x2  = gamma_m_1; 
     results.avalanche.gamma.dx2 = dgamma_m_1;
-    results.avalanche.gamma.x3  = 1 +gamma;
-    results.avalanche.gamma.dx3 = 0;
+    results.avalanche.gamma.x3  = invsignutau;
+    results.avalanche.gamma.dx3 = errEst;
     
     save(strcat(saveFolder, '/critResults.mat'), 'results');
     

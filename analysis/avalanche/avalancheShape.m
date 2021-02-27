@@ -1,4 +1,4 @@
-function [dur, size_t, time_t, numAv] = avalancheShape(events)
+function [dur, size_t, time_t, numAv, sample, lifeAv] = avalancheShape(events, sampleFraction, seed)
 %{
     Input:
         events (Nx1 array) - number of events at given time bin
@@ -7,6 +7,9 @@ function [dur, size_t, time_t, numAv] = avalancheShape(events)
     no events happen in preceding and after time-bin
 
     A avalanches are recorded
+
+    Can bootstrap by providing a sample fraction and seed
+
 
     Output:
         dur (Nx1 array) - each unique avalanche duration
@@ -20,6 +23,13 @@ function [dur, size_t, time_t, numAv] = avalancheShape(events)
        
 %}
 
+    if nargin < 2
+        sampleFraction = 1.0;
+    end
+    
+    if nargin < 3
+        seed = -1;
+    end
 
     minNum = 0; %minimum number of avalanches
 
@@ -30,7 +40,31 @@ function [dur, size_t, time_t, numAv] = avalancheShape(events)
     for avId = 1:A
         lifeAv(avId) = avEdg(avId+1) - avEdg(avId) - 1;
     end   
+   
     
+    
+    %% boostrap
+    nzAv = find(lifeAv > 0); %indices of non-zero avalanches
+    Anz = numel(nzAv); %number of actual avalanches
+    
+    if seed >= 0
+        %number of avalanches sampled 
+        AS = round(sampleFraction*Anz);
+
+        %Generate samples
+        rng(seed);    
+        sample = randi(Anz, AS, 1);
+        
+        sampleFull = nzAv(sample); %includes zero avalanches
+        lifeAv = lifeAv(sampleFull); 
+        
+    else
+        sampleFull = 1:A; %sample all avalanches
+        sample = 1:Anz;
+    end
+    
+    
+    %% generate durations
     dur = unique(lifeAv(lifeAv > 0), 'sorted');
     N   = numel(dur); 
     
@@ -44,12 +78,14 @@ function [dur, size_t, time_t, numAv] = avalancheShape(events)
     end
     
     
+    %%
     %make average event at each time point
     for i = 1:N %loop over event durations
         size_t{i} = zeros(dur(i) + 2,1);
         avIDs = find(lifeAv == dur(i)); %get the avalanche IDs
+        avIDs = sampleFull(avIDs); %convert back to original ID      
         nRelv = numel(avIDs); %Number of relevant avalanches
-        if nRelv >= minNum
+        if nRelv > 0
             for j = 1:(dur(i) + 2) %loop over size of avalanche            
                 for k = 1:nRelv %loop over the relevant avalanches
                     if avEdg(avIDs(k)) + j - 1 > numel(events)
@@ -63,6 +99,8 @@ function [dur, size_t, time_t, numAv] = avalancheShape(events)
         numAv(i)  = nRelv;
     end
     
+    %%
+    lifeAv = lifeAv(lifeAv > 0);
     
    
 

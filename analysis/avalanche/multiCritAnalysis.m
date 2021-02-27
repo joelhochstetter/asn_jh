@@ -45,7 +45,7 @@ function multiCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     %% Process files and extract G, V, t
     numFiles = howManyFiles(importMode, importFolder);
 %     for i = 1:numFiles    
-    parfor i = 1:numFiles
+    for i = 1:numFiles
         %import file
         [G, V, t, fname] = importByType(importMode, importFolder, i);
         dt = (t(end) - t(1))/(numel(t) - 1);

@@ -100,7 +100,7 @@ function [tau, xmin, xmax, sigmaTau, p, pCrit, ks, fullResults] = plparams(x, va
 %% Parse command line for parameters
 
 nSamples = 500; %500
-pCrit = 0.2;%0.1; %0.2
+pCrit = 0.5;%0.1; %0.2
 likelihood = 1e-2; %1e-3
 
 iVarArg = 1;
@@ -154,7 +154,7 @@ rank = lnRInv.^2;
 [~, idx] = sort(rank, 'descend');
 support = support(idx,:);
 
-%%
+%% Store fullResults
 fullResults = struct('xmin', zeros(nSupport,1), ...
     'xmax', zeros(nSupport,1), 'p', zeros(nSupport,1), ...
     'tau', zeros(nSupport,1));
@@ -196,6 +196,10 @@ while sweepFlag && iSupport <= nSupport
         iSupport = iSupport + 1;
     end
 end
+
+
+%% Find best one
+pThresh = 0.5;
 
 
 

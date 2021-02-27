@@ -10,8 +10,11 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 %   Ly.mat stores junction Lyapunov exponents and mean exponent
 %   Ly.h5 stores exponential diverges at each time step and running
 %       lyapunov exponents at the end of each period to check for convergence
-%
+% idx < 0 loops through all things
 % Written by Joel Hochsteter
+
+
+
 
     %% quit if file exists
     if numel(idx) == 1 && idx >= 1
@@ -88,7 +91,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 
 
     params.Comp.ComponentType = 'tunnelSwitch2';
-	params.SimOpt.T                = 100;%10/params.Stim.Frequency;
+	params.SimOpt.T                = 150;%10/params.Stim.Frequency;
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
     
@@ -161,7 +164,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 
             end                
         end
-    else
+    elseif idx > 0
         for i =  idx %1:R
             params.Comp.filamentState = initLamda + id(:,i);
             params.SimOpt.nameComment = strcat('_eps', num2str(eps), '_i', num2str(i,'%03.f'));
@@ -179,6 +182,24 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
             end                                
         end
 
+    elseif idx < 0
+        for i = 1:R
+            params.Comp.filamentState = initLamda + id(:,i);
+            params.SimOpt.nameComment = strcat('_eps', num2str(eps), '_i', num2str(i,'%03.f'));
+            params.misc.perturbID     = i;
+            files = dir(strcat(params.SimOpt.saveFolder, '/*', params.SimOpt.nameComment, '.mat'));
+            if numel(files) == 0 
+                t =  multiRun(params);
+                gij(:,i) = t{1}.Output.LyapunovMax;%/params.SimOpt.dt;
+                clear('t');
+            else
+                %sprintf('Import, %d\n', i)                      
+                t = multiImport(params);
+                gij(:,i) = t{1}.LyapunovMax;%/params.SimOpt.dt; 
+                clear('t')
+            end                                
+        end        
+        
     end
     
     
