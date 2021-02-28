@@ -203,8 +203,8 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
             params.SimOpt.nameComment = strcat('_eps', num2str(eps), '_i', num2str(i,'%03.f'));
             params.misc.perturbID     = i;
             files = dir(strcat(params.SimOpt.saveFolder, '/*', params.SimOpt.nameComment, '.mat'));
-            if numel(files) == 0 || isempty(who('-file', strcat(files(1).folder, '/', files(1).name), 'sim'))
-                if isempty(who('-file', strcat(files(1).folder, '/', files(1).name), 'sim'))
+            if numel(files) == 0 || isempty(who('-file', strcat(files(1).folder, '/', files(1).name), 'sim')) %checks if contains sim
+                if numel(files) > 0 && isempty(who('-file', strcat(files(1).folder, '/', files(1).name), 'sim')) %if doesnt contain sim delete sim
                     delete(strcat(files(1).folder, '/', files(1).name))
                 end                
                 t =  multiRun(params);
