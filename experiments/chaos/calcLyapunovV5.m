@@ -105,7 +105,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
             swType = 'brownModel';       
     end
 
-    params.Comp.ComponentType = 'tunnelSwitch2';% swType; %'tunnelSwitchL'; %'tunnelSwitch2';
+    params.Comp.ComponentType = swType; %'tunnelSwitchL'; %'tunnelSwitch2';
 	params.SimOpt.T                = 150;%10/params.Stim.Frequency;
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
