@@ -84,13 +84,28 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     
 	if idx > E
 		return
-	end
+    end
 
+    switch(sim{1}.Comp.swType)
+        case 'a' 
+            swType =  'atomicSwitch' ; 
+        case 'm'
+            swType = 'memristor';
+        case 't'
+            swType = 'tunnelSwitch';
+        case 'q'
+            swType = 'quantCSwitch';
+        case 't2'
+            swType = 'tunnelSwitch2';    
+        case 'tl'
+            swType = 'tunnelSwitchL';            
+        case 'l'
+            swType = 'linearSwitch';            
+        case 'b'
+            swType = 'brownModel';       
+    end
 
-    
-
-
-    params.Comp.ComponentType = 'tunnelSwitchL'; %'tunnelSwitch2';
+    params.Comp.ComponentType = swType; 'tunnelSwitchL'; %'tunnelSwitch2';
 	params.SimOpt.T                = 150;%10/params.Stim.Frequency;
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
