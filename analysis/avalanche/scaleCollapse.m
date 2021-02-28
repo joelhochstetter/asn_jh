@@ -50,6 +50,7 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
     lifeFreq = reshape(lifeFreq, [numel(lifeFreq), 1]);
     
     %% Calculate re-scaled time
+    assert(numel(lives) == numel(time_t));
     re_tm = cell(size(time_t));
     for i = 1:numel(time_t)
         re_tm{i} = time_t{i}/(lives(i));

@@ -243,9 +243,9 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     minTime = 5;
     minFreq  = 50;
     ToPlot = true;
-    Freq = sum(lifeAv == dur');
+    lifeFreq = sum(
     figure('visible','off');
-    [~, ~, ~, new_t, size_t_ave, ~] = scaleCollapse(dur', Freq, time_t, size_t, results.avalanche.timeFit.uc, minTime, minFreq, ToPlot);
+    [~, ~, ~, new_t, size_t_ave, ~] = scaleCollapse(bins, prob, time_t, size_t, results.avalanche.timeFit.uc, minTime, minFreq, ToPlot);
     results.avalanche.shape.re_tm  = new_t;
     results.avalanche.shape.re_sz  = size_t_ave;    
 

@@ -105,7 +105,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
             swType = 'brownModel';       
     end
 
-    params.Comp.ComponentType = swType; 'tunnelSwitchL'; %'tunnelSwitch2';
+    params.Comp.ComponentType = swType; %'tunnelSwitchL'; %'tunnelSwitch2';
 	params.SimOpt.T                = 150;%10/params.Stim.Frequency;
 
     %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
@@ -203,12 +203,15 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
             params.SimOpt.nameComment = strcat('_eps', num2str(eps), '_i', num2str(i,'%03.f'));
             params.misc.perturbID     = i;
             files = dir(strcat(params.SimOpt.saveFolder, '/*', params.SimOpt.nameComment, '.mat'));
-            if numel(files) == 0 
+            if numel(files) == 0 || isempty(who('-file', strcat(files(1).folder, '/', files(1).name), 'sim'))
+                if isempty(who('-file', strcat(files(1).folder, '/', files(1).name), 'sim'))
+                    delete(strcat(files(1).folder, '/', files(1).name))
+                end                
                 t =  multiRun(params);
                 gij(:,i) = t{1}.Output.LyapunovMax;%/params.SimOpt.dt;
                 clear('t');
             else
-                %sprintf('Import, %d\n', i)                      
+                sprintf('Import, %d\n', i)                      
                 t = multiImport(params);
                 gij(:,i) = t{1}.LyapunovMax;%/params.SimOpt.dt; 
                 clear('t')

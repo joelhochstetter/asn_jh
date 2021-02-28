@@ -13,6 +13,8 @@ function [G, V, t, I] = applyConditions(G, V, t, conditions)
     t  = reshape(t, [numel(t),1]);
     V = reshape(V, [numel(V),1]);    
 
+    dG = gradient(G);
+    
     if ~isfield(conditions, 'type')
         conditions.type = 'none';
     end
@@ -27,7 +29,9 @@ function [G, V, t, I] = applyConditions(G, V, t, conditions)
         case 'GInterval'
             I = extractInterval(G, conditions.lc, conditions.uc);  
         case 'Gchange'
-            I =  changeInterval(G,conditions.thresh);
+            I =  changeInterval(G, conditions.thresh);
+        case 'dGGchange'
+            I =  extractInterval(dG./G, conditions.thresh, inf);            
     end
 
     G = G(I);
