@@ -1,12 +1,15 @@
-function ICV = InterCycleVariation(netC, dt, T, f) 
+function ICV = InterCycleVariation(netC, dt, T, f, G0) 
 %{
 netC: network conductance
 dt:   time-step
 T: Length of simulation
 f: Frequency
 %}
-
-	G0 = 7.77e-5;
+    
+    if nargin < 5
+        G0 = 7.77e-5;
+    end
+    
 	tstepT = round(1/dt/f);
 	numT = floor(T*f);
 	netCMat = zeros(numT, tstepT);

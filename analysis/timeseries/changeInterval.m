@@ -21,10 +21,10 @@ that occurs in a given time-series vector
 
     assert(sum(isnan(x)) == 0);
     dx = gradient(x);
-    pdx = find(dx > thresh);
+    pdx = find(abs(dx) > thresh);
     if sum(pdx) > 0
         cuts(1) = pdx(1);
-        cuts(2) = pdx(2);    
+        cuts(2) = pdx(end);    
         I = cuts(1):cuts(2);
     end    
 end

@@ -15,7 +15,7 @@ function [Connectivity, ContactNodes, SDpath, src, drn] = addRectElectrode(Conne
         drn = find((Connectivity.VertexPosition(:,2) <= Connectivity.GridSize(2)*fraction) & ...
             (Connectivity.VertexPosition(:,1) <= Connectivity.GridSize(1)*xFraction));        
         Connectivity.addNodes = {src, drn};
-        ContactNodes =double(Connectivity.NumberOfNodes) + [1:2]; %add new nodes
+        ContactNodes = double(Connectivity.NumberOfNodes) + [1:2]; %add new nodes
         Connectivity          = getConnectivity(Connectivity);
         sp = graphallshortestpaths(sparse(double(Connectivity.weights)));
         SDpath  = sp(ContactNodes(1), ContactNodes(2)) - 2;

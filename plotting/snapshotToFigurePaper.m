@@ -210,7 +210,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         %G.Edges.Weight = full(snapshot.Voltage(1:connectivity.NumberOfEdges));
 
         hold all;
-        p = plot(G, 'XData', connectivity.VertexPosition(:,1), 'YData', connectivity.VertexPosition(:,2), 'LineStyle','-','LineWidth',5, 'MarkerSize',8);
+        p = plot(G, 'XData', connectivity.VertexPosition(:,1), 'YData', connectivity.VertexPosition(:,2), 'LineStyle','-','LineWidth',4, 'MarkerSize',1); %,8)  
 
         % Highlight on switches
             % Find the edges which correspond to OFF switches:
@@ -229,7 +229,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
 
         % Highlight a nanowire
         if numel(highlightNodes) > 0
-            highlight(p, highlightNodes, 'NodeColor','r','Marker', 'square','MarkerSize',6)  
+            highlight(p, highlightNodes, 'NodeColor','r','Marker', 'square','MarkerSize',1) %,6)  
         end
           
         % Highlight an edge
@@ -263,7 +263,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             colours = ['r';'g'];
             if whatToPlot.Nanowires
                 for i = 1:numel(contacts)
-                    highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
+                    highlight(p,contacts(i),'Marker', '*','MarkerSize',5,'NodeColor',colours(1+isSource(i)))
                 end
             else
                 source = contacts(logical(isSource));

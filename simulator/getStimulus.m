@@ -135,7 +135,10 @@ function Stimulus = getStimulus(Stimulus, SimulationOptions, includet0)
            
         case 'Square'
             Stimulus.Signal = max(Stimulus.AmplitudeOff,Stimulus.AmplitudeOn*square(1*pi*Stimulus.TimeAxis/Stimulus.OffTime + Stimulus.Phase, Stimulus.Duty));           
-            
+            Stimulus.stimName   = strcat(Stimulus.BiasType,num2str(Stimulus.AmplitudeOn,3),'V_off',num2str(Stimulus.OffTime,3),'s', ...
+               'offV', num2str(Stimulus.AmplitudeOff,3), 'V');
+           
+           
         case 'Ramp'
             Stimulus.Signal = linspace(Stimulus.AmplitudeMin, Stimulus.AmplitudeMax, length(Stimulus.TimeAxis))';
             Stimulus.stimName = strcat(Stimulus.BiasType, 'max', num2str( Stimulus.AmplitudeMax,3),'V_min',num2str(Stimulus.AmplitudeMin,3),'V');              

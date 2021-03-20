@@ -119,7 +119,7 @@ params.SimOpt.saveFolder      = saveFolder;
 mkdir(params.SimOpt.saveFolder);
 
 params.SimOpt.T                = T;
-params.SimOpt.dt               = 1e-3;
+params.SimOpt.dt               = 1e-2;%1e-3;
 params.SimOpt.ContactMode = contactMode;
 params.SimOpt.ContactGraphDist = contactDistance;
 

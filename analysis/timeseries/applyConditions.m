@@ -25,13 +25,13 @@ function [G, V, t, I] = applyConditions(G, V, t, conditions)
         case 'crossing'
             I = subTimeseries(G, conditions.after, conditions.thresh);
         case 'tInterval'
-            I = extractInterval(t, conditions.lc, conditions.uc);
+            I = extractInterval(t, conditions.lc, conditions.uc, false);
         case 'GInterval'
-            I = extractInterval(G, conditions.lc, conditions.uc);  
+            I = extractInterval(G, conditions.lc, conditions.uc, false);  
         case 'Gchange'
             I =  changeInterval(G, conditions.thresh);
         case 'dGGchange'
-            I =  extractInterval(dG./G, conditions.thresh, inf);            
+            I =  extractInterval(abs(dG./G), conditions.thresh, inf, true);            
     end
 
     G = G(I);
