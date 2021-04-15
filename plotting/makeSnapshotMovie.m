@@ -33,7 +33,7 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
     
     v = VideoWriter('networkMovie','Motion JPEG AVI');
 
-    v.FrameRate = 20;%floor(1/(timeVec(2)-timeVec(1))/10);
+    v.FrameRate = 50;%floor(1/(timeVec(2)-timeVec(1))/10);
     v.Quality = 100;
     open(v);
     
@@ -43,7 +43,7 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
         critLam = Components.criticalFlux(1);
     end
         
-    for i = 1 : samplingTime: length(timeVec)
+    for i = length(timeVec)/10 : samplingTime: length(timeVec)
         if timeVec(i) > tend
             break
         end
@@ -56,7 +56,7 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
         frameFig = snapshotToFigurePaper(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);          
         xx = Connectivity.GridSize(1);
         yy = Connectivity.GridSize(2);
-        RF = 0.075;
+        RF = 0.05;
         ex = [0, xx, xx, 0];
         sy = yy*[1-RF, 1-RF, 1, 1];
         dy = [0, 0, yy*RF, yy*RF];

@@ -153,6 +153,10 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
        whatToPlot.LogConductance = false; 
     end         
     
+    if ~isfield(whatToPlot, 'ConductanceChange')
+       whatToPlot.ConductanceChange = false; 
+    end          
+    
     if ~isfield(whatToPlot, 'JnCurrents')
        whatToPlot.JnCurrents = false; 
     end    
@@ -407,7 +411,9 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         
         elseif whatToPlot.LogConductance
             % calculate power consumption:
+%             p.EdgeCData = log10(snapshot.Conductance(1:connectivity.NumberOfEdges)/7.77e-5);  
             p.EdgeCData = log10(snapshot.Conductance(1:connectivity.NumberOfEdges)/7.77e-5);          
+            
             cbar  = colorbar;
             caxis([log10(axesLimits.ConCbar(1)/7.77e-5),round(log10(axesLimits.ConCbar(2)/7.77e-5))]);
             %caxis([log10(axesLimits.ConCbar(1)),round(log10(axesLimits.ConCbar(2)))]);
@@ -422,6 +428,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             
 %             cbar.TickLabels = string(10.^(cbar.Ticks));          
             colormap('parula');
+        
             
         elseif whatToPlot.Conductance
             % calculate power consumption:
@@ -438,6 +445,17 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
 %             cbar.TickLabels = string(10.^(cbar.Ticks));          
             colormap('parula');
             
+        elseif whatToPlot.ConductanceChange            
+            p.EdgeCData = snapshot.Conductance(1:connectivity.NumberOfEdges);          
+            cbar  = colorbar;
+            caxis([axesLimits.ConCbar(1), axesLimits.ConCbar(2)]);
+            
+            % colorbar:               
+            title(cbar, '$$\frac{1}{G_{jn}} \frac{dG_{jn}}{dt}$$','interpreter','latex', 'FontSize', 13)
+
+            
+            cbar.FontSize = 15;
+            colormap('parula');            
 
         elseif whatToPlot.JnCurrents
             currents =(abs(snapshot.Voltage(1:connectivity.NumberOfEdges)).*(snapshot.Conductance(1:connectivity.NumberOfEdges))); % (nA)

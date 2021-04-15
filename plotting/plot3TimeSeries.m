@@ -13,7 +13,7 @@ function plot3TimeSeries(params)
     Lam = sim.swLam;
 
     E = sum(sim.adjMat(:))/2;
-    sp  = graphallshortestpaths(sparse(sim.adjMat));
+    sp  = graphallshortestpaths(sparse(double(sim.adjMat)));
     sd = sp(sim.ContactNodes(1), sim.ContactNodes(2));
 
 

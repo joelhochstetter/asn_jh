@@ -13,7 +13,7 @@ ensembleID: 0 (fixed density, change size),
     end
 
 
-     numSeeds = 3000;
+     numSeeds = 2000;
      seedIdx  = mod((idx-1), numSeeds) + 1;
 
   
@@ -21,7 +21,7 @@ ensembleID: 0 (fixed density, change size),
     switch ensembleID
         case 0 %fixed density, change size 
             disp('Simulating networks of fixed density, changing size')
-            netSizes = 100;%[50, 100, 150, 200];
+            netSizes = [50, 100, 150, 200];
             Szeidx    = floor((idx-1)/numSeeds) + 1;
             thisSize = netSizes(Szeidx);            
             disp(strcat2({'Seed: ', seedIdx - 1, ', D = ', thisSize}));

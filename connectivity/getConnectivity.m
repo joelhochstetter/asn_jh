@@ -220,7 +220,6 @@ clc
     %---------------------------------------------------------------------%  
 
     case 'Lattice'
-
         if ~isfield(Connectivity, 'sizex')
             Connectivity.sizex = 10;
         end
@@ -229,65 +228,20 @@ clc
             Connectivity.sizey = Connectivity.sizex;
         end            
 
-        Connectivity.NumberOfNodes = Connectivity.sizex*Connectivity.sizey;
-        Connectivity.weights  = zeros(Connectivity.NumberOfNodes);
-
         if ~isfield(Connectivity, 'BondProb') %bond probability
             Connectivity.BondProb = 1;
         end
 
         if ~isfield(Connectivity, 'RewireProb') %bond probability
             Connectivity.RewireProb = 0;
-        end        
-        
-        if Connectivity.BondProb == 1
-            %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
-            %nodeIdx = Connectivity.sizex * (j - 1) + i
-            %Connect adjacent nodes in x direction
-            for i = 1:(Connectivity.sizex - 1)
-                for j = 1:Connectivity.sizey
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = 1;
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = 1;            
-                end
-            end
+        end          
 
-            %Connect adjacent nodes in y direction
-            for i = 1:Connectivity.sizex
-                for j = 1:(Connectivity.sizey - 1)
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = 1;
-                    Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = 1;                
-                end
-            end            
-        else %percolation model with bond proabibility p
-
-            %We index nodes so first row 1-sizex, 2nd row sizex+1-2sizex,etc.
-            %nodeIdx = Connectivity.sizex * (j - 1) + i
-            %Connect adjacent nodes in x direction
-            for i = 1:(Connectivity.sizex - 1)
-                for j = 1:Connectivity.sizey
-                    p = rand(1) < Connectivity.BondProb;                         
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i,     Connectivity.sizex * (j - 1) + i + 1) = p;
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i + 1, Connectivity.sizex * (j - 1) + i)     = p;                
-                end
-            end
-
-            %Connect adjacent nodes in y direction
-            for i = 1:Connectivity.sizex
-                for j = 1:(Connectivity.sizey - 1)
-                    p = rand(1) < Connectivity.BondProb;                        
-                    Connectivity.weights(Connectivity.sizex * (j - 1) + i, Connectivity.sizex * j + i)       = p;
-                    Connectivity.weights(Connectivity.sizex * j + i,       Connectivity.sizex * (j - 1) + i) = p;                
-                end
-            end                  
-        end       
+        Connectivity.NumberOfNodes = Connectivity.sizex*Connectivity.sizey;
         
-        if Connectivity.RewireProb ~= 0
-            
-        end
+        Connectivity.weights = DilutedLattice(Connectivity.sizex, Connectivity.sizey, Connectivity.BondProb, Connectivity.RewireProb, Connectivity.seed);
         
-        nds = 0:(Connectivity.NumberOfNodes - 1);
-        Connectivity.VertexPosition = 1 +  [floor(nds/Connectivity.sizex); mod(nds, Connectivity.sizex)].';      
-        
+%         nds = 0:(Connectivity.NumberOfNodes - 1);
+%         Connectivity.VertexPosition = 1 +  [floor(nds/sizex); mod(nds, sizex)].';              
     %---------------------------------------------------------------------%  
 
         case 'WattsStrogatz'
@@ -461,8 +415,8 @@ clc
         oldNumNodes = double(Connectivity.NumberOfNodes);
         Connectivity.NumberOfNodes = oldNumNodes + numNew;
         adjMat = Connectivity.weights;
-        Connectivity.weights = single(zeros(Connectivity.NumberOfNodes));
-        Connectivity.weights(1:oldNumNodes,1:oldNumNodes) = adjMat;
+        Connectivity.weights = (zeros(Connectivity.NumberOfNodes));
+        Connectivity.weights(1:oldNumNodes,1:oldNumNodes) = adjMat; %may need to fix this line for non-sparse case
         
         for i = 1:numNew
             Connectivity.weights(oldNumNodes + i, Connectivity.addNodes{i}) = 1;

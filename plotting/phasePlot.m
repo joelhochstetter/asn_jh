@@ -49,10 +49,10 @@ function cb = phasePlot(x, y, t, type, color, symbol, varargin)
         cm = colormap(jet);                                             % Approximates Spectrum
         y(end) = NaN;                                                 % Set Last Value To ‘NaN’ To Create Line
         
-%        patch(x, y,t(1):t(2), 'EdgeColor','interp')
+%        patch(x, y, t(1):t(2), 'EdgeColor','interp')
         %Plot as points instead
          pointsize = 30; 
-         scatter(x, y, pointsize, t(1):t(2), symbol);
+         scatter(x, y, pointsize, t, 'filled');
         cb = colorbar;
     end
 
