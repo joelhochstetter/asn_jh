@@ -214,7 +214,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         %G.Edges.Weight = full(snapshot.Voltage(1:connectivity.NumberOfEdges));
 
         hold all;
-        p = plot(G, 'XData', connectivity.VertexPosition(:,1), 'YData', connectivity.VertexPosition(:,2), 'LineStyle','-','LineWidth',4, 'MarkerSize',1); %,8)  
+        p = plot(G, 'XData', connectivity.VertexPosition(:,1), 'YData', connectivity.VertexPosition(:,2), 'LineStyle','-','LineWidth',4, 'MarkerSize',8)  
 
         % Highlight on switches
             % Find the edges which correspond to OFF switches:
@@ -267,7 +267,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             colours = ['r';'g'];
             if whatToPlot.Nanowires
                 for i = 1:numel(contacts)
-                    highlight(p,contacts(i),'Marker', '*','MarkerSize',5,'NodeColor',colours(1+isSource(i)))
+                    highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
                 end
             else
                 source = contacts(logical(isSource));
@@ -432,9 +432,9 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             
         elseif whatToPlot.Conductance
             % calculate power consumption:
-            p.EdgeCData = snapshot.Conductance(1:connectivity.NumberOfEdges)/7.77e-5;          
+            p.EdgeCData = snapshot.Conductance(1:connectivity.NumberOfEdges);          
             cbar  = colorbar;
-            caxis([axesLimits.ConCbar(1)/7.77e-5,axesLimits.ConCbar(2)/7.77e-5]);
+            caxis([axesLimits.ConCbar(1),axesLimits.ConCbar(2)]);
             %caxis([log10(axesLimits.ConCbar(1)),round(log10(axesLimits.ConCbar(2)))]);
             
             % colorbar:               
