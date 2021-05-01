@@ -6,7 +6,7 @@ function [bins, probs, edges] = LogBin(x, nbins)
 %}
     N = numel(x);
     x = reshape(x, [numel(x), 1]);
-    c = 1;
+    c = 1;git
     %bins begin floor(c*R^j)
     R = round(max(x)^(1/nbins)/c);
 %     R = 2;
