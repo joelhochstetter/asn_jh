@@ -4,7 +4,7 @@ function [bins, probs, edges] = LogBin(x, nbins)
         x = [1,1,1,1,1,5,10,12];
         LogBin(x, 2)
 %}
-
+    N = numel(x);
     x = reshape(x, [numel(x), 1]);
     c = 1;
     %bins begin floor(c*R^j)
@@ -13,7 +13,7 @@ function [bins, probs, edges] = LogBin(x, nbins)
     edges = floor(c*R.^[0:(nbins + 1)]);
     bins  = floor(c*R.^[0.5:(nbins + 0.5)]);
     bsize = edges(2:end) - edges(1:end -1);
-    probs = sum((x < edges(2:end)) & (x >= edges(1:end-1)))./bsize;
+    probs = sum((x < edges(2:end)) & (x >= edges(1:end-1)))./bsize/N;
 
 
 end
