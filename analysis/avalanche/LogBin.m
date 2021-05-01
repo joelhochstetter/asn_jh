@@ -11,16 +11,21 @@ function [bins, probs, edges] = LogBin(x, nbins, R)
     R = round(max(x)^(1/nbins)/c);
     c = 1;
 
-    if nargin == 2
+    if nargin == 1
+        R = 2;
+        nbins = log(max(x))/log(c*R);        
+    elseif nargin == 2
         x = reshape(x, [numel(x), 1]);
         %bins begin floor(c*R^j)
-        R = round(max(x)^(1/nbins)/c);
-        if R == 1
+        R = (max(x)^(1/nbins)/c);
+        if R <= 1
             R = 2;
         end
     else
         nbins = log(max(x))/log(c*R);
     end
+    
+    
 %     R = 2;
     edges = floor(c*R.^[0:(nbins + 1)]);
     bins  = floor(c*R.^[0.5:(nbins + 0.5)]);
