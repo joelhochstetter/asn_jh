@@ -8,6 +8,7 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
 
     %}
 
+    nameComment = '';
     if nargin < 7
         initLamda = 0;
         disp('No initial state file provided. Using lambda (t = 0) = 0')        
@@ -17,6 +18,8 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
         end
         if ischar(initStateFile)
             sim = multiImport(struct('SimOpt', struct('saveFolder', initStateFolder), 'importByName', initStateFile, 'importStateOnly', true));
+            finalG = sim{1}.netC(end);
+            nameComment = strcat('_init', num2str(finalG));
             if isfield(sim{1}, 'swLam')
                 initLamda                  = sim{1}.swLam(end,:)';
             elseif isfield(sim{1}, 'finalStates')
@@ -71,7 +74,7 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
 
     params.SimOpt.T                = T;
     params.SimOpt.dt               = dt;
-    params.SimOpt.nameComment      = '';
+    params.SimOpt.nameComment      = nameComment;
 
     %Set Stimulus
     params.Stim.BiasType     = BiasType; % 'ACsaw'; % 'DC' \ 'AC' \ 'DCandWait' \ 'Ramp' \ 'ACsaw'
@@ -96,7 +99,7 @@ function attractorForCluster(idx, saveFolder, lyFolder, BiasType, Amps, Freqs, i
     params.SimOpt.ContactMode = contactMode;
     params.SimOpt.ContactGraphDist = contactDistance;
     
-    params.Conn.filename = connFile;
+%     params.Conn.filename = connFile;
 
     %%
     s = multiRun(params);
