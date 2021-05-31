@@ -83,13 +83,13 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     end
     
     %% Fourier transform
-%     figure('visible','off');
-%     [beta, dbeta] = plotPSD(time, G);
-%     results.PSD.beta  = nan;%beta;
-%     results.PSD.dbeta = nan;%dbeta;
-%     %need to give uncertainity as well
-%     saveas(gcf, strcat(saveFolder, '/PSD.png'))
-%     close all;
+    figure('visible','off');
+    [beta, dbeta] = plotPSD(time, G);
+    results.PSD.beta  = beta;
+    results.PSD.dbeta = dbeta;
+    %need to give uncertainity as well
+    saveas(gcf, strcat(saveFolder, '/PSD.png'))
+    close all;
     
     %% Auto correlation function
 %     figure('visible','off');
@@ -153,7 +153,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     
     %% Inter-event interval
     figure('visible','off');
-    results.IEI = plotIEIfromEvents(events, time, struct('useML', false), joinperiod);%fitML), joinperiod);
+    results.IEI = plotIEIfromEvents(events, time, struct('useML', fitML), joinperiod);%fitML), joinperiod);
     saveas(gcf, strcat(saveFolder, '/IEIdist.png'))
     close all;
 

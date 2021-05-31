@@ -40,7 +40,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
          end       
  
          if ~isfield(fitP, 'logBin')
-            fitP.logBin = false;
+            fitP.logBin = true;
          end             
         
          if ~isfield(fitP, 'fitTrun')
@@ -63,9 +63,9 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
     pcrit = 0.0;
     ks = 0.0;
     
-    if fitP.logBin
-        nbins = ceil(2*iqr(sizeAv)/(numel(sizeAv)^(1/3))); %calculated by Freeman Diaconis rule
-        [bins, N, edges]=lnbin(sizeAv, nbins);
+    if fitP.logBin      
+%         nbins = ceil(2*iqr(sizeAv)/(numel(sizeAv)^(1/3))); %calculated by Freeman Diaconis rule
+        [bins, N, edges] = LogBin(sizeAv);
     else 
         [N,edges] = histcounts(sizeAv, 'Normalization', 'probability');
         bins = (edges(1:end-1) + edges(2:end))/2;
