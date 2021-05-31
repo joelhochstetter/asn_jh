@@ -61,6 +61,7 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
     %% Prune data according to appropriate datasets
    
     selected = (lives >= minTime) & (lifeFreq >= minFreq) & (lives <= Tmax);
+    selected(7) = 0;
     lives     = lives(selected);
     re_tm = re_tm(selected);
     size_t    = size_t(selected);

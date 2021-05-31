@@ -50,11 +50,20 @@ function [sims] = multiImport (params)
                 filenames{i} = strcat(files(i).folder,'/',files(i).name);
             end
 
-        else %in this case we use importByName
-            if contains(params.importByName,'.mat')
-                filenames{1} = strcat(params.SimOpt.saveFolder, '/', params.importByName);                
-            else
-                filenames{1} = strcat(params.SimOpt.saveFolder, '/', params.importByName, '.mat');
+        else %in this case we use importByName 
+            %name can be either a cell array or a string
+            if ~iscell(params.importByName)
+                params.importByName = {params.importByName};
+            end
+            
+            filenames = cell(1,numel(params.importByName));   %create cell array of filenames
+            %for all specified name imports files
+            for i = 1:numel(params.importByName)
+                if contains(params.importByName{i},'.mat')
+                    filenames{i} = strcat(params.SimOpt.saveFolder, '/', params.importByName{i});                
+                else
+                    filenames{i} = strcat(params.SimOpt.saveFolder, '/', params.importByName{i}, '.mat');
+                end
             end
         end
 

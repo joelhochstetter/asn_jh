@@ -62,7 +62,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
     %Calculate the unperturbed orbit
     unpertFilState        = SimulationOptions.unpertFilState';
     
-    LyapunovMax        = zeros(niterations,1);
+    LyapunovMax        = zeros(niterations,1); %exponential divergence at each time-step
     
     %% Solve equation systems for every time step and update:
     for ii = 1 : niterations
@@ -76,7 +76,6 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         % Get LHS (matrix) and RHS (vector) of equation:
         Gmat = zeros(V);
 
-        
          for i = 1:E
              Gmat(edgeList(i,1),edgeList(i,2)) = componentConductance(i);
              Gmat(edgeList(i,2),edgeList(i,1)) = componentConductance(i);
@@ -96,18 +95,19 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         end
         % Solve equation:
         sol = LHS\RHS;
-
+        
+        %calculate junction voltages
         tempWireV = sol(1:V);
         compPtr.comp.voltage = tempWireV(edgeList(:,1)) - tempWireV(edgeList(:,2));
         
         
         % Update element fields:
-        updateComponentState(compPtr, SimulationOptions.dt);    % ZK: changed to allow retrieval of local values
+        updateComponentState(compPtr, SimulationOptions.dt);    
         
         %Calculate state difference
         deltaLam     = compPtr.comp.filamentState - unpertFilState(:,ii);
         normDeltaLam = norm(deltaLam);
-        if normDeltaLam == 0
+        if normDeltaLam == 0 %if perturbation disappears then either perturbation is too small or time-step is too big
             LyapunovMax(ii) = -inf;
             break
         end
@@ -115,7 +115,10 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
         %Update trajectory
         compPtr.comp.filamentState =  unpertFilState(:,ii) + SimulationOptions.LyEps/normDeltaLam*deltaLam;
         
+        %Calculate exponential divergence for time-step
         LyapunovMax(ii) = log(normDeltaLam/SimulationOptions.LyEps);
+        
+        %Calculate network current
         electrodeCurrent(ii,:)   = sol(V+1:end);
 
         if SimulationOptions.saveSwitches
@@ -148,6 +151,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLyapunov(Connectiv
     OutputDynamics.networkCurrent    = electrodeCurrent(:, 2);
     OutputDynamics.networkConductance = abs(OutputDynamics.networkCurrent ./ Signals{1});
 
-    OutputDynamics.LyapunovMax       = LyapunovMax;
+    %Save exponential divergences
+    OutputDynamics.LyapunovMax       = LyapunovMax/SimulationOptions.dt; %normalise by step size
     
 end

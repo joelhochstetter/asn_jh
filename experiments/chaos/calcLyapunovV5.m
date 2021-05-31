@@ -11,7 +11,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
 %   Ly.h5 stores exponential diverges at each time step and running
 %       lyapunov exponents at the end of each period to check for convergence
 % idx < 0 loops through all things
-% Written by Joel Hochsteter
+% Written by Joel Hochsteter (last edited 23/7/20)
 
 
 
@@ -43,7 +43,6 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     params.SimOpt.reserveFilename = true;
     params.SimOpt.stopIfDupName = true;
     
-	%params.SimOpt.saveFolder      = '/import/silo2/joelh/Chaos/Lyapunov';
 	params.SimOpt.dt               = 5e-4;
 	params.SimOpt.nameComment      = '';
     params.SimOpt.saveFolder       = strcat(lyFolder, '/', Attractor, '/');%strcat('/headnode2/joelh/bin/longAC_topo/Lyapunov/up/', Attractor, '/');
@@ -106,9 +105,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     end
 
     params.Comp.ComponentType = swType; %'tunnelSwitchL'; %'tunnelSwitch2';
-	params.SimOpt.T                = 150;%10/params.Stim.Frequency;
-
-    %swLam =  ';%h5read(strcat(Folder, '/', Attractor, '.h5'), '/swLam');
+	params.SimOpt.T                = 150;
     
     if isfield(sim{1}, 'swLam')
         initLamda                  = sim{1}.swLam(end,1:E)';
@@ -120,7 +117,7 @@ function li = calcLyapunovV5(useParFor, idx, attractorFolder, Attractor, lyFolde
     end
         
     params.Comp.filamentState = initLamda;
-	eps                        = 5e-4;%1e-5; %1e-5 / 1e-6 / 1e-7 / 1
+	eps                        = 5e-4;
     clear('swLam', 'sim')
 
     %% Run unperturbed simulation

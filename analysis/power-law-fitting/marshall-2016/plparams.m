@@ -100,7 +100,7 @@ function [tau, xmin, xmax, sigmaTau, p, pCrit, ks, fullResults] = plparams(x, va
 %% Parse command line for parameters
 
 nSamples = 500; %500
-pCrit = 0.2;%0.1; %0.2
+pCrit = 0.5;%0.1; %0.2
 likelihood = 1e-2; %1e-3
 
 iVarArg = 1;
@@ -131,6 +131,13 @@ end
 
 % find unique x values
 unqX = unique(x);
+if max(x) < 130
+    u = max(x);
+else
+    u = 130;
+end
+unqX = 1:u;
+
 
 %% Sort data in decreasing order by normalized Euclidean distance
 
