@@ -58,8 +58,8 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
     ks = 0.0;
     
     if fitP.logBin
-        nbins = 2*iqr(lifeAv)/(numel(lifeAv)^(1/3)); %calculated by Freeman Diaconis rule %this is actually bin width not number of bins
-        [bins, N, edges]=lnbin(lifeAv, nbins);
+%         nbins = ceil(2*iqr(lifeAv)/(numel(lifeAv)^(1/3))); %calculated by Freeman Diaconis rule
+        [bins, N, edges] = LogBin(lifeAv);
     else 
         [N,edges] = histcounts(lifeAv, 'Normalization', 'probability','BinMethod','integers');
         bins = (edges(1:end-1) + edges(2:end))/2;

@@ -98,7 +98,7 @@ function IEIres = plotIEIfromEvents(events, t, fitP, joinperiod)
     IEIres.pCrit = 1;
     IEIres.ks = 1;  
     
-    ieiDat = ieiDat*dt; %convert to seconds
+%     ieiDat = ieiDat*dt; %convert to seconds
     %[~, ieiDat] = IEI(ddG, 1, t); %uses time-vector
     if fitP.logBins
         N = floor(sqrt(ieiDat));         % number of bins

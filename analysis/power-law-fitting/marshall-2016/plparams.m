@@ -124,6 +124,10 @@ end
 % ensure data is oriented vertically
 nX = numel(x);
 x = reshape(x, nX, 1);
+if max(x) > 1e4
+    x = 2.^(1:14)';
+    disp('Trying fewer steps');
+end
 
 % find unique x values
 unqX = unique(x);

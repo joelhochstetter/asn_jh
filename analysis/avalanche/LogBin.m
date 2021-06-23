@@ -6,6 +6,7 @@ function [bins, probs, edges] = LogBin(x, nbins, mx, R)
 %}
     N = numel(x);
     x = reshape(x, [numel(x), 1]);
+    %bins begin floor(c*R^j)
     c = 1;
 
     if nargin == 1
@@ -23,6 +24,8 @@ function [bins, probs, edges] = LogBin(x, nbins, mx, R)
             R = 2;
         end
     else
+%         R = round(max(x)^(1/nbins)/c);
+        
         nbins = log(max(x))/log(c*R);
     end
     

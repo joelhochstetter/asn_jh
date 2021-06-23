@@ -76,6 +76,19 @@ function [G, V, t, fname] = importByType(importMode, importFolder, idx)
             files = dir(strcat(importFolder, '/*.mat'));
             load(strcat(importFolder, '/', files(idx).name), 't', 'G', 'V');
             fname = files(idx).name;   
+            
+        case 4 %data saved as .tdms: UCLA format
+            files = dir(strcat(importFolder, '/*.tdms'));
+            file = files(idx);
+            ff = strcat(file.folder,'/',file.name);
+            my_tdms_struct = TDMS_getStruct(ff);
+            I  = my_tdms_struct.I_V_0.SMU_Current.data;
+            t = my_tdms_struct.I_V_0.SMU_Current.Props.wf_increment*(1:numel(I));
+            % V  = my_tdms_struct.I_V_0.SMU_Voltage.data;
+%             V = my_tdms_struct.I_V_0.Voltage_Out_0.data;
+            V = 1;
+            G  = I./V;
+            fname = files(idx).name;
            
     end 
             

@@ -55,7 +55,7 @@ function plotIEI(G, thr, t, pn, fitP)
         end 
         
         if ~isfield(fitP, 'logBins')
-            fitP.logBins = false;
+            fitP.logBins = true;
         end
     end
 
@@ -66,11 +66,7 @@ function plotIEI(G, thr, t, pn, fitP)
         ddG = dG > thr;
         [~, ieiDat] = IEI(ddG, 1, t);
         if fitP.logBins
-            N = floor(sqrt(ieiDat));         % number of bins
-            start = min(ieiDat); % first bin edge
-            stop = max(ieiDat);  % last bin edge
-            b = 2.^linspace(log2(start),log2(stop),N+1);
-            [Niei,edgesiei] = histcounts(ieiDat, b, 'Normalization', 'probability');
+           [~, Niei, edgesiei] = LogBin(ieiDat);
         else
             [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');            
         end
@@ -124,11 +120,7 @@ function plotIEI(G, thr, t, pn, fitP)
         ddG = abs(dG) > thr;
         [~, ieiDat] = IEI(ddG, 1, t);
         if fitP.logBins
-            N = floor(sqrt(ieiDat));         % number of bins
-            start = min(ieiDat); % first bin edge
-            stop = max(ieiDat);  % last bin edge
-            b = 2.^linspace(log2(start),log2(stop),N+1);
-            [Niei,edgesiei] = histcounts(ieiDat, b, 'Normalization', 'probability');
+           [~, Niei, edgesiei] = LogBin(ieiDat);
         else
             [Niei,edgesiei] = histcounts(ieiDat, 'Normalization', 'probability');            
         end
