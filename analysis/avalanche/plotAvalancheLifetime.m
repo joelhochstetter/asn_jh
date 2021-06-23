@@ -85,23 +85,23 @@ function [alpha, dal, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAva
     if fitPL
         
         if fitP.useML
-            if numel(unique(lifeAv)) > 2            
+            if numel(unique(lifeAv)) > 2   && numel(bins) > 3         
 %                 fitP.uc = 60;
                 MLcompare = mlFit(lifeAv(lifeAv <= fitP.uc), fitP.fitTrun);
-                alpha   = MLcompare.PL.tau;
-                xmin = MLcompare.PL.xmin;
-                xmax = MLcompare.PL.xmax;
-                if isfield(MLcompare.PL, 'dtau')
-                    dal    = MLcompare.PL.dtau; 
+                alpha   = MLcompare(1).PL.tau;
+                xmin = MLcompare(1).PL.xmin;
+                xmax = MLcompare(1).PL.xmax;
+                if isfield(MLcompare(1).PL, 'dtau')
+                    dal    = MLcompare(1).PL.dtau; 
                 end
-                if isfield(MLcompare.PL, 'p')
-                    p    = MLcompare.PL.p; 
+                if isfield(MLcompare(1).PL, 'p')
+                    p    = MLcompare(1).PL.p; 
                 end
-                if isfield(MLcompare.PL, 'pcrit')
-                    pcrit   = MLcompare.PL.pcrit; 
+                if isfield(MLcompare(1).PL, 'pcrit')
+                    pcrit   = MLcompare(1).PL.pcrit; 
                 end
-                if isfield(MLcompare.PL, 'ks')
-                    ks     = MLcompare.PL.ks; 
+                if isfield(MLcompare(1).PL, 'ks')
+                    ks     = MLcompare(1).PL.ks; 
                 end      
                 x = xmin:0.01:xmax;
                 A = N(find(edges <= xmin, 1));

@@ -1,9 +1,18 @@
 function [fullResults] = custom_plparams(x, xmin)
+%{
+    This function is equivalent to pl_params.m from Marshall 2016.
+    This is modified for a given xmin loops over the possible xmax
+        values and performs power-law fit
+
+    For attribution see pl_params.m
+    Modified by Joel Hochstetter
+%}
+
 %% Parse command line for parameters
 
-nSamples = 500; %500
-pCrit = 1.0;%0.1; %0.2
-likelihood = 1e-2; %1e-3
+nSamples = 500;
+pCrit = 1.0;
+likelihood = 1e-2;
 
 %% Process data
 
@@ -31,13 +40,6 @@ fullResults = struct('xmin', zeros(nSupport,1), ...
 
 
 %% Initiate greedy search for optimal support
-if nSupport < 1
-    'fuck'
-end
-
-
-% Try support pairs in ranked order until p = pCrit
-
 xmins = zeros(nSupport,1);
 xmaxs = zeros(nSupport,1);
 ps        = zeros(nSupport,1);

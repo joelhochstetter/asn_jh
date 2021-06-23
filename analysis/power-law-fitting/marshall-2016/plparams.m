@@ -129,10 +129,10 @@ x = reshape(x, nX, 1);
 unqX = unique(x);
 if max(x) < 130
     u = max(x);
+    unqX = 1:u;
 else
-    u = 130;
+    unqX = unique(round(2.^([0:0.05:floor(log2(max(x)))])));
 end
-unqX = 1:u;
 
 
 %% Sort data in decreasing order by normalized Euclidean distance

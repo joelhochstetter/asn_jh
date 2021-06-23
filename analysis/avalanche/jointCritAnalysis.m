@@ -38,6 +38,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     Gjoin = [];
     tjoin = [0];
     Vjoin = [];
+    events = [];
     fname = 'joint folders:';
     joinSpots = [0];
     
@@ -56,16 +57,19 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
                 continue
             end
             
-            t  = reshape(t, [1, numel(t)]);
-            G = reshape(G,  [1, numel(G)]);
-            V = reshape(V,  [1, numel(V)]);
+            t  = reshape(t, [numel(t), 1]);
+            G = reshape(G,  [numel(G), 1]);
+            V = reshape(V,  [numel(V), 1]);
             
             t = t + tjoin(end) - t(1);
             
+             % detect events
+            ev =  findEvents(G, eventDetect);
             
-            tjoin = [tjoin, t];
-            Gjoin = [Gjoin, G];
-            Vjoin = [Vjoin, V]; 
+            events = [events; ev];
+            tjoin = [tjoin; t];
+            Gjoin = [Gjoin; G];
+            Vjoin = [Vjoin; V]; 
             joinSpots = [joinSpots, numel(t) + joinSpots(end)]; %stores index of joins (index of last element in time-series) for fixing IEI
         end
     end
@@ -74,8 +78,7 @@ function jointCritAnalysis(importFolder, saveFolder, importMode, eventDetect, fi
     tjoin = tjoin(2:end);
     joinSpots = joinSpots(2:end);
     
-    % detect events
-    events =  findEvents(Gjoin, eventDetect);
+   
     if numel(tjoin) == 0
        disp('None') 
        return

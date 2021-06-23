@@ -91,7 +91,7 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
     if fitPL
         
         if fitP.useML
-            if numel(unique(sizeAv(sizeAv <= fitP.uc))) > 2
+            if numel(unique(sizeAv(sizeAv <= fitP.uc))) > 4 && numel(bins) > 3
 %                 fitP.uc = 100;
                 MLcompare = mlFit(sizeAv(sizeAv <= fitP.uc), fitP.fitTrun);
                 tau   = MLcompare.PL.tau;
@@ -108,7 +108,11 @@ function [tau, dta, xmin, xmax, p, pcrit, ks, bins, prob, MLcompare] = plotAvala
                 end
                 if isfield(MLcompare.PL, 'ks')
                     ks     = MLcompare.PL.ks; 
-                end                
+                end           
+                if xmin < min(sizeAv)
+                    xmin = min(sizeAv);
+                end
+                
                 x = xmin:0.01:xmax;
                 A = N(find(edges <= xmin, 1));
                 y = A*x.^(-tau);

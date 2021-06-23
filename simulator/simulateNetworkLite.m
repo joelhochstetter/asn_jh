@@ -136,6 +136,7 @@ function [OutputDynamics, SimulationOptions] = simulateNetworkLite(Connectivity,
     OutputDynamics.storevoltage       = compPtr.comp.voltage';
     OutputDynamics.storeCon           = compPtr.comp.conductance';
     
+    %detect events
     if SimulationOptions.saveFilStateOnly == true
         if SimulationOptions.saveEventsOnly == true
             d = (Components.criticalFlux(1) - abs(filamentStates))*5/Components.criticalFlux(1);

@@ -43,7 +43,7 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
         critLam = Components.criticalFlux(1);
     end
         
-    for i = length(timeVec)/10 : samplingTime: length(timeVec)
+    for i = 1: samplingTime: length(timeVec)
         if timeVec(i) > tend
             break
         end
@@ -54,9 +54,9 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
         snapshot = generateSnapshotFromData(swVolt, swLambda, swCon, critLam,  Signal(i), netC(i), timeVec(i));
 %         frameFig = snapshotToFigureThesis(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);
         frameFig = snapshotToFigurePaper(snapshot, contacts, Connectivity, whatToPlot, axesLimits, [], []);          
-        xx = Connectivity.GridSize(1);
-        yy = Connectivity.GridSize(2);
-        RF = 0.05;
+        xx = double(Connectivity.GridSize(1));
+        yy = double(Connectivity.GridSize(2));
+        RF = 0.06;
         ex = [0, xx, xx, 0];
         sy = yy*[1-RF, 1-RF, 1, 1];
         dy = [0, 0, yy*RF, yy*RF];
@@ -67,6 +67,7 @@ function makeSnapshotMovie(Signal, netC, swV, swLam, swC, timeVec, contacts, Com
         axis square;
         myfig = gcf;
         myfig.InvertHardcopy = 'off'; 
+        title(strcat('t = ', num2str(timeVec(i), '%.2f')))
         
         axis square;
         writeVideo(v,getframe(frameFig));

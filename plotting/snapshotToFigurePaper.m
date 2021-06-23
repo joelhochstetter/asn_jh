@@ -214,7 +214,7 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
         %G.Edges.Weight = full(snapshot.Voltage(1:connectivity.NumberOfEdges));
 
         hold all;
-        p = plot(G, 'XData', connectivity.VertexPosition(:,1), 'YData', connectivity.VertexPosition(:,2), 'LineStyle','-','LineWidth',4, 'MarkerSize',8)  
+        p = plot(G, 'XData', connectivity.VertexPosition(:,1), 'YData', connectivity.VertexPosition(:,2), 'LineStyle','-','LineWidth',4, 'MarkerSize',2);  
 
         % Highlight on switches
             % Find the edges which correspond to OFF switches:
@@ -267,14 +267,14 @@ function [snapshotFigure, p] = snapshotToFigurePaper(snapshot, contacts, connect
             colours = ['r';'g'];
             if whatToPlot.Nanowires
                 for i = 1:numel(contacts)
-                    highlight(p,contacts(i),'Marker', '*','MarkerSize',20,'NodeColor',colours(1+isSource(i)))
+                    highlight(p,contacts(i),'Marker', '*','MarkerSize',2,'NodeColor',colours(1+isSource(i)))
                 end
             else
                 source = contacts(logical(isSource));
                 drain  = contacts(~logical(isSource));
                 
-                scatter(p.XData(source),p.YData(source),20,[[0 1 0];[1 0 0]],'Marker', '*','g');
-                scatter(p.XData(drain),p.YData(drain),20,[[0 1 0];[1 0 0]],'Marker', '*','r');
+                scatter(p.XData(source),p.YData(source),2,[[0 1 0];[1 0 0]],'Marker', '*','g');
+                scatter(p.XData(drain),p.YData(drain),2,[[0 1 0];[1 0 0]],'Marker', '*','r');
             end
         end
             

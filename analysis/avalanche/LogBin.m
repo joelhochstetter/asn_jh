@@ -28,14 +28,17 @@ function [bins, probs, edges] = LogBin(x, nbins, mx, R)
     
     
 %     R = 2;
-    edges = floor(c*R.^[0:(nbins + 1)]) - 0.5;
+    edges = floor(c*R.^[0:(nbins + 1)]);
     edges = unique(edges);
 
-%     bins = edges(1:end - 1) + edges(2:end);
-    bins = sqrt(edges(1:end - 1).*edges(2:end));
-%     bins  = floor(c*R.^[0.5:(nbins + 0.5)]);
-%     bins    = unique(bins);
+%     bins = (edges(1:end - 1) + edges(2:end))/2;
+%     bins1 = (edges(1:end - 1) + edges(2:end))/2;
+    
+    bins = floor(sqrt(edges(1:end - 1).*edges(2:end)));
+%     bins  = floor(c*R.^[0.5:(nbins)]);
+    bins    = unique(bins);
     bsize = edges(2:end) - edges(1:end -1);
+%     bins(bsize == 1) = bins1(bsize == 1);
     probs = sum((x < edges(2:end)) & (x >= edges(1:end-1)))./bsize/N;
 
 

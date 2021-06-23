@@ -152,7 +152,7 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
         plot(new_t, size_t_ave(gm,:), 'k', 'Linewidth', 2.5)
         xlabel('t/T')
         ylabel('s(t,T) T^{1 - 1/\sigma\nu z}')
-        title(strcat2({'1/\sigma\nu z = ', num2str(gamma + 1,2)}))
+        title(strcat2({'1/\sigma\nu z = ', num2str(gamma + 1,3)}))
         axis square;
         box on;    
     end

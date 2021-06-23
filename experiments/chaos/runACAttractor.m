@@ -23,7 +23,7 @@ function runACAttractor(Amps, Freqs, dt, T, attractorFolder)
     params.SimOpt.saveSim         = true;
     params.SimOpt.useParallel     = false; %can set to true to allow parallel processing
     params.SimOpt.hdfSave         = true;  %saves junction parameters to a 'hdf5' file
-    params.SimOpt.saveSwitches         = false; %to save memory set this to true and "hdfSave" to false
+    params.SimOpt.saveSwitches         = true; %to save memory set this to false and "hdfSave" to false
     params.SimOpt.stopIfDupName = true; %this parameter only runs simulation if the savename is not used.
     params.SimOpt.T                = T; %length of the simulation in seconds
     params.SimOpt.dt               = dt; %time step
