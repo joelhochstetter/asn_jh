@@ -26,7 +26,7 @@ function [beta, dbeta] = plotPSD(t, G)
 %     log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)))'
     
     % Linear fit for log-log plot of PSD:
-    fitRes = polyfitn(log10(t_freq(t_freq ~= 0 & t_freq<max(t_freq)))', log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)))', 1);
+    fitRes = polyfitn(log10(t_freq(t_freq ~= 0 & t_freq<max(t_freq)/10))', log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)/10))', 1);
     fitCoef = fitRes.Coefficients;
     errors  = fitRes.ParameterStd;
     
@@ -37,18 +37,18 @@ function [beta, dbeta] = plotPSD(t, G)
     fitCoef(2) = 10^fitCoef(2); 
     PSDfit = fitCoef(2)*t_freq.^fitCoef(1);
     
-    loglog(t_freq,conductance_freq);
+    loglog(t_freq,conductance_freq, 'k');
     xlim([min(t_freq), max(t_freq)]);
     hold on;
-    loglog(t_freq,PSDfit,'r');
+    loglog(t_freq,PSDfit,'b');
     
-    text(0.5,0.8,sprintf('\\beta=%.1f', -fitCoef(1)),'Units','normalized','Color','r','FontSize',18);
-    title('Conductance PSD');
+    text(0.5,0.8,sprintf('\\beta=%.1f', -fitCoef(1)),'Units','normalized','Color','b','FontSize',12);
+%     title('Conductance PSD');
     xlabel('Frequency (Hz)');
     ylabel('PSD');
     ylim([min(conductance_freq)/10,max(conductance_freq)*10]);
-    set(gca,'Ytick',10.^(-20:1:20));
-    grid on;
+    set(gca,'Ytick',10.^(-30:5:20));
+%     grid on;
 
     beta = -fitCoef(1);
     

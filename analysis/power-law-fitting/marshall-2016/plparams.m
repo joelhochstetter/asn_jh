@@ -100,8 +100,8 @@ function [tau, xmin, xmax, sigmaTau, p, pCrit, ks, fullResults] = plparams(x, va
 %% Parse command line for parameters
 
 nSamples = 500; %500
-pCrit = 0.5;%0.1; %0.2
-likelihood = 1e-2; %1e-3
+pCrit = 0.2;%0.1; %0.2
+likelihood = 1e-3; %1e-3
 
 iVarArg = 1;
 while iVarArg <= length(varargin)
@@ -124,18 +124,12 @@ end
 % ensure data is oriented vertically
 nX = numel(x);
 x = reshape(x, nX, 1);
-if max(x) > 1e4
-    x = 2.^(1:14)';
-    disp('Trying fewer steps');
-end
+
 
 % find unique x values
 unqX = unique(x);
-if max(x) < 130
-    u = max(x);
-    unqX = 1:u;
-else
-    unqX = unique(round(2.^([0:0.05:floor(log2(max(x)))])));
+if max(x) > 130
+    unqX = unique(round(2.^([0:0.5:floor(log2(max(x)))])));
 end
 
 
@@ -173,10 +167,6 @@ fullResults = struct('xmin', zeros(nSupport,1), ...
 
 
 %% Initiate greedy search for optimal support
-if nSupport < 1
-    'fuck'
-end
-
 
 % Try support pairs in ranked order until p = pCrit
 sweepFlag = true;

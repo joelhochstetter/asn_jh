@@ -105,6 +105,13 @@ parser.add_argument('--no-plot',
     default = False,
     help    = 'Flag to not plot the figure (default).')    
 
+parser.add_argument('--allComp', 
+    dest    = 'allComp', 
+    action  = 'store_true',
+    default = False, 
+    help    = 'Saves all components. Otherwise, only largest is saved.')
+    
+
 args = parser.parse_args()
 
 if args.nwiresMax == -1:
@@ -122,6 +129,8 @@ else:
 if args.LxMax == -1:
     args.LxMax = args.Lx
 
+    
+
 mean_length     = args.mean_length
 std_length      = args.std_length
 shape           = args.shape
@@ -131,6 +140,7 @@ Ly              = args.Ly
 folder          = args.folder
 density         = args.density
 oldNameConvention  = args.oldNameConvention
+allComp = args.allComp
 
 wireList = list(np.unique(np.linspace(args.nwires, args.nwiresMax, args.numSims, dtype = int)))
 seedList = range(args.seed, args.seedMax)
@@ -185,7 +195,7 @@ for nwires in wireList:
             wires_dict = wires.generate_graph(wires_dict)
             
             
-            if not wires.check_connectedness(wires_dict):
+            if (not wires.check_connectedness(wires_dict)) and (not allComp):
                 wires_dict = wires.select_largest_component(wires_dict)
             
             

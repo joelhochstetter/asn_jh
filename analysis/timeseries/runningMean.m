@@ -4,6 +4,9 @@ function [mx, fx] = runningMean(x, dt)
     time-point of time series (if dt is odd) and one before if dt is even
     
     also returns a fluctuation about the mean at each point in time-bin.
+
+
+    Written by Joel Hochstetter
 %}
 
     %% Initialise outputs

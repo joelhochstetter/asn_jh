@@ -26,8 +26,8 @@ function [freqVector, freqSignal] = fourier_analysis(timeVector, signal)
     Fs = 1/(timeVector(2)-timeVector(1));                   % Sampling frequency (Hz)
 
     freqSignal = fftshift(fft(signal));                     % perform fft and zero-centred shift
-%    freqSignal = abs(freqSignal/L);                         % Normalize and calculate power spectrum (no complex numbers)
-    freqSignal = (abs(freqSignal))/(L*Fs);                         % calculate power per unit frequency (ZK) - for power spectrum square this .^2
+   freqSignal = abs(freqSignal/(L*Fs)).^2;                         % Normalize and calculate power spectrum (no complex numbers)
+%     freqSignal = (abs(freqSignal))/(L*Fs);                         % calculate power per unit frequency (ZK) - for power spectrum square this .^2
 
 
     freqSignal = freqSignal(L/2:end);                       % given that the signal is real, one side is enough
