@@ -172,6 +172,7 @@ params.Comp.filamentState = initLamda;
 if useUncorrelated
     params.SimOpt.useUncorrelated = useUncorrelated;
     params.SimOpt.nameComment   = '_uncorrelated';
+    params.SimOpt.saveSwitches = true;
 end
 
 
