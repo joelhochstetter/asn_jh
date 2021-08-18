@@ -6,13 +6,16 @@ function beta = getBeta(timeVector, signal,fl, fu)
 %}
     
     signal = reshape(signal, size(timeVector));
-    if fl < 0
-        fl = 0;
-    end
+
     signal(isnan(signal)) = 0;
     [t_freq, conductance_freq] = fourier_analysis(timeVector, signal);
+    
+    if fl < 0
+        fl = min(t_freq(t_freq > 0))*5;
+    end
+    
     if fu < 0 
-        fu = max(t_freq);
+        fu = max(t_freq)/5;
     end
     conductance_freq = reshape(conductance_freq, size(t_freq));
     

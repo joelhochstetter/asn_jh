@@ -99,8 +99,8 @@
 function [tau, xmin, xmax, sigmaTau, p, pCrit, ks, fullResults] = plparams(x, varargin)
 %% Parse command line for parameters
 
-nSamples = 500; %500
-pCrit = 0.2;%0.1; %0.2
+nSamples = 200; %500
+pCrit = 0.5;%0.1; %0.2
 likelihood = 1e-3; %1e-3
 
 iVarArg = 1;

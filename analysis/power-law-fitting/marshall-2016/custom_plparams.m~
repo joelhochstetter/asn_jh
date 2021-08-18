@@ -10,7 +10,7 @@ function [fullResults] = custom_plparams(x, xmin)
 
 %% Parse command line for parameters
 
-nSamples = 200;
+nSamples = 500;
 pCrit = 1.0;
 likelihood = 1e-2;
 
@@ -28,12 +28,10 @@ unqX = unique(x);
 % get all support pairs
 % support = nchoosek(unqX,2);
 if numel(unqX) > 1000
-    unqX = unique(round(unqX(unqX > xmin + 5)/ 10) * 10);
-else
-    unqX = unqX(unqX > xmin + 5);
-end
- 
-support = [xmin*ones(numel(unqX), 1) , unqX];
+    
+    
+
+support = [xmin*ones(sum(unqX > xmin + 2),1) , unqX(unqX > xmin + 2)];
 
 % get the amount of data covered by each support pair (nData)
 nSupport = size(support, 1);

@@ -1,4 +1,4 @@
-function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleCollapse(lives, lifeFreq, time_t, size_t, Tmax, minTime, minFreq, ToPlot)
+function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleCollapse(lives, lifeFreq, time_t, size_t, Tmax, minTime, minFreq, ToPlot, extra, nrows, ncols)
 %{
     Input: 
         lifeAv:   lifetime of avalanches
@@ -7,6 +7,7 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
        size_t: size as a function of time
         Tmax: maximum avalanche life-time considered
        ToPlot: plots output
+        extra: plots extra panels
 
     Ouput:
         Determines scale-collapse parameter gamma
@@ -30,6 +31,18 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
     
     if nargin < 8
         ToPlot = true;
+    end
+    
+    if nargin < 9
+        extra = 0;
+    end
+    
+    if nargin < 10
+        nrows = 1;
+    end
+    
+    if nargin < 11
+        ncols = extra + 2;
     end
     
     %% Snip zeros off data
@@ -130,7 +143,7 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
     
     %% Plot scaling function
     if ToPlot
-        subplot(1,2,1);
+        subplot(nrows,ncols,1+extra);
     %     boundedline(new_t, size_t_ave(gm,:), sqrt(size_t_var(gm,:)), 'transparency', 0.1)%, 'k--',)    
         for i = 1:numel(lives)
             hold on;        
@@ -140,10 +153,10 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
         xlabel('t')
         ylabel('s(t,T)')
     %     title(strcat2({'1/\sigma\nu z = ', gamma + 1}))
-        axis square;
+%         axis square;
         box on;
 
-        subplot(1,2,2);
+        subplot(nrows,ncols,2+extra);
         boundedline(new_t, size_t_ave(gm,:), sqrt(size_t_var(gm,:)), 'transparency', 0.1)%, 'k--',)    
         for i = 1:numel(lives)
             hold on;        
@@ -153,7 +166,7 @@ function [gamma, gamma_vals, RMS_errors, new_t, size_t_ave, size_t_var] = scaleC
         xlabel('t/T')
         ylabel('s(t,T) T^{1 - 1/\sigma\nu z}')
         title(strcat2({'1/\sigma\nu z = ', num2str(gamma + 1,3)}))
-        axis square;
+%         axis square;
         box on;    
     end
     

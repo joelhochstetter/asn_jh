@@ -1,9 +1,14 @@
-function [beta, dbeta] = plotPSD(t, G)
+function [beta, dbeta] = plotPSD(t, G, fitLims)
 %{
     Plots the conductance power spectrum to the current figure given time
     (t) and conductance (G)
+    
 
+    fitLims = [lc, uc]: is the range of the fit
 %}
+
+
+    
     
     cLevel = 0.95;
     beta = 0;
@@ -25,8 +30,13 @@ function [beta, dbeta] = plotPSD(t, G)
 %     log10(t_freq(t_freq ~= 0 & t_freq<max(t_freq)))'
 %     log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)))'
     
+    if nargin < 3
+        fitLims = [min(t_freq(t_freq > 0))*5, max(t_freq)/5];
+    end
+
+
     % Linear fit for log-log plot of PSD:
-    fitRes = polyfitn(log10(t_freq(t_freq ~= 0 & t_freq<max(t_freq)/10))', log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)/10))', 1);
+    fitRes = polyfitn(log10(t_freq(t_freq > fitLims(1) & t_freq < fitLims(2)))', log10(conductance_freq(t_freq > fitLims(1) & t_freq < fitLims(2)))', 1);
     fitCoef = fitRes.Coefficients;
     errors  = fitRes.ParameterStd;
     
@@ -40,7 +50,7 @@ function [beta, dbeta] = plotPSD(t, G)
     loglog(t_freq,conductance_freq, 'k');
     xlim([min(t_freq), max(t_freq)]);
     hold on;
-    loglog(t_freq,PSDfit,'b');
+    loglog(t_freq(t_freq > fitLims(1) & t_freq < fitLims(2)), PSDfit(t_freq > fitLims(1) & t_freq < fitLims(2)),'b');
     
     text(0.5,0.8,sprintf('\\beta=%.1f', -fitCoef(1)),'Units','normalized','Color','b','FontSize',12);
 %     title('Conductance PSD');

@@ -114,7 +114,7 @@ function [p, ks, sigmaTau] = pvcalc(x, tau, varargin)
 %% Parse command line for arguments
 xmin = min(x);
 xmax = max(x);
-nSamples = 500;
+nSamples = 200;
 pCrit = 1;
 likelihood = 10^(-3);
 

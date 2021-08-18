@@ -54,6 +54,7 @@ function events =  findEvents(G, eventDetect, t)
             events(locs(pks > eventDetect.thresh)) = true;
         case 'thresholdPeak'
             dGG =calc_dx_x(G); %method of calculating dx./x to treat forward and backward events on equal footing
+%             dGG = dG./G;
             
             % find crossing of threshold. Take peak from that sequence as event time.
             events = events + thresholdCrossingPeaks(dG, eventDetect.thresh);
