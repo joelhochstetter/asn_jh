@@ -1,4 +1,5 @@
 function events =  findEvents(G, eventDetect, t)
+%    
     defEvDet.method = 'hybrid';
     defEvDet.window = 1;
     defEvDet.thresh = 5.0e-8; %threshold of form dG >= thr or dG./G >= thr
