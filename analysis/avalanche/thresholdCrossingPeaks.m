@@ -6,7 +6,7 @@ function events = thresholdCrossingPeaks(x, thresh)
     if numel(above) > 2 && numel(below) > 2
         if above(1) > below(1)
             above = above(2:end);
-            below = below(1:end-1);
+            below = below(2:end);
         end
         if numel(above) > numel(below)
            above = above(1:end-1); 
@@ -20,4 +20,5 @@ function events = thresholdCrossingPeaks(x, thresh)
             events(I + above(i) - 1) = true;
         end
     end    
+
 end
