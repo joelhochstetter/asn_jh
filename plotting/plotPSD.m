@@ -1,4 +1,4 @@
-function [beta, dbeta] = plotPSD(t, G, fitLims)
+function [beta, dbeta] = plotPSD(t, G, fitLims, npts)
 %{
     Plots the conductance power spectrum to the current figure given time
     (t) and conductance (G)
@@ -7,10 +7,11 @@ function [beta, dbeta] = plotPSD(t, G, fitLims)
     fitLims = [lc, uc]: is the range of the fit
 %}
 
-
+    if nargin < 4
+        npts = numel(t);
+    end
     
     
-    cLevel = 0.95;
     beta = 0;
     dbeta = inf;
     G = reshape(G, size(t));
@@ -19,7 +20,7 @@ function [beta, dbeta] = plotPSD(t, G, fitLims)
     dt = (t(end) - t(1))/(numel(t) - 1);
     t  = t(1):dt:t(end);
     
-    [t_freq, conductance_freq] = fourier_analysis(t, G);
+    [t_freq, conductance_freq] = fourier_analysis(t, G, npts);
     conductance_freq = reshape(conductance_freq, size(t_freq));
    
     if numel(t) < 10 
@@ -31,8 +32,9 @@ function [beta, dbeta] = plotPSD(t, G, fitLims)
 %     log10(conductance_freq(t_freq ~= 0 & t_freq<max(t_freq)))'
     
     if nargin < 3
-        fitLims = [min(t_freq(t_freq > 0))*5, max(t_freq)/5];
+        fitLims = [min(t_freq(t_freq > 0))*10, max(t_freq)/2];
     end
+
 
 
     % Linear fit for log-log plot of PSD:

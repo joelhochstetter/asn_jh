@@ -267,7 +267,7 @@ function results = critAnalysis(events, dt, G, time, V, filename, saveFolder, fi
     dta   = results.avalanche.sizeFit.dTau;
     
     results.avalanche.gamma.x1  = (alpha - 1)/(tau - 1);
-    results.avalanche.gamma.dx1 = results.avalanche.gamma.x1 * sqrt((dta/tau)^2 + (dal/alpha)^2);   
+    results.avalanche.gamma.dx1 = results.avalanche.gamma.x1 * sqrt((dta/(tau - 1))^2 + (dal/(alpha-1))^2);   
     results.avalanche.gamma.x2  = gamma_m_1; 
     results.avalanche.gamma.dx2 = dgamma_m_1;
     results.avalanche.gamma.x3  = invsignutau;
